@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -82,7 +81,10 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
   ];
 
   const handleItemSelect = (type: string) => {
+    console.log('Selected item type:', type);
     if (type === 'assessment') {
+      console.log('Opening assessment builder');
+      onClose(); // Close the main menu first
       setIsAssessmentBuilderOpen(true);
     } else {
       setCreatorView(type);
@@ -92,6 +94,11 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
   const handleCreatorClose = () => {
     setCreatorView(null);
     onClose();
+  };
+
+  const handleAssessmentBuilderClose = () => {
+    console.log('Closing assessment builder');
+    setIsAssessmentBuilderOpen(false);
   };
 
   const renderCreator = () => {
@@ -174,10 +181,7 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
 
       <AssessmentBuilderModal
         isOpen={isAssessmentBuilderOpen}
-        onClose={() => {
-          setIsAssessmentBuilderOpen(false);
-          onClose();
-        }}
+        onClose={handleAssessmentBuilderClose}
         courseId={courseId}
       />
     </>
