@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Plus, ChevronDown, GripVertical, BookOpen, Code, FileText, Video, ClipboardCheck } from 'lucide-react';
+import { Plus, ChevronDown, GripVertical, BookOpen, Code, FileText, Video, ClipboardCheck, FolderOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AddItemMenu from './AddItemMenu';
 
@@ -19,26 +19,22 @@ interface LearningItem {
   description?: string;
 }
 
-interface Module {
+interface ContentItem {
   id: string;
+  type: 'module' | 'project';
   title: string;
   description: string;
-  items: LearningItem[];
-  isExpanded: boolean;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  items?: LearningItem[]; // Only for modules
+  isExpanded?: boolean; // Only for modules
+  duration?: string; // Only for projects
+  difficulty?: 'Easy' | 'Medium' | 'Hard'; // Only for projects
 }
 
 const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
-  const [modules, setModules] = useState<Module[]>([
+  const [contentItems, setContentItems] = useState<ContentItem[]>([
     {
       id: '1',
+      type: 'module',
       title: 'Introduction to Web Development',
       description: 'Fundamentals of HTML, CSS, and JavaScript',
       isExpanded: true,
@@ -51,6 +47,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     },
     {
       id: '2',
+      type: 'module',
       title: 'Advanced JavaScript',
       description: 'Deep dive into ES6+, async programming, and modern JavaScript',
       isExpanded: false,
@@ -60,33 +57,44 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         title: `JavaScript Topic ${i + 1}`,
         duration: '20 min read'
       }))
-    }
-  ]);
-
-  const [projects, setProjects] = useState<Project[]>([
+    },
     {
-      id: '1',
+      id: '3',
+      type: 'project',
       title: 'Portfolio Website',
       description: 'Build a responsive personal portfolio using HTML, CSS, and JavaScript',
       duration: '1 week',
-      difficulty: 'Easy'
+      difficulty: 'Easy' as const
     },
     {
-      id: '2',
+      id: '4',
+      type: 'module',
+      title: 'React Fundamentals',
+      description: 'Learn React components, state management, and hooks',
+      isExpanded: false,
+      items: [
+        { id: '20', type: 'video', title: 'Introduction to React', duration: '60 min' },
+        { id: '21', type: 'reading', title: 'Components and Props', duration: '30 min read' },
+        { id: '22', type: 'coding', title: 'Build Your First Component', duration: '90 min' }
+      ]
+    },
+    {
+      id: '5',
+      type: 'project',
       title: 'E-commerce Application',
       description: 'Full-stack e-commerce app with React, Node.js, and MongoDB',
       duration: '3 weeks',
-      difficulty: 'Hard'
+      difficulty: 'Hard' as const
     }
   ]);
 
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
-  const toggleModule = (moduleId: string) => {
-    setModules(prev => prev.map(module => 
-      module.id === moduleId 
-        ? { ...module, isExpanded: !module.isExpanded }
-        : module
+  const toggleModule = (itemId: string) => {
+    setContentItems(prev => prev.map(item => 
+      item.id === itemId && item.type === 'module'
+        ? { ...item, isExpanded: !item.isExpanded }
+        : item
     ));
   };
 
@@ -110,6 +118,17 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     }
   };
 
+  const getContentIndex = (index: number) => {
+    const moduleCount = contentItems.slice(0, index + 1).filter(item => item.type === 'module').length;
+    const projectCount = contentItems.slice(0, index + 1).filter(item => item.type === 'project').length;
+    
+    if (contentItems[index].type === 'module') {
+      return `Module ${moduleCount}`;
+    } else {
+      return `Project ${projectCount}`;
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Add Content Button */}
@@ -124,102 +143,110 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         </Button>
       </div>
 
-      {/* Modules */}
+      {/* Content Items */}
       <div className="space-y-4">
-        {modules.map((module, moduleIndex) => (
-          <Card key={module.id} className="shadow-4dp">
-            <Collapsible open={module.isExpanded} onOpenChange={() => toggleModule(module.id)}>
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
+        {contentItems.map((item, index) => (
+          <Card key={item.id} className="shadow-4dp">
+            {item.type === 'module' ? (
+              <Collapsible open={item.isExpanded} onOpenChange={() => toggleModule(item.id)}>
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="cursor-grab text-muted-foreground hover:text-foreground">
+                      <GripVertical className="h-5 w-5" />
+                    </div>
+                    <CollapsibleTrigger className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
+                      <div className="text-left flex items-center gap-3">
+                        <div className="p-2 rounded-md bg-primary-light text-primary">
+                          <FolderOpen className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-heading font-semibold text-lg">
+                            {getContentIndex(index)}: {item.title}
+                          </h3>
+                          <p className="text-muted-foreground text-sm">{item.description}</p>
+                        </div>
+                      </div>
+                      <ChevronDown className={cn(
+                        "h-5 w-5 transition-transform",
+                        item.isExpanded && "rotate-180"
+                      )} />
+                    </CollapsibleTrigger>
+                  </div>
+                </CardHeader>
+                
+                <CollapsibleContent>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      {item.items?.slice(0, item.isExpanded ? (item.items.length > 10 ? 10 : item.items.length) : item.items.length).map((learningItem) => {
+                        const IconComponent = getItemIcon(learningItem.type);
+                        return (
+                          <div key={learningItem.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card-light hover:bg-muted/50 transition-colors group">
+                            <div className="cursor-grab text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                              <GripVertical className="h-4 w-4" />
+                            </div>
+                            <div className="flex items-center gap-3 flex-1">
+                              <div className="p-2 rounded-md bg-primary-light text-primary">
+                                <IconComponent className="h-4 w-4" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm">{learningItem.title}</h4>
+                                {learningItem.duration && (
+                                  <p className="text-xs text-muted-foreground">{learningItem.duration}</p>
+                                )}
+                              </div>
+                            </div>
+                            <Button variant="ghost" size="sm">Edit</Button>
+                          </div>
+                        );
+                      })}
+                      
+                      {item.items && item.items.length > 10 && item.isExpanded && (
+                        <Button 
+                          variant="ghost" 
+                          className="w-full mt-2"
+                          onClick={() => {/* Show all logic */}}
+                        >
+                          Show All {item.items.length} Items
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
                   <div className="cursor-grab text-muted-foreground hover:text-foreground">
                     <GripVertical className="h-5 w-5" />
                   </div>
-                  <CollapsibleTrigger className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
-                    <div className="text-left">
-                      <h3 className="font-heading font-semibold text-lg">
-                        Module {moduleIndex + 1}: {module.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm">{module.description}</p>
+                  <div className="p-2 rounded-md bg-warning-light text-warning">
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-heading font-semibold text-lg">
+                        {getContentIndex(index)}: {item.title}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        {item.difficulty && (
+                          <span className={cn(
+                            "px-2 py-1 rounded-md text-xs font-medium border",
+                            getDifficultyColor(item.difficulty)
+                          )}>
+                            {item.difficulty}
+                          </span>
+                        )}
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </div>
                     </div>
-                    <ChevronDown className={cn(
-                      "h-5 w-5 transition-transform",
-                      module.isExpanded && "rotate-180"
-                    )} />
-                  </CollapsibleTrigger>
-                </div>
-              </CardHeader>
-              
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {module.items.slice(0, module.isExpanded ? (module.items.length > 10 ? 10 : module.items.length) : module.items.length).map((item) => {
-                      const IconComponent = getItemIcon(item.type);
-                      return (
-                        <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card-light hover:bg-muted/50 transition-colors group">
-                          <div className="cursor-grab text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                            <GripVertical className="h-4 w-4" />
-                          </div>
-                          <div className="flex items-center gap-3 flex-1">
-                            <div className="p-2 rounded-md bg-primary-light text-primary">
-                              <IconComponent className="h-4 w-4" />
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-sm">{item.title}</h4>
-                              {item.duration && (
-                                <p className="text-xs text-muted-foreground">{item.duration}</p>
-                              )}
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      );
-                    })}
-                    
-                    {module.items.length > 10 && module.isExpanded && (
-                      <Button 
-                        variant="ghost" 
-                        className="w-full mt-2"
-                        onClick={() => {/* Show all logic */}}
-                      >
-                        Show All {module.items.length} Items
-                      </Button>
+                    <p className="text-muted-foreground text-sm mb-2">{item.description}</p>
+                    {item.duration && (
+                      <p className="text-xs text-muted-foreground">Duration: {item.duration}</p>
                     )}
                   </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
-        ))}
-      </div>
-
-      {/* Projects */}
-      <div className="space-y-4">
-        <h3 className="font-heading font-semibold text-xl">Projects</h3>
-        {projects.map((project) => (
-          <Card key={project.id} className="shadow-4dp">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="cursor-grab text-muted-foreground hover:text-foreground">
-                  <GripVertical className="h-5 w-5" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-heading font-semibold text-lg">{project.title}</h4>
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "px-2 py-1 rounded-md text-xs font-medium border",
-                        getDifficultyColor(project.difficulty)
-                      )}>
-                        {project.difficulty}
-                      </span>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm mb-2">{project.description}</p>
-                  <p className="text-xs text-muted-foreground">Duration: {project.duration}</p>
-                </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
         ))}
       </div>

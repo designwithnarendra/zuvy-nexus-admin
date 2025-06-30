@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,40 +8,12 @@ import {
   Clock, 
   AlertTriangle, 
   CheckCircle,
-  Calendar,
-  MessageSquare
+  MessageSquare,
+  TrendingDown
 } from 'lucide-react';
 import PerformanceWidget from '@/components/shared/PerformanceWidget';
 
 const DashboardPage = () => {
-  // Dummy data for dashboard widgets
-  const upcomingDeadlines = [
-    {
-      id: '1',
-      title: 'JavaScript Fundamentals Quiz',
-      course: 'Full Stack Bootcamp',
-      dueDate: '2024-01-25',
-      type: 'Assessment',
-      priority: 'high'
-    },
-    {
-      id: '2',
-      title: 'React Project Submission',
-      course: 'Frontend Development',
-      dueDate: '2024-01-27',
-      type: 'Assignment',
-      priority: 'medium'
-    },
-    {
-      id: '3',
-      title: 'Weekly Progress Review',
-      course: 'Data Science Course',
-      dueDate: '2024-01-28',
-      type: 'Review',
-      priority: 'low'
-    }
-  ];
-
   const recentActivity = [
     {
       id: '1',
@@ -95,17 +66,65 @@ const DashboardPage = () => {
       students: 67,
       completionRate: 92,
       averageScore: 88
+    },
+    {
+      id: '4',
+      title: 'Machine Learning Fundamentals',
+      students: 156,
+      completionRate: 78,
+      averageScore: 79
+    },
+    {
+      id: '5',
+      title: 'DevOps Engineering',
+      students: 93,
+      completionRate: 85,
+      averageScore: 86
     }
   ];
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-destructive-light text-destructive-dark border-destructive';
-      case 'medium': return 'bg-warning-light text-warning-dark border-warning';
-      case 'low': return 'bg-success-light text-success-dark border-success';
-      default: return 'bg-muted text-muted-foreground border-border';
+  const lowPerformingCourses = [
+    {
+      id: '6',
+      title: 'Advanced Algorithms',
+      students: 45,
+      completionRate: 32,
+      averageScore: 58,
+      issues: ['Low engagement', 'High dropout']
+    },
+    {
+      id: '7',
+      title: 'Database Design',
+      students: 67,
+      completionRate: 41,
+      averageScore: 62,
+      issues: ['Content difficulty', 'Poor reviews']
+    },
+    {
+      id: '8',
+      title: 'System Architecture',
+      students: 38,
+      completionRate: 28,
+      averageScore: 55,
+      issues: ['Complex material', 'Low completion']
+    },
+    {
+      id: '9',
+      title: 'Cloud Computing Basics',
+      students: 78,
+      completionRate: 45,
+      averageScore: 59,
+      issues: ['Technical barriers', 'Support needed']
+    },
+    {
+      id: '10',
+      title: 'Cybersecurity Fundamentals',
+      students: 52,
+      completionRate: 35,
+      averageScore: 61,
+      issues: ['High complexity', 'Resource gaps']
     }
-  };
+  ];
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -162,40 +181,6 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Upcoming Deadlines */}
-          <Card className="shadow-4dp">
-            <CardHeader>
-              <CardTitle className="font-heading text-xl flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
-                Upcoming Deadlines
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {upcomingDeadlines.map((deadline) => (
-                  <div key={deadline.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-sm">{deadline.title}</h3>
-                      <p className="text-xs text-muted-foreground">{deadline.course}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className={getPriorityColor(deadline.priority)}>
-                        {deadline.priority}
-                      </Badge>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{new Date(deadline.dueDate).toLocaleDateString()}</p>
-                        <p className="text-xs text-muted-foreground">{deadline.type}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" className="w-full">
-                  View All Deadlines
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Top Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
@@ -206,7 +191,7 @@ const DashboardPage = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {topPerformingCourses.map((course, index) => (
+                {topPerformingCourses.slice(0, 5).map((course, index) => (
                   <div key={course.id} className="flex items-center gap-4 p-3 border rounded-lg">
                     <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
                       {index + 1}
@@ -223,6 +208,47 @@ const DashboardPage = () => {
                     </div>
                     <Button variant="outline" size="sm">
                       View Details
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Low Performing Courses */}
+          <Card className="shadow-4dp">
+            <CardHeader>
+              <CardTitle className="font-heading text-xl flex items-center gap-2">
+                <TrendingDown className="h-5 w-5 text-destructive" />
+                Low Performing Courses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {lowPerformingCourses.slice(0, 5).map((course, index) => (
+                  <div key={course.id} className="flex items-center gap-4 p-3 border rounded-lg bg-destructive-light/10">
+                    <div className="w-8 h-8 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center font-bold text-sm">
+                      <AlertTriangle className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-sm">{course.title}</h3>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                        <span>{course.students} students</span>
+                        <span>•</span>
+                        <span>{course.completionRate}% completion</span>
+                        <span>•</span>
+                        <span>Avg. {course.averageScore}</span>
+                      </div>
+                      <div className="flex gap-1 mt-2">
+                        {course.issues.slice(0, 2).map((issue, i) => (
+                          <Badge key={i} variant="outline" className="text-xs bg-destructive-light text-destructive-dark">
+                            {issue}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Improve
                     </Button>
                   </div>
                 ))}
