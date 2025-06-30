@@ -1,6 +1,10 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Info, BookOpen, Users, Settings } from 'lucide-react';
+import GeneralDetailsTab from './GeneralDetailsTab';
+import CurriculumTab from './CurriculumTab';
+import StudentsTab from './StudentsTab';
+import SettingsTab from './SettingsTab';
 
 interface CourseViewTabsProps {
   courseId: string;
@@ -63,34 +67,5 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
     </Tabs>
   );
 };
-
-// Placeholder components for each tab
-const GeneralDetailsTab = ({ courseId }: { courseId: string }) => (
-  <div className="bg-card rounded-lg border p-6 shadow-2dp">
-    <h2 className="font-heading font-semibold text-xl mb-4">General Details</h2>
-    <p className="text-muted-foreground">General details form will be implemented here for course {courseId}</p>
-  </div>
-);
-
-const CurriculumTab = ({ courseId }: { courseId: string }) => (
-  <div className="bg-card rounded-lg border p-6 shadow-2dp">
-    <h2 className="font-heading font-semibold text-xl mb-4">Curriculum</h2>
-    <p className="text-muted-foreground">Curriculum builder will be implemented here for course {courseId}</p>
-  </div>
-);
-
-const StudentsTab = ({ courseId }: { courseId: string }) => (
-  <div className="bg-card rounded-lg border p-6 shadow-2dp">
-    <h2 className="font-heading font-semibold text-xl mb-4">Students & Performance</h2>
-    <p className="text-muted-foreground">Student performance analytics will be implemented here for course {courseId}</p>
-  </div>
-);
-
-const SettingsTab = ({ courseId }: { courseId: string }) => (
-  <div className="bg-card rounded-lg border p-6 shadow-2dp">
-    <h2 className="font-heading font-semibold text-xl mb-4">Settings</h2>
-    <p className="text-muted-foreground">Course settings will be implemented here for course {courseId}</p>
-  </div>
-);
 
 export default CourseViewTabs;
