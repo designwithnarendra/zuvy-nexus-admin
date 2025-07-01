@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { FileText, Video, ClipboardCheck, Code, BookOpen, PlayCircle, Calendar, MessageSquare } from 'lucide-react';
-import AssessmentBuilderModal from './AssessmentBuilderModal';
+import AssessmentBuilderModal from './assessment-builder/AssessmentBuilderModal';
 import LiveClassCreator from './LiveClassCreator';
 import VideoCreator from './VideoCreator';
 import ArticleCreator from './ArticleCreator';
@@ -84,7 +84,6 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
   const handleItemSelect = (type: string) => {
     if (type === 'assessment') {
       setIsAssessmentBuilderOpen(true);
-      onClose(); // Close the add item menu
     } else {
       setCreatorView(type);
     }
@@ -147,7 +146,7 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen && !isAssessmentBuilderOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle className="font-heading text-xl">Add Learning Content</DialogTitle>

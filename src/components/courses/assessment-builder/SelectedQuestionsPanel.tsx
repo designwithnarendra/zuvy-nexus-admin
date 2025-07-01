@@ -2,24 +2,16 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
+import { Question } from './types';
 
-interface Question {
-  id: string;
-  type: 'MCQ' | 'Coding' | 'True/False' | 'Fill in the Blank';
-  title: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  topic: string;
-  points: number;
-}
-
-interface SelectedQuestionsProps {
+interface SelectedQuestionsPanelProps {
   selectedQuestions: Question[];
   onQuestionRemove: (questionId: string) => void;
   onCreateAssessment: () => void;
 }
 
-const SelectedQuestions = ({ selectedQuestions, onQuestionRemove, onCreateAssessment }: SelectedQuestionsProps) => {
-  const groupedSelectedQuestions = selectedQuestions.reduce((acc, question) => {
+const SelectedQuestionsPanel = ({ selectedQuestions, onQuestionRemove, onCreateAssessment }: SelectedQuestionsPanelProps) => {
+  const groupedQuestions = selectedQuestions.reduce((acc, question) => {
     if (!acc[question.type]) {
       acc[question.type] = [];
     }
@@ -37,28 +29,29 @@ const SelectedQuestions = ({ selectedQuestions, onQuestionRemove, onCreateAssess
   };
 
   return (
-    <div className="w-80 border-l pl-6 flex flex-col">
+    <div className="w-80 border-l pl-6 flex flex-col h-full">
       <div className="mb-4">
-        <h3 className="font-medium text-sm mb-2">Selected Questions ({selectedQuestions.length})</h3>
-        <p className="text-xs text-muted-foreground">
-          Total Points: {selectedQuestions.reduce((sum, q) => sum + q.points, 0)}
-        </p>
+        <h3 className="font-medium text-lg mb-2">Selected Questions</h3>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span>Total: {selectedQuestions.length}</span>
+          <span>Points: {selectedQuestions.reduce((sum, q) => sum + q.points, 0)}</span>
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto space-y-4">
-        {Object.entries(groupedSelectedQuestions).map(([type, questions]) => (
+        {Object.entries(groupedQuestions).map(([type, questions]) => (
           <div key={type}>
-            <h4 className="font-medium text-sm mb-2 text-muted-foreground">{type} Questions</h4>
+            <h4 className="font-medium text-sm mb-2 text-muted-foreground">{type} Questions ({questions.length})</h4>
             <div className="space-y-2">
               {questions.map((question) => (
                 <div key={question.id} className="p-3 bg-card-light rounded-lg border">
                   <div className="flex items-start justify-between mb-1">
-                    <h5 className="font-medium text-xs line-clamp-2">{question.title}</h5>
+                    <h5 className="font-medium text-xs line-clamp-2 flex-1 mr-2">{question.title}</h5>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onQuestionRemove(question.id)}
-                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive flex-shrink-0"
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -74,6 +67,13 @@ const SelectedQuestions = ({ selectedQuestions, onQuestionRemove, onCreateAssess
             </div>
           </div>
         ))}
+        
+        {selectedQuestions.length === 0 && (
+          <div className="text-center text-muted-foreground py-8">
+            <p className="text-sm">No questions selected yet</p>
+            <p className="text-xs">Select questions from the content bank or create new ones</p>
+          </div>
+        )}
       </div>
       
       <div className="pt-4 border-t">
@@ -89,4 +89,4 @@ const SelectedQuestions = ({ selectedQuestions, onQuestionRemove, onCreateAssess
   );
 };
 
-export default SelectedQuestions;
+export default SelectedQuestionsPanel;
