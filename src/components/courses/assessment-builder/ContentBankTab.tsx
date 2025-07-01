@@ -12,8 +12,8 @@ interface ContentBankTabProps {
 
 const ContentBankTab = ({ onQuestionSelect }: ContentBankTabProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<string>('');
-  const [filterDifficulty, setFilterDifficulty] = useState<string>('');
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
 
   // Mock questions data
   const availableQuestions: Question[] = [
@@ -65,8 +65,8 @@ const ContentBankTab = ({ onQuestionSelect }: ContentBankTabProps) => {
   const filteredQuestions = availableQuestions.filter(q => {
     const matchesSearch = q.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          q.topic.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !filterType || q.type === filterType;
-    const matchesDifficulty = !filterDifficulty || q.difficulty === filterDifficulty;
+    const matchesType = filterType === 'all' || q.type === filterType;
+    const matchesDifficulty = filterDifficulty === 'all' || q.difficulty === filterDifficulty;
     return matchesSearch && matchesType && matchesDifficulty;
   });
 
@@ -97,7 +97,7 @@ const ContentBankTab = ({ onQuestionSelect }: ContentBankTabProps) => {
             <SelectValue placeholder="Question Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="MCQ">MCQ</SelectItem>
             <SelectItem value="Coding">Coding</SelectItem>
             <SelectItem value="Open Ended">Open Ended</SelectItem>
@@ -109,7 +109,7 @@ const ContentBankTab = ({ onQuestionSelect }: ContentBankTabProps) => {
             <SelectValue placeholder="Difficulty" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Levels</SelectItem>
+            <SelectItem value="all">All Levels</SelectItem>
             <SelectItem value="Easy">Easy</SelectItem>
             <SelectItem value="Medium">Medium</SelectItem>
             <SelectItem value="Hard">Hard</SelectItem>

@@ -121,7 +121,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
                     />
                   ) : (
                     <div className="flex gap-2">
-                      <Select value={questionData.topic} onValueChange={(value) => handleInputChange('topic', value)}>
+                      <Select value={questionData.topic || undefined} onValueChange={(value) => handleInputChange('topic', value)}>
                         <SelectTrigger className="flex-1">
                           <SelectValue placeholder="Select or create topic" />
                         </SelectTrigger>
@@ -142,7 +142,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
 
                 <div className="space-y-2">
                   <Label>Difficulty *</Label>
-                  <Select value={questionData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
+                  <Select value={questionData.difficulty || undefined} onValueChange={(value) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
