@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { ReactElement } from 'react';
 
 interface Column {
   key: string;
@@ -36,14 +36,20 @@ const DataTable = ({
     difficulty: 'all'
   });
 
+  // Helper function to check if a value is a React element
+  const isReactElement = (value: any): value is ReactElement => {
+    return value && typeof value === 'object' && value.props;
+  };
+
   // Extract unique values for filters
   const getUniqueValues = (key: string) => {
     const values = data.map(item => {
+      const value = item[key];
       // Handle React elements by extracting text content
-      if (typeof item[key] === 'object' && item[key]?.props?.children) {
-        return item[key].props.children;
+      if (isReactElement(value)) {
+        return value.props.children;
       }
-      return item[key];
+      return value;
     }).filter(Boolean);
     return [...new Set(values)];
   };
@@ -56,25 +62,21 @@ const DataTable = ({
   const filteredData = data.filter(item => {
     // Search filter
     const matchesSearch = !searchTerm || Object.values(item).some(value => {
-      if (typeof value === 'object' && value?.props?.children) {
+      if (isReactElement(value)) {
         return String(value.props.children).toLowerCase().includes(searchTerm.toLowerCase());
       }
       return String(value).toLowerCase().includes(searchTerm.toLowerCase());
     });
 
     // Type filter
-    const itemType = typeof item.type === 'object' && item.type?.props?.children 
-      ? item.type.props.children 
-      : item.type;
+    const itemType = isReactElement(item.type) ? item.type.props.children : item.type;
     const matchesType = filters.type === 'all' || itemType === filters.type;
 
     // Topic filter
     const matchesTopic = filters.topic === 'all' || item.topic === filters.topic;
 
     // Difficulty filter
-    const itemDifficulty = typeof item.difficulty === 'object' && item.difficulty?.props?.children 
-      ? item.difficulty.props.children 
-      : item.difficulty;
+    const itemDifficulty = isReactElement(item.difficulty) ? item.difficulty.props.children : item.difficulty;
     const matchesDifficulty = filters.difficulty === 'all' || itemDifficulty === filters.difficulty;
 
     return matchesSearch && matchesType && matchesTopic && matchesDifficulty;
