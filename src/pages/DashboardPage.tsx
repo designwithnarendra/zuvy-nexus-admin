@@ -229,9 +229,14 @@ const DashboardPage = () => {
           {/* High Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-success" />
-                High Performing Courses
+              <CardTitle className="font-heading text-xl flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-success" />
+                  High Performing Courses
+                </div>
+                <span className="text-sm font-normal text-muted-foreground">
+                  Completion Rate > 80%
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -262,9 +267,14 @@ const DashboardPage = () => {
           {/* Low Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl flex items-center gap-2">
-                <TrendingDown className="h-5 w-5 text-destructive" />
-                Low Performing Courses
+              <CardTitle className="font-heading text-xl flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="h-5 w-5 text-destructive" />
+                  Low Performing Courses
+                </div>
+                <span className="text-sm font-normal text-muted-foreground">
+                  Completion Rate < 80%
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent>

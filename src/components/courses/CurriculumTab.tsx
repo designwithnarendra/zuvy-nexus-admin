@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Plus, ChevronDown, GripVertical, BookOpen, Code, FileText, Video, ClipboardCheck, FolderOpen } from 'lucide-react';
+import { Plus, ChevronDown, GripVertical, BookOpen, Code, FileText, Video, ClipboardCheck, FolderOpen, Edit, Trash2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AddItemMenu from './AddItemMenu';
 
@@ -24,10 +24,11 @@ interface ContentItem {
   type: 'module' | 'project';
   title: string;
   description: string;
-  items?: LearningItem[]; // Only for modules
-  isExpanded?: boolean; // Only for modules
-  duration?: string; // Only for projects
-  difficulty?: 'Easy' | 'Medium' | 'Hard'; // Only for projects
+  items?: LearningItem[];
+  isExpanded?: boolean;
+  showAddContent?: boolean;
+  duration?: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
 }
 
 const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
@@ -38,6 +39,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: 'Introduction to Web Development',
       description: 'Fundamentals of HTML, CSS, and JavaScript',
       isExpanded: true,
+      showAddContent: false,
       items: [
         { id: '1', type: 'reading', title: 'What is Web Development?', duration: '15 min read' },
         { id: '2', type: 'video', title: 'HTML Basics', duration: '45 min' },
@@ -51,6 +53,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: 'Advanced JavaScript',
       description: 'Deep dive into ES6+, async programming, and modern JavaScript',
       isExpanded: false,
+      showAddContent: false,
       items: Array.from({ length: 15 }, (_, i) => ({
         id: `${i + 5}`,
         type: 'reading' as const,
@@ -72,6 +75,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: 'React Fundamentals',
       description: 'Learn React components, state management, and hooks',
       isExpanded: false,
+      showAddContent: false,
       items: [
         { id: '20', type: 'video', title: 'Introduction to React', duration: '60 min' },
         { id: '21', type: 'reading', title: 'Components and Props', duration: '30 min read' },
@@ -89,6 +93,15 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
   ]);
 
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const [showAddModuleForm, setShowAddModuleForm] = useState(false);
+  const [newModuleData, setNewModuleData] = useState({
+    type: 'module' as 'module' | 'project',
+    title: '',
+    description: '',
+    months: 0,
+    weeks: 0,
+    days: 0
+  });
 
   const toggleModule = (itemId: string) => {
     setContentItems(prev => prev.map(item => 
@@ -96,6 +109,28 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         ? { ...item, isExpanded: !item.isExpanded }
         : item
     ));
+  };
+
+  const toggleAddContent = (itemId: string) => {
+    setContentItems(prev => prev.map(item => 
+      item.id === itemId && item.type === 'module'
+        ? { ...item, showAddContent: !item.showAddContent }
+        : item
+    ));
+  };
+
+  const deleteContentItem = (itemId: string, learningItemId?: string) => {
+    if (learningItemId) {
+      // Delete learning item from module
+      setContentItems(prev => prev.map(item => 
+        item.id === itemId && item.type === 'module'
+          ? { ...item, items: item.items?.filter(learningItem => learningItem.id !== learningItemId) }
+          : item
+      ));
+    } else {
+      // Delete entire content item
+      setContentItems(prev => prev.filter(item => item.id !== itemId));
+    }
   };
 
   const getItemIcon = (type: string) => {
@@ -129,21 +164,69 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     }
   };
 
+  const handleAddModule = () => {
+    const duration = `${newModuleData.months ? `${newModuleData.months} months` : ''} ${newModuleData.weeks ? `${newModuleData.weeks} weeks` : ''} ${newModuleData.days ? `${newModuleData.days} days` : ''}`.trim();
+    
+    const newItem: ContentItem = {
+      id: Date.now().toString(),
+      type: newModuleData.type,
+      title: newModuleData.title,
+      description: newModuleData.description,
+      ...(newModuleData.type === 'module' ? {
+        isExpanded: false,
+        showAddContent: false,
+        items: []
+      } : {
+        duration,
+        difficulty: 'Easy' as const
+      })
+    };
+
+    setContentItems(prev => [...prev, newItem]);
+    setNewModuleData({
+      type: 'module',
+      title: '',
+      description: '',
+      months: 0,
+      weeks: 0,
+      days: 0
+    });
+    setShowAddModuleForm(false);
+  };
+
+  const contentTypes = [
+    {
+      type: 'live-class',
+      title: 'Live Class',
+      icon: Calendar,
+      color: 'bg-blue-light text-blue-dark'
+    },
+    {
+      type: 'video',
+      title: 'Video Content',
+      icon: Video,
+      color: 'bg-purple-light text-purple-dark'
+    },
+    {
+      type: 'article',
+      title: 'Article/Reading',
+      icon: FileText,
+      color: 'bg-green-light text-green-dark'
+    },
+    {
+      type: 'assignment',
+      title: 'Assignment',
+      icon: BookOpen,
+      color: 'bg-orange-light text-orange-dark'
+    }
+  ];
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Add Content Button */}
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-2xl">Course Curriculum</h2>
-        <Button 
-          onClick={() => setIsAddMenuOpen(true)}
-          className="bg-primary hover:bg-primary-dark shadow-4dp"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Content
-        </Button>
       </div>
 
-      {/* Content Items */}
       <div className="space-y-4">
         {contentItems.map((item, index) => (
           <Card key={item.id} className="shadow-4dp">
@@ -166,10 +249,32 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
                           <p className="text-muted-foreground text-sm">{item.description}</p>
                         </div>
                       </div>
-                      <ChevronDown className={cn(
-                        "h-5 w-5 transition-transform",
-                        item.isExpanded && "rotate-180"
-                      )} />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Navigate to edit page
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteContentItem(item.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <ChevronDown className={cn(
+                          "h-5 w-5 transition-transform",
+                          item.isExpanded && "rotate-180"
+                        )} />
+                      </div>
                     </CollapsibleTrigger>
                   </div>
                 </CardHeader>
@@ -195,7 +300,18 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
                                 )}
                               </div>
                             </div>
-                            <Button variant="ghost" size="sm">Edit</Button>
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteContentItem(item.id, learningItem.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         );
                       })}
@@ -207,6 +323,55 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
                           onClick={() => {/* Show all logic */}}
                         >
                           Show All {item.items.length} Items
+                        </Button>
+                      )}
+
+                      {/* Add Content Section */}
+                      {item.showAddContent && (
+                        <div className="mt-4 p-4 border rounded-lg bg-muted/20">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="font-medium">Add Learning Content</h4>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleAddContent(item.id)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            {contentTypes.map((contentType) => {
+                              const IconComponent = contentType.icon;
+                              return (
+                                <Button
+                                  key={contentType.type}
+                                  variant="outline"
+                                  className="h-auto p-3 flex items-center gap-2 justify-start"
+                                  onClick={() => {
+                                    // Handle content type selection
+                                    toggleAddContent(item.id);
+                                  }}
+                                >
+                                  <div className={`p-1 rounded ${contentType.color}`}>
+                                    <IconComponent className="h-4 w-4" />
+                                  </div>
+                                  <span className="text-sm">{contentType.title}</span>
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Add Content Button */}
+                      {!item.showAddContent && (
+                        <Button
+                          variant="outline"
+                          className="w-full mt-2"
+                          onClick={() => toggleAddContent(item.id)}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Content
                         </Button>
                       )}
                     </div>
@@ -236,7 +401,16 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
                             {item.difficulty}
                           </span>
                         )}
-                        <Button variant="ghost" size="sm">Edit</Button>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteContentItem(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                     <p className="text-muted-foreground text-sm mb-2">{item.description}</p>
@@ -250,6 +424,112 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
           </Card>
         ))}
       </div>
+
+      {/* Add Module/Project Form */}
+      {showAddModuleForm && (
+        <Card className="shadow-4dp">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading font-semibold text-lg">Add New Content</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAddModuleForm(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-4">
+              <Button
+                variant={newModuleData.type === 'module' ? 'default' : 'outline'}
+                onClick={() => setNewModuleData(prev => ({ ...prev, type: 'module' }))}
+              >
+                Module
+              </Button>
+              <Button
+                variant={newModuleData.type === 'project' ? 'default' : 'outline'}
+                onClick={() => setNewModuleData(prev => ({ ...prev, type: 'project' }))}
+              >
+                Project
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={newModuleData.title}
+                onChange={(e) => setNewModuleData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder={`Enter ${newModuleData.type} title`}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={newModuleData.description}
+                onChange={(e) => setNewModuleData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder={`Enter ${newModuleData.type} description`}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Duration</Label>
+              <div className="flex gap-2">
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="number"
+                    value={newModuleData.months}
+                    onChange={(e) => setNewModuleData(prev => ({ ...prev, months: parseInt(e.target.value) || 0 }))}
+                    placeholder="0"
+                    className="w-16"
+                    min="0"
+                  />
+                  <span className="text-sm">months</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="number"
+                    value={newModuleData.weeks}
+                    onChange={(e) => setNewModuleData(prev => ({ ...prev, weeks: parseInt(e.target.value) || 0 }))}
+                    placeholder="0"
+                    className="w-16"
+                    min="0"
+                  />
+                  <span className="text-sm">weeks</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="number"
+                    value={newModuleData.days}
+                    onChange={(e) => setNewModuleData(prev => ({ ...prev, days: parseInt(e.target.value) || 0 }))}
+                    placeholder="0"
+                    className="w-16"
+                    min="0"
+                  />
+                  <span className="text-sm">days</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleAddModule} disabled={!newModuleData.title.trim()}>
+                Add {newModuleData.type}
+              </Button>
+              <Button variant="outline" onClick={() => setShowAddModuleForm(false)}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Add Module/Project Button */}
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={() => setShowAddModuleForm(true)}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Add Module/Project
+      </Button>
 
       <AddItemMenu 
         isOpen={isAddMenuOpen} 

@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Image } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Badge } from '@/components/ui/badge';
+import { Upload, Image, X, Plus, Calendar } from 'lucide-react';
 
 interface GeneralDetailsTabProps {
   courseId: string;
@@ -16,28 +17,39 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
   const [formData, setFormData] = useState({
     title: 'Full Stack Web Development Bootcamp',
     description: 'Learn modern web development with React, Node.js, and MongoDB. Build real-world projects and deploy them to production.',
-    topic: 'Web Development',
-    duration: '12 weeks',
+    tags: ['Web Development', 'JavaScript', 'React'],
+    duration: 12,
+    language: 'English',
+    startDate: '2024-08-15',
     imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop'
   });
 
-  const topics = [
-    'Web Development',
-    'Data Science',
-    'Machine Learning',
-    'Mobile Development',
-    'DevOps',
-    'Cybersecurity'
-  ];
+  const [newTag, setNewTag] = useState('');
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // In a real app, this would upload to a service
       const reader = new FileReader();
       reader.onload = (e) => {
         setFormData(prev => ({ ...prev, imageUrl: e.target?.result as string }));
@@ -48,11 +60,10 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
 
   const handleSave = () => {
     console.log('Saving course data:', formData);
-    // Implementation would save to backend
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-none space-y-6">
       <Card className="shadow-4dp">
         <CardHeader>
           <CardTitle className="font-heading text-xl">Course Information</CardTitle>
@@ -116,32 +127,83 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="topic">Topic</Label>
-                  <Select value={formData.topic} onValueChange={(value) => handleInputChange('topic', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select topic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {topics.map((topic) => (
-                        <SelectItem key={topic} value={topic}>
-                          {topic}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="duration">Duration (weeks)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={formData.duration}
+                    onChange={(e) => handleInputChange('duration', parseInt(e.target.value) || 0)}
+                    placeholder="Duration in weeks"
+                    min="1"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
-                  <Input
-                    id="duration"
-                    value={formData.duration}
-                    onChange={(e) => handleInputChange('duration', e.target.value)}
-                    placeholder="e.g., 12 weeks"
-                  />
+                  <Label htmlFor="startDate">Course Start Date</Label>
+                  <div className="relative">
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={formData.startDate}
+                      onChange={(e) => handleInputChange('startDate', e.target.value)}
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Tags Section */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">Tags</Label>
+            <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border rounded-lg bg-background">
+              {formData.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                  {tag}
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className="ml-1 hover:bg-muted rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="Add a new tag"
+                onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+              />
+              <Button onClick={handleAddTag} size="sm" variant="outline">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Language Selection */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">Course Language</Label>
+            <RadioGroup
+              value={formData.language}
+              onValueChange={(value) => handleInputChange('language', value)}
+              className="flex gap-6"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="English" id="english" />
+                <Label htmlFor="english">English</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Hindi" id="hindi" />
+                <Label htmlFor="hindi">Hindi</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Kannada" id="kannada" />
+                <Label htmlFor="kannada">Kannada</Label>
+              </div>
+            </RadioGroup>
           </div>
 
           <div className="flex justify-end pt-4 border-t">
