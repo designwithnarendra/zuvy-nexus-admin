@@ -235,7 +235,7 @@ const DashboardPage = () => {
                   High Performing Courses
                 </div>
                 <span className="text-sm font-normal text-muted-foreground">
-                  Completion Rate > 80%
+                  Completion Rate &gt; 80%
                 </span>
               </CardTitle>
             </CardHeader>
@@ -273,7 +273,7 @@ const DashboardPage = () => {
                   Low Performing Courses
                 </div>
                 <span className="text-sm font-normal text-muted-foreground">
-                  Completion Rate < 80%
+                  Completion Rate &lt; 80%
                 </span>
               </CardTitle>
             </CardHeader>

@@ -1,34 +1,15 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Plus, ChevronDown, GripVertical, BookOpen, Code, FileText, Video, ClipboardCheck, FolderOpen, Edit, Trash2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus } from 'lucide-react';
 import AddItemMenu from './AddItemMenu';
+import ModuleCard from './curriculum/ModuleCard';
+import ProjectCard from './curriculum/ProjectCard';
+import AddModuleForm from './curriculum/AddModuleForm';
+import { ContentItem, NewModuleData } from './curriculum/types';
 
 interface CurriculumTabProps {
   courseId: string;
-}
-
-interface LearningItem {
-  id: string;
-  type: 'reading' | 'video' | 'assignment' | 'quiz' | 'coding';
-  title: string;
-  duration?: string;
-  description?: string;
-}
-
-interface ContentItem {
-  id: string;
-  type: 'module' | 'project';
-  title: string;
-  description: string;
-  items?: LearningItem[];
-  isExpanded?: boolean;
-  showAddContent?: boolean;
-  duration?: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard';
 }
 
 const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
@@ -94,8 +75,8 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
 
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [showAddModuleForm, setShowAddModuleForm] = useState(false);
-  const [newModuleData, setNewModuleData] = useState({
-    type: 'module' as 'module' | 'project',
+  const [newModuleData, setNewModuleData] = useState<NewModuleData>({
+    type: 'module',
     title: '',
     description: '',
     months: 0,
@@ -121,26 +102,13 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
 
   const deleteContentItem = (itemId: string, learningItemId?: string) => {
     if (learningItemId) {
-      // Delete learning item from module
       setContentItems(prev => prev.map(item => 
         item.id === itemId && item.type === 'module'
           ? { ...item, items: item.items?.filter(learningItem => learningItem.id !== learningItemId) }
           : item
       ));
     } else {
-      // Delete entire content item
       setContentItems(prev => prev.filter(item => item.id !== itemId));
-    }
-  };
-
-  const getItemIcon = (type: string) => {
-    switch (type) {
-      case 'reading': return FileText;
-      case 'video': return Video;
-      case 'assignment': return ClipboardCheck;
-      case 'quiz': return ClipboardCheck;
-      case 'coding': return Code;
-      default: return BookOpen;
     }
   };
 
@@ -194,33 +162,6 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     setShowAddModuleForm(false);
   };
 
-  const contentTypes = [
-    {
-      type: 'live-class',
-      title: 'Live Class',
-      icon: Calendar,
-      color: 'bg-blue-light text-blue-dark'
-    },
-    {
-      type: 'video',
-      title: 'Video Content',
-      icon: Video,
-      color: 'bg-purple-light text-purple-dark'
-    },
-    {
-      type: 'article',
-      title: 'Article/Reading',
-      icon: FileText,
-      color: 'bg-green-light text-green-dark'
-    },
-    {
-      type: 'assignment',
-      title: 'Assignment',
-      icon: BookOpen,
-      color: 'bg-orange-light text-orange-dark'
-    }
-  ];
-
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
@@ -229,299 +170,39 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
 
       <div className="space-y-4">
         {contentItems.map((item, index) => (
-          <Card key={item.id} className="shadow-4dp">
-            {item.type === 'module' ? (
-              <Collapsible open={item.isExpanded} onOpenChange={() => toggleModule(item.id)}>
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="cursor-grab text-muted-foreground hover:text-foreground">
-                      <GripVertical className="h-5 w-5" />
-                    </div>
-                    <CollapsibleTrigger className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
-                      <div className="text-left flex items-center gap-3">
-                        <div className="p-2 rounded-md bg-primary-light text-primary">
-                          <FolderOpen className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-heading font-semibold text-lg">
-                            {getContentIndex(index)}: {item.title}
-                          </h3>
-                          <p className="text-muted-foreground text-sm">{item.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Navigate to edit page
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteContentItem(item.id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        <ChevronDown className={cn(
-                          "h-5 w-5 transition-transform",
-                          item.isExpanded && "rotate-180"
-                        )} />
-                      </div>
-                    </CollapsibleTrigger>
-                  </div>
-                </CardHeader>
-                
-                <CollapsibleContent>
-                  <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {item.items?.slice(0, item.isExpanded ? (item.items.length > 10 ? 10 : item.items.length) : item.items.length).map((learningItem) => {
-                        const IconComponent = getItemIcon(learningItem.type);
-                        return (
-                          <div key={learningItem.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card-light hover:bg-muted/50 transition-colors group">
-                            <div className="cursor-grab text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                              <GripVertical className="h-4 w-4" />
-                            </div>
-                            <div className="flex items-center gap-3 flex-1">
-                              <div className="p-2 rounded-md bg-primary-light text-primary">
-                                <IconComponent className="h-4 w-4" />
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="font-medium text-sm">{learningItem.title}</h4>
-                                {learningItem.duration && (
-                                  <p className="text-xs text-muted-foreground">{learningItem.duration}</p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteContentItem(item.id, learningItem.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      
-                      {item.items && item.items.length > 10 && item.isExpanded && (
-                        <Button 
-                          variant="ghost" 
-                          className="w-full mt-2"
-                          onClick={() => {/* Show all logic */}}
-                        >
-                          Show All {item.items.length} Items
-                        </Button>
-                      )}
-
-                      {/* Add Content Section */}
-                      {item.showAddContent && (
-                        <div className="mt-4 p-4 border rounded-lg bg-muted/20">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="font-medium">Add Learning Content</h4>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleAddContent(item.id)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            {contentTypes.map((contentType) => {
-                              const IconComponent = contentType.icon;
-                              return (
-                                <Button
-                                  key={contentType.type}
-                                  variant="outline"
-                                  className="h-auto p-3 flex items-center gap-2 justify-start"
-                                  onClick={() => {
-                                    // Handle content type selection
-                                    toggleAddContent(item.id);
-                                  }}
-                                >
-                                  <div className={`p-1 rounded ${contentType.color}`}>
-                                    <IconComponent className="h-4 w-4" />
-                                  </div>
-                                  <span className="text-sm">{contentType.title}</span>
-                                </Button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Add Content Button */}
-                      {!item.showAddContent && (
-                        <Button
-                          variant="outline"
-                          className="w-full mt-2"
-                          onClick={() => toggleAddContent(item.id)}
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Content
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </CollapsibleContent>
-              </Collapsible>
-            ) : (
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="cursor-grab text-muted-foreground hover:text-foreground">
-                    <GripVertical className="h-5 w-5" />
-                  </div>
-                  <div className="p-2 rounded-md bg-warning-light text-warning">
-                    <BookOpen className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-heading font-semibold text-lg">
-                        {getContentIndex(index)}: {item.title}
-                      </h4>
-                      <div className="flex items-center gap-2">
-                        {item.difficulty && (
-                          <span className={cn(
-                            "px-2 py-1 rounded-md text-xs font-medium border",
-                            getDifficultyColor(item.difficulty)
-                          )}>
-                            {item.difficulty}
-                          </span>
-                        )}
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteContentItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground text-sm mb-2">{item.description}</p>
-                    {item.duration && (
-                      <p className="text-xs text-muted-foreground">Duration: {item.duration}</p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            )}
-          </Card>
+          item.type === 'module' ? (
+            <ModuleCard
+              key={item.id}
+              item={item}
+              index={index}
+              onToggle={toggleModule}
+              onDelete={deleteContentItem}
+              onDeleteLearningItem={deleteContentItem}
+              onToggleAddContent={toggleAddContent}
+              getContentIndex={getContentIndex}
+            />
+          ) : (
+            <ProjectCard
+              key={item.id}
+              item={item}
+              index={index}
+              onDelete={deleteContentItem}
+              getContentIndex={getContentIndex}
+              getDifficultyColor={getDifficultyColor}
+            />
+          )
         ))}
       </div>
 
-      {/* Add Module/Project Form */}
       {showAddModuleForm && (
-        <Card className="shadow-4dp">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <h3 className="font-heading font-semibold text-lg">Add New Content</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAddModuleForm(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <Button
-                variant={newModuleData.type === 'module' ? 'default' : 'outline'}
-                onClick={() => setNewModuleData(prev => ({ ...prev, type: 'module' }))}
-              >
-                Module
-              </Button>
-              <Button
-                variant={newModuleData.type === 'project' ? 'default' : 'outline'}
-                onClick={() => setNewModuleData(prev => ({ ...prev, type: 'project' }))}
-              >
-                Project
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={newModuleData.title}
-                onChange={(e) => setNewModuleData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder={`Enter ${newModuleData.type} title`}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={newModuleData.description}
-                onChange={(e) => setNewModuleData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={`Enter ${newModuleData.type} description`}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Duration</Label>
-              <div className="flex gap-2">
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    value={newModuleData.months}
-                    onChange={(e) => setNewModuleData(prev => ({ ...prev, months: parseInt(e.target.value) || 0 }))}
-                    placeholder="0"
-                    className="w-16"
-                    min="0"
-                  />
-                  <span className="text-sm">months</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    value={newModuleData.weeks}
-                    onChange={(e) => setNewModuleData(prev => ({ ...prev, weeks: parseInt(e.target.value) || 0 }))}
-                    placeholder="0"
-                    className="w-16"
-                    min="0"
-                  />
-                  <span className="text-sm">weeks</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    value={newModuleData.days}
-                    onChange={(e) => setNewModuleData(prev => ({ ...prev, days: parseInt(e.target.value) || 0 }))}
-                    placeholder="0"
-                    className="w-16"
-                    min="0"
-                  />
-                  <span className="text-sm">days</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleAddModule} disabled={!newModuleData.title.trim()}>
-                Add {newModuleData.type}
-              </Button>
-              <Button variant="outline" onClick={() => setShowAddModuleForm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <AddModuleForm
+          newModuleData={newModuleData}
+          onDataChange={setNewModuleData}
+          onSubmit={handleAddModule}
+          onCancel={() => setShowAddModuleForm(false)}
+        />
       )}
 
-      {/* Add Module/Project Button */}
       <Button
         variant="outline"
         className="w-full"
