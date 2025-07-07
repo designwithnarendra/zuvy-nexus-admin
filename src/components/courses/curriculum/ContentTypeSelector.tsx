@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { X, Calendar, Video, FileText, BookOpen } from 'lucide-react';
+import { X, Calendar, Video, FileText, BookOpen, PlayCircle, MessageSquare, Code, ClipboardCheck } from 'lucide-react';
 
 interface ContentTypeSelectorProps {
   onClose: () => void;
@@ -32,6 +32,30 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
       title: 'Assignment',
       icon: BookOpen,
       color: 'bg-orange-light text-orange-dark'
+    },
+    {
+      type: 'coding-problem',
+      title: 'Coding Problem',
+      icon: Code,
+      color: 'bg-warning-light text-warning-dark'
+    },
+    {
+      type: 'quiz',
+      title: 'Quiz',
+      icon: PlayCircle,
+      color: 'bg-secondary-light text-secondary-dark'
+    },
+    {
+      type: 'feedback-form',
+      title: 'Feedback Form',
+      icon: MessageSquare,
+      color: 'bg-accent-light text-accent-dark'
+    },
+    {
+      type: 'assessment',
+      title: 'Assessment',
+      icon: ClipboardCheck,
+      color: 'bg-primary-light text-primary-dark'
     }
   ];
 

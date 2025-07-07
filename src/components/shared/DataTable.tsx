@@ -30,13 +30,54 @@ const DataTable = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({
+    type: 'all',
+    topic: 'all',
+    difficulty: 'all'
+  });
 
-  // Filter data based on search term
+  // Extract unique values for filters
+  const getUniqueValues = (key: string) => {
+    const values = data.map(item => {
+      // Handle React elements by extracting text content
+      if (typeof item[key] === 'object' && item[key]?.props?.children) {
+        return item[key].props.children;
+      }
+      return item[key];
+    }).filter(Boolean);
+    return [...new Set(values)];
+  };
+
+  const uniqueTypes = getUniqueValues('type');
+  const uniqueTopics = getUniqueValues('topic');
+  const uniqueDifficulties = getUniqueValues('difficulty');
+
+  // Filter data based on search term and filters
   const filteredData = data.filter(item => {
-    if (!searchTerm) return true;
-    return Object.values(item).some(value => 
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Search filter
+    const matchesSearch = !searchTerm || Object.values(item).some(value => {
+      if (typeof value === 'object' && value?.props?.children) {
+        return String(value.props.children).toLowerCase().includes(searchTerm.toLowerCase());
+      }
+      return String(value).toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    // Type filter
+    const itemType = typeof item.type === 'object' && item.type?.props?.children 
+      ? item.type.props.children 
+      : item.type;
+    const matchesType = filters.type === 'all' || itemType === filters.type;
+
+    // Topic filter
+    const matchesTopic = filters.topic === 'all' || item.topic === filters.topic;
+
+    // Difficulty filter
+    const itemDifficulty = typeof item.difficulty === 'object' && item.difficulty?.props?.children 
+      ? item.difficulty.props.children 
+      : item.difficulty;
+    const matchesDifficulty = filters.difficulty === 'all' || itemDifficulty === filters.difficulty;
+
+    return matchesSearch && matchesType && matchesTopic && matchesDifficulty;
   });
 
   // Sort data
@@ -80,11 +121,16 @@ const DataTable = ({
       <ChevronDown className="h-4 w-4" />;
   };
 
+  const handleFilterChange = (filterType: string, value: string) => {
+    setFilters(prev => ({ ...prev, [filterType]: value }));
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
-      {searchable && (
-        <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4">
+        {searchable && (
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -94,8 +140,60 @@ const DataTable = ({
               className="pl-10"
             />
           </div>
-        </div>
-      )}
+        )}
+
+        {filterable && (
+          <div className="flex gap-2">
+            {uniqueTypes.length > 0 && (
+              <Select value={filters.type} onValueChange={(value) => handleFilterChange('type', value)}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="All Types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniqueTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {uniqueTopics.length > 0 && (
+              <Select value={filters.topic} onValueChange={(value) => handleFilterChange('topic', value)}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="All Topics" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Topics</SelectItem>
+                  {uniqueTopics.map((topic) => (
+                    <SelectItem key={topic} value={topic}>
+                      {topic}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {uniqueDifficulties.length > 0 && (
+              <Select value={filters.difficulty} onValueChange={(value) => handleFilterChange('difficulty', value)}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="All Difficulties" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Difficulties</SelectItem>
+                  {uniqueDifficulties.map((difficulty) => (
+                    <SelectItem key={difficulty} value={difficulty}>
+                      {difficulty}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Table */}
       <div className="rounded-md border">

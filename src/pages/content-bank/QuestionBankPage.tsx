@@ -1,21 +1,21 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Upload, Bot } from 'lucide-react';
+import { Plus, Upload, Bot, ChevronDown } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 import MCQCreator from '@/components/courses/MCQCreator';
 import CodingProblemCreator from '@/components/courses/CodingProblemCreator';
 import BulkUploadModal from '@/components/content-bank/BulkUploadModal';
 import AIGenerationModal from '@/components/content-bank/AIGenerationModal';
+import OpenEndedCreator from '@/components/courses/OpenEndedCreator';
 
 interface Question {
   id: string;
   text: string;
-  type: 'MCQ' | 'Coding' | 'True/False' | 'Fill in the Blank';
+  type: 'MCQ' | 'Coding' | 'Open Ended';
   topic: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   usageCount: number;
@@ -26,9 +26,9 @@ const QuestionBankPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [isAIGenerationOpen, setIsAIGenerationOpen] = useState(false);
-  const [createType, setCreateType] = useState<'MCQ' | 'Coding'>('MCQ');
+  const [createType, setCreateType] = useState<'MCQ' | 'Coding' | 'Open Ended'>('MCQ');
 
-  // Dummy questions data
+  // Updated questions data with correct types
   const questions: Question[] = [
     {
       id: '1',
@@ -59,10 +59,10 @@ const QuestionBankPage = () => {
     },
     {
       id: '4',
-      text: 'React is a JavaScript library for building user interfaces',
-      type: 'True/False',
-      topic: 'React',
-      difficulty: 'Easy',
+      text: 'Explain the concept of closures in JavaScript',
+      type: 'Open Ended',
+      topic: 'JavaScript Advanced',
+      difficulty: 'Hard',
       usageCount: 20,
       createdDate: '2024-01-18'
     }
@@ -81,8 +81,7 @@ const QuestionBankPage = () => {
     switch (type) {
       case 'MCQ': return 'bg-primary-light text-primary-dark';
       case 'Coding': return 'bg-accent-light text-accent-dark';
-      case 'True/False': return 'bg-secondary-light text-secondary-dark';
-      case 'Fill in the Blank': return 'bg-info-light text-info-dark';
+      case 'Open Ended': return 'bg-secondary-light text-secondary-dark';
       default: return 'bg-muted text-muted-foreground';
     }
   };
@@ -124,6 +123,24 @@ const QuestionBankPage = () => {
     setIsCreateDialogOpen(false);
   };
 
+  const handleCreateTypeSelect = (type: 'MCQ' | 'Coding' | 'Open Ended') => {
+    setCreateType(type);
+    setIsCreateDialogOpen(true);
+  };
+
+  const renderQuestionCreator = () => {
+    switch (createType) {
+      case 'MCQ':
+        return <MCQCreator onSave={handleCreateQuestion} />;
+      case 'Coding':
+        return <CodingProblemCreator onSave={handleCreateQuestion} />;
+      case 'Open Ended':
+        return <OpenEndedCreator onSave={handleCreateQuestion} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="container mx-auto px-6 py-8 max-w-7xl">
       {/* Header */}
@@ -154,52 +171,55 @@ const QuestionBankPage = () => {
             Generate with AI
           </Button>
           
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button className="bg-primary hover:bg-primary-dark shadow-4dp">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Question
+                <ChevronDown className="h-4 w-4 ml-2" />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="font-heading text-xl">Create New Question</DialogTitle>
-              </DialogHeader>
-              
-              <Tabs defaultValue="mcq" value={createType.toLowerCase()} onValueChange={(value) => setCreateType(value as 'MCQ' | 'Coding')}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="mcq">Multiple Choice</TabsTrigger>
-                  <TabsTrigger value="coding">Coding Problem</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="mcq">
-                  <MCQCreator onSave={handleCreateQuestion} />
-                </TabsContent>
-                
-                <TabsContent value="coding">
-                  <CodingProblemCreator onSave={handleCreateQuestion} />
-                </TabsContent>
-              </Tabs>
-            </DialogContent>
-          </Dialog>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleCreateTypeSelect('MCQ')}>
+                Multiple Choice Question
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleCreateTypeSelect('Coding')}>
+                Coding Problem
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleCreateTypeSelect('Open Ended')}>
+                Open Ended Question
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      {/* Questions Table */}
-      <Card className="shadow-4dp">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">All Questions ({questions.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            data={questions.map(formatQuestionData)}
-            columns={questionColumns}
-            searchable
-            filterable
-            itemsPerPage={15}
-          />
-        </CardContent>
-      </Card>
+      {/* Questions Table - Removed Card wrapper */}
+      <div>
+        <div className="mb-4">
+          <h2 className="font-heading text-xl mb-2">All Questions ({questions.length})</h2>
+        </div>
+        <DataTable
+          data={questions.map(formatQuestionData)}
+          columns={questionColumns}
+          searchable
+          filterable
+          itemsPerPage={15}
+        />
+      </div>
+
+      {/* Create Question Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">
+              Create {createType === 'Open Ended' ? 'Open Ended Question' : createType === 'MCQ' ? 'Multiple Choice Question' : 'Coding Problem'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {renderQuestionCreator()}
+        </DialogContent>
+      </Dialog>
 
       {/* Modals */}
       <BulkUploadModal
