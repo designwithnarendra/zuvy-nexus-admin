@@ -1,6 +1,9 @@
+
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   TrendingUp, 
   Users, 
@@ -11,14 +14,19 @@ import {
   MessageSquare,
   TrendingDown
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PerformanceWidget from '@/components/shared/PerformanceWidget';
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+
   const recentActivity = [
     {
       id: '1',
       action: 'New student enrolled',
       course: 'Full Stack Bootcamp',
+      batch: 'Batch 2024-A',
       time: '2 hours ago',
       type: 'enrollment'
     },
@@ -26,6 +34,7 @@ const DashboardPage = () => {
       id: '2',
       action: 'Assessment submitted',
       course: 'React Fundamentals',
+      batch: 'Batch 2024-B',
       time: '4 hours ago',
       type: 'submission'
     },
@@ -33,53 +42,90 @@ const DashboardPage = () => {
       id: '3',
       action: 'Course content updated',
       course: 'JavaScript Basics',
+      batch: 'Batch 2024-A',
       time: '1 day ago',
       type: 'update'
     },
     {
       id: '4',
-      action: 'New discussion post',
+      action: 'Student completed module',
       course: 'Web Development',
+      batch: 'Batch 2024-C',
       time: '2 days ago',
-      type: 'discussion'
+      type: 'completion'
     }
   ];
 
-  const topPerformingCourses = [
+  const allActivities = [
+    ...recentActivity,
+    {
+      id: '5',
+      action: 'New student enrolled',
+      course: 'Python for Data Science',
+      batch: 'Batch 2024-B',
+      time: '2 days ago',
+      type: 'enrollment'
+    },
+    {
+      id: '6',
+      action: 'Assessment submitted',
+      course: 'Machine Learning',
+      batch: 'Batch 2024-A',
+      time: '3 days ago',
+      type: 'submission'
+    },
+    {
+      id: '7',
+      action: 'Course content updated',
+      course: 'DevOps Engineering',
+      batch: 'Batch 2024-C',
+      time: '3 days ago',
+      type: 'update'
+    },
+    {
+      id: '8',
+      action: 'Student completed module',
+      course: 'React Native Development',
+      batch: 'Batch 2024-B',
+      time: '3 days ago',
+      type: 'completion'
+    },
+    {
+      id: '9',
+      action: 'New student enrolled',
+      course: 'UI/UX Design',
+      batch: 'Batch 2024-A',
+      time: '3 days ago',
+      type: 'enrollment'
+    },
+    {
+      id: '10',
+      action: 'Assessment submitted',
+      course: 'Advanced JavaScript',
+      batch: 'Batch 2024-C',
+      time: '3 days ago',
+      type: 'submission'
+    }
+  ];
+
+  const highPerformingCourses = [
     {
       id: '1',
       title: 'Full Stack Web Development',
       students: 124,
-      completionRate: 89,
-      averageScore: 85
-    },
-    {
-      id: '2',
-      title: 'Python for Data Science',
-      students: 89,
-      completionRate: 76,
-      averageScore: 82
+      completionRate: 89
     },
     {
       id: '3',
       title: 'React Native Development',
       students: 67,
-      completionRate: 92,
-      averageScore: 88
-    },
-    {
-      id: '4',
-      title: 'Machine Learning Fundamentals',
-      students: 156,
-      completionRate: 78,
-      averageScore: 79
+      completionRate: 92
     },
     {
       id: '5',
       title: 'DevOps Engineering',
       students: 93,
-      completionRate: 85,
-      averageScore: 86
+      completionRate: 85
     }
   ];
 
@@ -89,7 +135,6 @@ const DashboardPage = () => {
       title: 'Advanced Algorithms',
       students: 45,
       completionRate: 32,
-      averageScore: 58,
       issues: ['Low engagement', 'High dropout']
     },
     {
@@ -97,7 +142,6 @@ const DashboardPage = () => {
       title: 'Database Design',
       students: 67,
       completionRate: 41,
-      averageScore: 62,
       issues: ['Content difficulty', 'Poor reviews']
     },
     {
@@ -105,7 +149,6 @@ const DashboardPage = () => {
       title: 'System Architecture',
       students: 38,
       completionRate: 28,
-      averageScore: 55,
       issues: ['Complex material', 'Low completion']
     },
     {
@@ -113,7 +156,6 @@ const DashboardPage = () => {
       title: 'Cloud Computing Basics',
       students: 78,
       completionRate: 45,
-      averageScore: 59,
       issues: ['Technical barriers', 'Support needed']
     },
     {
@@ -121,7 +163,6 @@ const DashboardPage = () => {
       title: 'Cybersecurity Fundamentals',
       students: 52,
       completionRate: 35,
-      averageScore: 61,
       issues: ['High complexity', 'Resource gaps']
     }
   ];
@@ -131,9 +172,13 @@ const DashboardPage = () => {
       case 'enrollment': return <Users className="h-4 w-4 text-primary" />;
       case 'submission': return <CheckCircle className="h-4 w-4 text-success" />;
       case 'update': return <BookOpen className="h-4 w-4 text-warning" />;
-      case 'discussion': return <MessageSquare className="h-4 w-4 text-accent" />;
+      case 'completion': return <CheckCircle className="h-4 w-4 text-success" />;
       default: return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
+  };
+
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/courses/${courseId}`);
   };
 
   return (
@@ -181,18 +226,22 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Top Performing Courses */}
+          {/* High Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
               <CardTitle className="font-heading text-xl flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-success" />
-                Top Performing Courses
+                High Performing Courses
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {topPerformingCourses.slice(0, 5).map((course, index) => (
-                  <div key={course.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                {highPerformingCourses.map((course, index) => (
+                  <div 
+                    key={course.id} 
+                    className="flex items-center gap-4 p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleCourseClick(course.id)}
+                  >
                     <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
                       {index + 1}
                     </div>
@@ -202,13 +251,8 @@ const DashboardPage = () => {
                         <span>{course.students} students</span>
                         <span>•</span>
                         <span>{course.completionRate}% completion</span>
-                        <span>•</span>
-                        <span>Avg. {course.averageScore}</span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
                   </div>
                 ))}
               </div>
@@ -226,7 +270,11 @@ const DashboardPage = () => {
             <CardContent>
               <div className="space-y-4">
                 {lowPerformingCourses.slice(0, 5).map((course, index) => (
-                  <div key={course.id} className="flex items-center gap-4 p-3 border rounded-lg bg-destructive-light/10">
+                  <div 
+                    key={course.id} 
+                    className="flex items-center gap-4 p-3 border rounded-lg bg-destructive-light/10 cursor-pointer hover:bg-destructive-light/20 transition-colors"
+                    onClick={() => handleCourseClick(course.id)}
+                  >
                     <div className="w-8 h-8 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center font-bold text-sm">
                       <AlertTriangle className="h-4 w-4" />
                     </div>
@@ -236,8 +284,6 @@ const DashboardPage = () => {
                         <span>{course.students} students</span>
                         <span>•</span>
                         <span>{course.completionRate}% completion</span>
-                        <span>•</span>
-                        <span>Avg. {course.averageScore}</span>
                       </div>
                       <div className="flex gap-1 mt-2">
                         {course.issues.slice(0, 2).map((issue, i) => (
@@ -247,9 +293,6 @@ const DashboardPage = () => {
                         ))}
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Improve
-                    </Button>
                   </div>
                 ))}
               </div>
@@ -298,7 +341,7 @@ const DashboardPage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">{activity.action}</p>
-                      <p className="text-xs text-muted-foreground">{activity.course}</p>
+                      <p className="text-xs text-muted-foreground">{activity.course} - {activity.batch}</p>
                     </div>
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {activity.time}
@@ -306,43 +349,42 @@ const DashboardPage = () => {
                   </div>
                 ))}
               </div>
-              <Button variant="outline" className="w-full mt-4">
+              <Button 
+                variant="outline" 
+                className="w-full mt-4"
+                onClick={() => setIsActivityModalOpen(true)}
+              >
                 View All Activity
               </Button>
             </CardContent>
           </Card>
-
-          {/* System Status */}
-          <Card className="shadow-4dp">
-            <CardHeader>
-              <CardTitle className="font-heading text-xl">System Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Platform Status</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-success"></div>
-                  <span className="text-xs text-success">Operational</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Database</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-success"></div>
-                  <span className="text-xs text-success">Healthy</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Storage</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-warning"></div>
-                  <span className="text-xs text-warning">78% Used</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
+
+      {/* Activity Modal */}
+      <Dialog open={isActivityModalOpen} onOpenChange={setIsActivityModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">All Recent Activity</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {allActivities.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                <div className="mt-1">
+                  {getActivityIcon(activity.type)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{activity.action}</p>
+                  <p className="text-xs text-muted-foreground">{activity.course} - {activity.batch}</p>
+                </div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  {activity.time}
+                </span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

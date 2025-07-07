@@ -86,13 +86,6 @@ const SingleCoursePage = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Courses
           </Button>
-          <div className="h-6 w-px bg-border" />
-          <Badge 
-            variant="outline" 
-            className={`capitalize ${getStatusColor(course.status)}`}
-          >
-            {course.status}
-          </Badge>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -118,9 +111,17 @@ const SingleCoursePage = () => {
           {/* Course Info */}
           <div className="lg:w-2/3 space-y-4">
             <div>
-              <h1 className="font-heading font-bold text-3xl text-foreground mb-2">
-                {course.title}
-              </h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="font-heading font-bold text-3xl text-foreground">
+                  {course.title}
+                </h1>
+                <Badge 
+                  variant="outline" 
+                  className={`capitalize ${getStatusColor(course.status)}`}
+                >
+                  {course.status}
+                </Badge>
+              </div>
               <p className="text-muted-foreground text-lg leading-relaxed">
                 {course.description}
               </p>
