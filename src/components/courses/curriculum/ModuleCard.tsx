@@ -104,8 +104,8 @@ const ModuleCard = ({
                 <ContentTypeSelector 
                   onClose={() => onToggleAddContent(item.id)}
                   onSelect={(type) => {
-                    // Handle content type selection
-                    onToggleAddContent(item.id);
+                    // ContentTypeSelector handles opening forms internally
+                    // Don't close immediately - let the selector handle the flow
                   }}
                 />
               ) : (
