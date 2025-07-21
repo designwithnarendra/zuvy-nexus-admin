@@ -10,6 +10,8 @@ import AllCoursesPage from "./pages/courses/AllCoursesPage";
 import SingleCoursePage from "./pages/courses/SingleCoursePage";
 import QuestionBankPage from "./pages/content-bank/QuestionBankPage";
 import NotFound from "./pages/NotFound";
+import { FocusPanelDemo } from "./components/demo/FocusPanelDemo";
+import { LearningItemEditorsDemo } from "./components/demo/LearningItemEditorsDemo";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
             <Route path="/courses" element={<AllCoursesPage />} />
             <Route path="/courses/:courseId" element={<SingleCoursePage />} />
             <Route path="/content-bank" element={<QuestionBankPage />} />
+            <Route path="/demo/focus-panel" element={<FocusPanelDemo />} />
+            <Route path="/demo/editors" element={<LearningItemEditorsDemo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>

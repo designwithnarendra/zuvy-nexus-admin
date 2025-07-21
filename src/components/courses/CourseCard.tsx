@@ -8,10 +8,8 @@ import { cn } from '@/lib/utils';
 interface CourseCardProps {
   id: string;
   title: string;
-  description?: string;
   learnerCount: number;
   duration: string;
-  topic?: string;
   status: 'draft' | 'published' | 'archived' | 'completed';
   imageUrl?: string;
   onClick: () => void;
@@ -19,10 +17,8 @@ interface CourseCardProps {
 
 const CourseCard = ({
   title,
-  description,
   learnerCount,
   duration,
-  topic,
   status,
   imageUrl,
   onClick
@@ -43,8 +39,8 @@ const CourseCard = ({
   };
 
   return (
-    <Card 
-      className="group cursor-pointer transition-all duration-200 hover:shadow-hover hover:-translate-y-1 bg-card border-border"
+    <Card
+      className="group cursor-pointer transition-all duration-200 hover:shadow-hover hover:-translate-y-1 bg-card border-border flex flex-col h-full"
       onClick={onClick}
     >
       <CardHeader className="p-0">
@@ -63,36 +59,21 @@ const CourseCard = ({
         )}
       </CardHeader>
       
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-2 flex-1">
-              <h3 className="font-heading font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                {title}
-              </h3>
-              {description && (
-                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                  {description}
-                </p>
-              )}
-            </div>
-            <Badge 
-              variant="outline" 
-              className={cn("capitalize text-xs", getStatusColor(status))}
-            >
-              {status}
-            </Badge>
-          </div>
-          
-          {topic && (
-            <Badge variant="secondary" className="text-xs">
-              {topic}
-            </Badge>
-          )}
+      <CardContent className="p-6 flex-1">
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="font-heading font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors flex-1">
+            {title}
+          </h3>
+          <Badge 
+            variant="outline" 
+            className={cn("capitalize text-xs", getStatusColor(status))}
+          >
+            {status}
+          </Badge>
         </div>
       </CardContent>
       
-      <CardFooter className="px-6 pb-6 pt-0">
+      <CardFooter className="px-6 pb-6 pt-0 mt-auto">
         <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />

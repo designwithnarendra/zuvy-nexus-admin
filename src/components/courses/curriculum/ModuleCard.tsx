@@ -8,6 +8,9 @@ import { cn } from '@/lib/utils';
 import { ContentItem, LearningItem } from './types';
 import LearningItemCard from './LearningItemCard';
 import ContentTypeSelector from './ContentTypeSelector';
+import { LearningItemType } from '@/components/ui/learning-item-card';
+import { ContentBankItemType } from '@/components/ui/content-bank-panel';
+
 
 interface ModuleCardProps {
   item: ContentItem;
@@ -17,6 +20,9 @@ interface ModuleCardProps {
   onDeleteLearningItem: (itemId: string, learningItemId: string) => void;
   onToggleAddContent: (itemId: string) => void;
   getContentIndex: (index: number) => string;
+  onAddItem?: (type: string) => void;
+  onEditItem?: (itemId: string, type: string) => void;
+  onDropItem?: (moduleId: string, item: any) => void;
 }
 
 const ModuleCard = ({ 
@@ -26,8 +32,81 @@ const ModuleCard = ({
   onDelete, 
   onDeleteLearningItem, 
   onToggleAddContent,
-  getContentIndex 
+  getContentIndex,
+  onAddItem,
+  onEditItem,
+  onDropItem
 }: ModuleCardProps) => {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  // Map content type to learning item type
+  const mapContentTypeToLearningItemType = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      'article': 'article',
+      'video': 'video',
+      'quiz': 'quiz',
+      'assignment': 'assignment',
+      'coding-problem': 'coding',
+      'live-class': 'live-class',
+      'feedback-form': 'feedback',
+      'assessment': 'assessment'
+    };
+    return typeMap[type] || type;
+  };
+
+  const handleContentTypeSelect = (type: string) => {
+    // Close the content selector
+    onToggleAddContent(item.id);
+    
+    // Call the onAddItem prop if provided
+    if (onAddItem) {
+      const learningItemType = mapContentTypeToLearningItemType(type);
+      onAddItem(learningItemType);
+    }
+  };
+
+  const handleEditLearningItem = (learningItem: LearningItem) => {
+    if (onEditItem) {
+      onEditItem(learningItem.id, learningItem.type);
+    }
+  };
+
+  // Handle drag over event
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  // Handle drag leave event
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  // Handle drop event
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    try {
+      // Get the dropped item data
+      const jsonData = e.dataTransfer.getData('application/json');
+      if (jsonData) {
+        const droppedItem = JSON.parse(jsonData);
+        
+        // Call the onDropItem prop if provided
+        if (onDropItem) {
+          onDropItem(item.id, droppedItem);
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing dropped item:', error);
+    }
+  };
+
   return (
     <Card className="shadow-4dp">
       <Collapsible open={item.isExpanded} onOpenChange={() => onToggle(item.id)}>
@@ -62,6 +141,7 @@ const ModuleCard = ({
                 <Button
                   variant="ghost"
                   size="sm"
+                  className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(item.id);
@@ -79,13 +159,22 @@ const ModuleCard = ({
         </CardHeader>
         
         <CollapsibleContent>
-          <CardContent className="pt-0">
-            <div className="space-y-2">
+          <CardContent 
+            className={cn(
+              "pt-0 transition-colors",
+              isDragOver && "bg-muted/50 rounded-md"
+            )}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="space-y-4">
               {item.items?.slice(0, item.isExpanded ? (item.items.length > 10 ? 10 : item.items.length) : item.items.length).map((learningItem) => (
                 <LearningItemCard
                   key={learningItem.id}
                   learningItem={learningItem}
                   onDelete={() => onDeleteLearningItem(item.id, learningItem.id)}
+                  onEdit={() => handleEditLearningItem(learningItem)}
                 />
               ))}
               
@@ -103,16 +192,14 @@ const ModuleCard = ({
               {item.showAddContent ? (
                 <ContentTypeSelector 
                   onClose={() => onToggleAddContent(item.id)}
-                  onSelect={(type) => {
-                    // ContentTypeSelector handles opening forms internally
-                    // Don't close immediately - let the selector handle the flow
-                  }}
+                  onSelect={(type) => handleContentTypeSelect(type)}
                 />
               ) : (
                 <Button
-                  variant="outline"
-                  className="w-full mt-2"
                   onClick={() => onToggleAddContent(item.id)}
+                  variant="outline"
+                  size="default"
+                  className="w-full mt-2"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Content

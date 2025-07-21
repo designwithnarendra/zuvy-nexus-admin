@@ -6,9 +6,10 @@ import { LearningItem } from './types';
 interface LearningItemCardProps {
   learningItem: LearningItem;
   onDelete: () => void;
+  onEdit?: () => void;
 }
 
-const LearningItemCard = ({ learningItem, onDelete }: LearningItemCardProps) => {
+const LearningItemCard = ({ learningItem, onDelete, onEdit }: LearningItemCardProps) => {
   const getItemIcon = (type: string) => {
     switch (type) {
       case 'reading': return FileText;
@@ -31,20 +32,25 @@ const LearningItemCard = ({ learningItem, onDelete }: LearningItemCardProps) => 
         <div className="p-2 rounded-md bg-primary-light text-primary">
           <IconComponent className="h-4 w-4" />
         </div>
-        <div className="flex-1">
-          <h4 className="font-medium text-sm">{learningItem.title}</h4>
+        <div className="flex-1 flex items-center justify-between">
+          <h4 className="font-medium text-lg">{learningItem.title}</h4>
           {learningItem.duration && (
-            <p className="text-xs text-muted-foreground">{learningItem.duration}</p>
+            <p className="text-sm text-muted-foreground ml-4">{learningItem.duration}</p>
           )}
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="sm">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={onEdit}
+        >
           <Edit className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
           size="sm"
+          className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
           onClick={onDelete}
         >
           <Trash2 className="h-4 w-4" />
