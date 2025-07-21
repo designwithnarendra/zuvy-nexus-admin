@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Upload, Bot, ChevronDown } from 'lucide-react';
+import { Plus, Bot, ChevronDown, Eye, Edit, Trash2 } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 import MCQCreator from '@/components/courses/MCQCreator';
 import CodingProblemCreator from '@/components/courses/CodingProblemCreator';
@@ -28,44 +28,51 @@ const QuestionBankPage = () => {
   const [isAIGenerationOpen, setIsAIGenerationOpen] = useState(false);
   const [createType, setCreateType] = useState<'MCQ' | 'Coding' | 'Open Ended'>('MCQ');
 
-  // Updated questions data with correct types
+  // Expanded questions data with 30+ items
   const questions: Question[] = [
-    {
-      id: '1',
-      text: 'What is the correct way to declare a variable in JavaScript?',
-      type: 'MCQ',
-      topic: 'JavaScript Basics',
-      difficulty: 'Easy',
-      usageCount: 15,
-      createdDate: '2024-01-15'
-    },
-    {
-      id: '2',
-      text: 'Implement a function to reverse a string',
-      type: 'Coding',
-      topic: 'Algorithms',
-      difficulty: 'Medium',
-      usageCount: 8,
-      createdDate: '2024-01-16'
-    },
-    {
-      id: '3',
-      text: 'Which of the following is NOT a JavaScript data type?',
-      type: 'MCQ',
-      topic: 'JavaScript Basics',
-      difficulty: 'Easy',
-      usageCount: 12,
-      createdDate: '2024-01-17'
-    },
-    {
-      id: '4',
-      text: 'Explain the concept of closures in JavaScript',
-      type: 'Open Ended',
-      topic: 'JavaScript Advanced',
-      difficulty: 'Hard',
-      usageCount: 20,
-      createdDate: '2024-01-18'
-    }
+    // JavaScript Questions
+    { id: '1', text: 'What is the correct way to declare a variable in JavaScript?', type: 'MCQ', topic: 'JavaScript Basics', difficulty: 'Easy', usageCount: 15, createdDate: '2024-01-15' },
+    { id: '2', text: 'Implement a function to reverse a string', type: 'Coding', topic: 'Algorithms', difficulty: 'Medium', usageCount: 8, createdDate: '2024-01-16' },
+    { id: '3', text: 'Which of the following is NOT a JavaScript data type?', type: 'MCQ', topic: 'JavaScript Basics', difficulty: 'Easy', usageCount: 12, createdDate: '2024-01-17' },
+    { id: '4', text: 'Explain the concept of closures in JavaScript', type: 'Open Ended', topic: 'JavaScript Advanced', difficulty: 'Hard', usageCount: 20, createdDate: '2024-01-18' },
+    { id: '5', text: 'What is the difference between let, const, and var?', type: 'MCQ', topic: 'JavaScript Basics', difficulty: 'Medium', usageCount: 25, createdDate: '2024-01-19' },
+    { id: '6', text: 'Write a function to find the largest number in an array', type: 'Coding', topic: 'Algorithms', difficulty: 'Easy', usageCount: 18, createdDate: '2024-01-20' },
+    { id: '7', text: 'Describe the event loop in JavaScript', type: 'Open Ended', topic: 'JavaScript Advanced', difficulty: 'Hard', usageCount: 14, createdDate: '2024-01-21' },
+    { id: '8', text: 'Which method is used to add elements to the end of an array?', type: 'MCQ', topic: 'JavaScript Arrays', difficulty: 'Easy', usageCount: 22, createdDate: '2024-01-22' },
+    { id: '9', text: 'Implement a binary search algorithm', type: 'Coding', topic: 'Algorithms', difficulty: 'Hard', usageCount: 6, createdDate: '2024-01-23' },
+    { id: '10', text: 'What is hoisting in JavaScript?', type: 'Open Ended', topic: 'JavaScript Advanced', difficulty: 'Medium', usageCount: 16, createdDate: '2024-01-24' },
+    
+    // React Questions
+    { id: '11', text: 'What is the virtual DOM in React?', type: 'MCQ', topic: 'React Fundamentals', difficulty: 'Medium', usageCount: 28, createdDate: '2024-01-25' },
+    { id: '12', text: 'Create a custom React hook for API calls', type: 'Coding', topic: 'React Hooks', difficulty: 'Hard', usageCount: 11, createdDate: '2024-01-26' },
+    { id: '13', text: 'Explain the component lifecycle in React', type: 'Open Ended', topic: 'React Fundamentals', difficulty: 'Medium', usageCount: 19, createdDate: '2024-01-27' },
+    { id: '14', text: 'Which hook is used for side effects in React?', type: 'MCQ', topic: 'React Hooks', difficulty: 'Easy', usageCount: 31, createdDate: '2024-01-28' },
+    { id: '15', text: 'Build a todo list component with add/remove functionality', type: 'Coding', topic: 'React Components', difficulty: 'Medium', usageCount: 9, createdDate: '2024-01-29' },
+    { id: '16', text: 'What is the purpose of React.memo?', type: 'Open Ended', topic: 'React Optimization', difficulty: 'Hard', usageCount: 13, createdDate: '2024-01-30' },
+    { id: '17', text: 'How do you pass data from parent to child component?', type: 'MCQ', topic: 'React Props', difficulty: 'Easy', usageCount: 26, createdDate: '2024-02-01' },
+    { id: '18', text: 'Implement a counter component using useState', type: 'Coding', topic: 'React Hooks', difficulty: 'Easy', usageCount: 21, createdDate: '2024-02-02' },
+    
+    // CSS Questions
+    { id: '19', text: 'What is the difference between margin and padding?', type: 'MCQ', topic: 'CSS Layout', difficulty: 'Easy', usageCount: 24, createdDate: '2024-02-03' },
+    { id: '20', text: 'Create a responsive navigation bar using Flexbox', type: 'Coding', topic: 'CSS Flexbox', difficulty: 'Medium', usageCount: 12, createdDate: '2024-02-04' },
+    { id: '21', text: 'Explain the CSS Box Model', type: 'Open Ended', topic: 'CSS Fundamentals', difficulty: 'Medium', usageCount: 17, createdDate: '2024-02-05' },
+    { id: '22', text: 'Which CSS property is used to change text color?', type: 'MCQ', topic: 'CSS Styling', difficulty: 'Easy', usageCount: 29, createdDate: '2024-02-06' },
+    { id: '23', text: 'Design a card component with hover effects', type: 'Coding', topic: 'CSS Animations', difficulty: 'Medium', usageCount: 7, createdDate: '2024-02-07' },
+    { id: '24', text: 'What are CSS Grid advantages over Flexbox?', type: 'Open Ended', topic: 'CSS Grid', difficulty: 'Hard', usageCount: 10, createdDate: '2024-02-08' },
+    
+    // Node.js Questions
+    { id: '25', text: 'What is the difference between require() and import?', type: 'MCQ', topic: 'Node.js Modules', difficulty: 'Medium', usageCount: 15, createdDate: '2024-02-09' },
+    { id: '26', text: 'Build a REST API endpoint for user authentication', type: 'Coding', topic: 'Node.js API', difficulty: 'Hard', usageCount: 5, createdDate: '2024-02-10' },
+    { id: '27', text: 'Describe middleware in Express.js', type: 'Open Ended', topic: 'Express.js', difficulty: 'Medium', usageCount: 18, createdDate: '2024-02-11' },
+    { id: '28', text: 'Which module is used for file system operations in Node.js?', type: 'MCQ', topic: 'Node.js Core', difficulty: 'Easy', usageCount: 23, createdDate: '2024-02-12' },
+    { id: '29', text: 'Create a simple HTTP server using Node.js', type: 'Coding', topic: 'Node.js HTTP', difficulty: 'Easy', usageCount: 20, createdDate: '2024-02-13' },
+    { id: '30', text: 'How does Node.js handle asynchronous operations?', type: 'Open Ended', topic: 'Node.js Async', difficulty: 'Hard', usageCount: 8, createdDate: '2024-02-14' },
+    
+    // Database Questions
+    { id: '31', text: 'What is the difference between SQL and NoSQL databases?', type: 'MCQ', topic: 'Database Concepts', difficulty: 'Medium', usageCount: 27, createdDate: '2024-02-15' },
+    { id: '32', text: 'Write a SQL query to find duplicate records', type: 'Coding', topic: 'SQL Queries', difficulty: 'Hard', usageCount: 4, createdDate: '2024-02-16' },
+    { id: '33', text: 'Explain database normalization', type: 'Open Ended', topic: 'Database Design', difficulty: 'Hard', usageCount: 9, createdDate: '2024-02-17' },
+    { id: '34', text: 'Which command is used to create a table in SQL?', type: 'MCQ', topic: 'SQL DDL', difficulty: 'Easy', usageCount: 30, createdDate: '2024-02-18' }
   ];
 
   const getDifficultyColor = (difficulty: string) => {
@@ -92,7 +99,8 @@ const QuestionBankPage = () => {
     { key: 'topic', label: 'Topic' },
     { key: 'difficulty', label: 'Difficulty' },
     { key: 'usageCount', label: 'Usage Count' },
-    { key: 'createdDate', label: 'Created' }
+    { key: 'createdDate', label: 'Created' },
+    { key: 'actions', label: 'Actions', sortable: false }
   ];
 
   const formatQuestionData = (question: Question) => ({
@@ -115,7 +123,35 @@ const QuestionBankPage = () => {
     usageCount: (
       <span className="font-medium">{question.usageCount}</span>
     ),
-    createdDate: new Date(question.createdDate).toLocaleDateString()
+    createdDate: new Date(question.createdDate).toLocaleDateString(),
+    actions: (
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handlePreviewQuestion(question.id)}
+          className="h-8 w-8"
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleEditQuestion(question.id)}
+          className="h-8 w-8"
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteQuestion(question.id)}
+          className="h-8 w-8 text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    )
   });
 
   const handleCreateQuestion = () => {
@@ -126,6 +162,21 @@ const QuestionBankPage = () => {
   const handleCreateTypeSelect = (type: 'MCQ' | 'Coding' | 'Open Ended') => {
     setCreateType(type);
     setIsCreateDialogOpen(true);
+  };
+
+  const handlePreviewQuestion = (questionId: string) => {
+    console.log('Preview question:', questionId);
+    // In a real app, this would open a preview modal
+  };
+
+  const handleEditQuestion = (questionId: string) => {
+    console.log('Edit question:', questionId);
+    // In a real app, this would open the edit dialog
+  };
+
+  const handleDeleteQuestion = (questionId: string) => {
+    console.log('Delete question:', questionId);
+    // In a real app, this would show a confirmation dialog
   };
 
   const renderQuestionCreator = () => {
@@ -146,22 +197,13 @@ const QuestionBankPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-heading font-bold text-3xl mb-2">Question Bank</h1>
+          <h1 className="font-heading font-bold text-3xl mb-2">Question Bank ({questions.length})</h1>
           <p className="text-muted-foreground">
             Centralized repository for all assessment questions
           </p>
         </div>
         
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setIsBulkUploadOpen(true)}
-            className="shadow-4dp"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Bulk Upload
-          </Button>
-          
           <Button
             variant="outline"
             onClick={() => setIsAIGenerationOpen(true)}
@@ -194,17 +236,15 @@ const QuestionBankPage = () => {
         </div>
       </div>
 
-      {/* Questions Table - Removed Card wrapper */}
+      {/* Questions Table */}
       <div>
-        <div className="mb-4">
-          <h2 className="font-heading text-xl mb-2">All Questions ({questions.length})</h2>
-        </div>
         <DataTable
           data={questions.map(formatQuestionData)}
           columns={questionColumns}
           searchable
           filterable
-          itemsPerPage={15}
+          itemsPerPage={20}
+          itemsPerPageOptions={[10, 20, 50, 100]}
         />
       </div>
 

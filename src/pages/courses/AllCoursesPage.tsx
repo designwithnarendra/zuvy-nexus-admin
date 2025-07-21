@@ -76,35 +76,128 @@ const dummyCourses = [
     status: 'published' as const,
     tags: ['JavaScript', 'Advanced', 'ES6+'],
     imageUrl: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=225&fit=crop'
+  },
+  {
+    id: '7',
+    title: 'Advanced Machine Learning',
+    description: 'Dive deep into neural networks, reinforcement learning, and computer vision applications.',
+    learnerCount: 92,
+    duration: '10 weeks',
+    topic: 'AI',
+    status: 'published' as const,
+    tags: ['ML', 'Deep Learning', 'TensorFlow'],
+    imageUrl: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&h=225&fit=crop'
+  },
+  {
+    id: '8',
+    title: 'Cloud Infrastructure Management',
+    description: 'Master cloud services, infrastructure as code, and deployment strategies on AWS and Azure.',
+    learnerCount: 78,
+    duration: '8 weeks',
+    topic: 'DevOps',
+    status: 'published' as const,
+    tags: ['Cloud', 'AWS', 'Azure', 'Terraform'],
+  },
+  {
+    id: '9',
+    title: 'Frontend Performance Optimization',
+    description: 'Learn techniques to speed up web applications and improve user experience.',
+    learnerCount: 112,
+    duration: '6 weeks',
+    topic: 'Web Development',
+    status: 'draft' as const,
+    tags: ['Performance', 'JavaScript', 'React'],
+    imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop'
+  },
+  {
+    id: '10',
+    title: 'Blockchain Fundamentals',
+    description: 'Understand blockchain technology, smart contracts, and cryptocurrency applications.',
+    learnerCount: 65,
+    duration: '7 weeks',
+    topic: 'Blockchain',
+    status: 'published' as const,
+    tags: ['Blockchain', 'Ethereum', 'Solidity'],
+  },
+  {
+    id: '11',
+    title: 'Advanced CSS Techniques',
+    description: 'Master modern CSS features including Grid, Flexbox, and animations.',
+    learnerCount: 143,
+    duration: '5 weeks',
+    topic: 'Web Development',
+    status: 'published' as const,
+    tags: ['CSS', 'Frontend', 'Design'],
+    imageUrl: 'https://images.unsplash.com/photo-1522542550221-31fd19575a7d?w=400&h=225&fit=crop'
+  },
+  {
+    id: '12',
+    title: 'Serverless Architecture',
+    description: 'Build scalable applications using serverless technologies on AWS Lambda and Azure Functions.',
+    learnerCount: 54,
+    duration: '6 weeks',
+    topic: 'Cloud Computing',
+    status: 'completed' as const,
+    tags: ['Serverless', 'AWS', 'Azure'],
+  },
+  {
+    id: '13',
+    title: 'Game Development with Unity',
+    description: 'Create interactive games using Unity engine and C# programming.',
+    learnerCount: 87,
+    duration: '10 weeks',
+    topic: 'Game Development',
+    status: 'published' as const,
+    tags: ['Unity', 'C#', 'Game Design'],
+    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=225&fit=crop'
+  },
+  {
+    id: '14',
+    title: 'Cybersecurity Essentials',
+    description: 'Learn fundamental security principles and practices to protect systems and data.',
+    learnerCount: 76,
+    duration: '8 weeks',
+    topic: 'Security',
+    status: 'published' as const,
+    tags: ['Security', 'Cybersecurity', 'Networking'],
+  },
+  {
+    id: '15',
+    title: 'Natural Language Processing',
+    description: 'Explore techniques for processing and analyzing human language data.',
+    learnerCount: 68,
+    duration: '9 weeks',
+    topic: 'AI',
+    status: 'draft' as const,
+    tags: ['NLP', 'Python', 'Machine Learning'],
+    imageUrl: 'https://images.unsplash.com/photo-1618044733300-9472044094d7?w=400&h=225&fit=crop'
   }
 ];
 
 const AllCoursesPage = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [tagFilter, setTagFilter] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   const [newCourse, setNewCourse] = useState({
     title: '',
     description: '',
-    imageUrl: '',
-    tags: [] as string[],
     duration: ''
   });
-  const [newTag, setNewTag] = useState('');
 
+  // Calculate pagination indexes
+  const indexOfLastCourse = currentPage * itemsPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - itemsPerPage;
+  
   const filteredCourses = dummyCourses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.topic?.toLowerCase().includes(searchQuery.toLowerCase());
+                         course.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || course.status === statusFilter;
-    const matchesTag = tagFilter === 'all' || course.tags?.includes(tagFilter);
-    return matchesSearch && matchesStatus && matchesTag;
+    return matchesSearch && matchesStatus;
   });
-
-  const allTags = Array.from(new Set(dummyCourses.flatMap(course => course.tags || [])));
 
   const handleCourseClick = (courseId: string) => {
     navigate(`/courses/${courseId}`);
@@ -114,22 +207,6 @@ const AllCoursesPage = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleAddTag = () => {
-    if (newTag.trim() && !newCourse.tags.includes(newTag.trim())) {
-      setNewCourse(prev => ({
-        ...prev,
-        tags: [...prev.tags, newTag.trim()]
-      }));
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setNewCourse(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
-  };
 
   const handleSubmitCourse = () => {
     console.log('Creating course:', newCourse);
@@ -137,8 +214,6 @@ const AllCoursesPage = () => {
     setNewCourse({
       title: '',
       description: '',
-      imageUrl: '',
-      tags: [],
       duration: ''
     });
     setIsCreateModalOpen(false);
@@ -157,9 +232,9 @@ const AllCoursesPage = () => {
               Create, manage, and monitor your educational courses
             </p>
           </div>
-          <Button 
+          <Button
             onClick={handleCreateCourse}
-            className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200"
+            className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4"
             size="lg"
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -193,31 +268,62 @@ const AllCoursesPage = () => {
               <SelectItem value="archived">Archived</SelectItem>
             </SelectContent>
           </Select>
-
-          <Select value={tagFilter} onValueChange={setTagFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Tags" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Tags</SelectItem>
-              {allTags.map(tag => (
-                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map((course) => (
-          <CourseCard
-            key={course.id}
-            {...course}
-            onClick={() => handleCourseClick(course.id)}
-          />
-        ))}
+        {filteredCourses
+          .slice(indexOfFirstCourse, indexOfLastCourse)
+          .map((course) => (
+            <CourseCard
+              key={course.id}
+              id={course.id}
+              title={course.title}
+              learnerCount={course.learnerCount}
+              duration={course.duration}
+              status={course.status}
+              imageUrl={course.imageUrl}
+              onClick={() => handleCourseClick(course.id)}
+            />
+          ))}
       </div>
+
+      {/* Pagination Controls */}
+      {filteredCourses.length > itemsPerPage && (
+        <div className="mt-8 flex justify-center">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            >
+              Previous
+            </Button>
+            
+            {Array.from({ length: Math.ceil(filteredCourses.length / itemsPerPage) }).map((_, index) => (
+              <Button
+                key={index}
+                variant={currentPage === index + 1 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </Button>
+            ))}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === Math.ceil(filteredCourses.length / itemsPerPage)}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredCourses.length / itemsPerPage)))}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredCourses.length === 0 && (
@@ -250,12 +356,12 @@ const AllCoursesPage = () => {
           
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Course Title *</Label>
+              <Label htmlFor="title">Course Name *</Label>
               <Input
                 id="title"
                 value={newCourse.title}
                 onChange={(e) => setNewCourse(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter course title"
+                placeholder="Enter course name"
               />
             </div>
 
@@ -268,45 +374,6 @@ const AllCoursesPage = () => {
                 placeholder="Enter course description"
                 className="min-h-[100px]"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="imageUrl">Course Image URL</Label>
-              <Input
-                id="imageUrl"
-                value={newCourse.imageUrl}
-                onChange={(e) => setNewCourse(prev => ({ ...prev, imageUrl: e.target.value }))}
-                placeholder="Enter image URL"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Tags</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add a tag"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                />
-                <Button type="button" onClick={handleAddTag}>Add</Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {newCourse.tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => handleRemoveTag(tag)}
-                    />
-                  </Badge>
-                ))}
-              </div>
             </div>
 
             <div className="space-y-2">

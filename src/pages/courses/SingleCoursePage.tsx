@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Upload } from 'lucide-react';
 import CourseViewTabs from '@/components/courses/CourseViewTabs';
 
 // This would normally come from your API
@@ -77,79 +77,49 @@ const SingleCoursePage = () => {
     <div className="container mx-auto px-6 py-8 max-w-6xl">
       {/* Header Section */}
       <div className="mb-8">
-        <div className="flex items-center gap-4 mb-6">
+        {/* Top Navigation Row */}
+        <div className="flex items-center justify-between mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/courses')}
             className="hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Courses
+            Back to Course Library
           </Button>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Course Image */}
-          <div className="lg:w-1/3">
-            {course.imageUrl ? (
-              <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted shadow-4dp">
-                <img 
-                  src={course.imageUrl} 
-                  alt={course.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="aspect-video w-full overflow-hidden rounded-lg bg-gradient-to-br from-primary-light to-primary flex items-center justify-center shadow-4dp">
-                <span className="text-primary-foreground font-heading font-bold text-2xl">
-                  {course.title.charAt(0)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Course Info */}
-          <div className="lg:w-2/3 space-y-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="font-heading font-bold text-3xl text-foreground">
-                  {course.title}
-                </h1>
-                <Badge 
-                  variant="outline" 
-                  className={`capitalize ${getStatusColor(course.status)}`}
-                >
-                  {course.status}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                {course.description}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Topic:</span>
-                <Badge variant="secondary">{course.topic}</Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Duration:</span>
-                <span className="text-muted-foreground">{course.duration}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Learners:</span>
-                <span className="text-muted-foreground">{course.learnerCount}</span>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <Button className="bg-primary hover:bg-primary-dark shadow-4dp">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View Student Experience
-              </Button>
-            </div>
+          
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Preview as Student
+            </Button>
+            
+            <Button className="bg-primary hover:bg-primary-dark shadow-4dp">
+              <Upload className="h-4 w-4 mr-2" />
+              Publish Course
+            </Button>
           </div>
         </div>
+
+        {/* Course Title and Status */}
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="font-heading font-bold text-3xl text-foreground">
+            {course.title}
+          </h1>
+          <Badge 
+            variant="outline" 
+            className={`capitalize ${getStatusColor(course.status)}`}
+          >
+            {course.status}
+          </Badge>
+        </div>
+        
+        <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
+          {course.description}
+        </p>
       </div>
 
       {/* Course Management Tabs */}

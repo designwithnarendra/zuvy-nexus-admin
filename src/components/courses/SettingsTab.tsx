@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { AlertTriangle, Trash2, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface SettingsTabProps {
   courseId: string;
@@ -13,63 +16,43 @@ interface SettingsTabProps {
 
 const SettingsTab = ({ courseId }: SettingsTabProps) => {
   const [settings, setSettings] = useState({
-    isPublished: true,
-    allowSelfEnrollment: false,
-    enableDiscussions: true,
-    sendNotifications: true,
-    requireCompletion: true,
-    showLeaderboard: false
+    courseType: 'private',
+    moduleLock: true
   });
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
 
-  const handleSettingChange = (key: string, value: boolean) => {
+  const handleSettingChange = (key: string, value: boolean | string) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    setIsSaved(false);
   };
 
   const handleSaveSettings = () => {
     console.log('Saving settings:', settings);
     // Implementation would save to backend
+    setIsSaved(true);
+    
+    // Reset the saved indicator after 3 seconds
+    setTimeout(() => {
+      setIsSaved(false);
+    }, 3000);
   };
 
   const handleDeleteCourse = () => {
-    console.log('Deleting course:', courseId);
-    // Implementation would delete course
-    setIsDeleteDialogOpen(false);
+    if (deleteConfirmationText === 'Delete Course') {
+      console.log('Deleting course:', courseId);
+      // Implementation would delete course
+      setIsDeleteDialogOpen(false);
+      setDeleteConfirmationText('');
+    }
   };
 
-  const settingItems = [
-    {
-      key: 'isPublished',
-      label: 'Published',
-      description: 'Make this course visible to students'
-    },
-    {
-      key: 'allowSelfEnrollment',
-      label: 'Allow Self-Enrollment',
-      description: 'Students can enroll themselves without admin approval'
-    },
-    {
-      key: 'enableDiscussions',
-      label: 'Enable Discussions',
-      description: 'Allow students to participate in course discussions'
-    },
-    {
-      key: 'sendNotifications',
-      label: 'Send Notifications',
-      description: 'Send email notifications for course updates and deadlines'
-    },
-    {
-      key: 'requireCompletion',
-      label: 'Require Sequential Completion',
-      description: 'Students must complete modules in order'
-    },
-    {
-      key: 'showLeaderboard',
-      label: 'Show Leaderboard',
-      description: 'Display student rankings and progress comparisons'
-    }
-  ];
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setDeleteConfirmationText('');
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -79,20 +62,51 @@ const SettingsTab = ({ courseId }: SettingsTabProps) => {
           <CardTitle className="font-heading text-xl">Course Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {settingItems.map((item) => (
-            <div key={item.key} className="flex items-center justify-between py-3 border-b last:border-b-0">
-              <div className="space-y-1">
-                <Label className="text-sm font-medium">{item.label}</Label>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
+          {/* Course Type */}
+          <div className="space-y-3">
+            <Label className="text-base font-medium">Course Type</Label>
+            <RadioGroup 
+              value={settings.courseType} 
+              onValueChange={(value) => handleSettingChange('courseType', value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="private" id="private" />
+                <Label htmlFor="private" className="font-normal">
+                  Private - Only invited students can access this course
+                </Label>
               </div>
-              <Switch
-                checked={settings[item.key as keyof typeof settings]}
-                onCheckedChange={(value) => handleSettingChange(item.key, value)}
-              />
-            </div>
-          ))}
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="public" id="public" />
+                <Label htmlFor="public" className="font-normal">
+                  Public - Anyone with the link can access this course
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
 
-          <div className="flex justify-end pt-4 border-t">
+          {/* Module Lock */}
+          <div className="flex items-center justify-between py-3 border-t border-b">
+            <div className="space-y-1">
+              <Label className="text-base font-medium">Module Lock</Label>
+              <p className="text-sm text-muted-foreground">
+                If enabled, students must complete modules and projects in sequential order
+              </p>
+            </div>
+            <Switch
+              checked={settings.moduleLock}
+              onCheckedChange={(value) => handleSettingChange('moduleLock', value)}
+            />
+          </div>
+
+          {/* Save Button */}
+          <div className="flex items-center justify-end pt-4">
+            {isSaved && (
+              <Alert variant="default" className="bg-success-light text-success-dark mr-4 py-2 h-10">
+                <Info className="h-4 w-4" />
+                <AlertDescription>Settings saved successfully</AlertDescription>
+              </Alert>
+            )}
             <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary-dark">
               Save Settings
             </Button>
@@ -100,18 +114,17 @@ const SettingsTab = ({ courseId }: SettingsTabProps) => {
         </CardContent>
       </Card>
 
-      {/* Danger Zone */}
+      {/* Delete Course */}
       <Card className="shadow-4dp border-destructive-light">
         <CardHeader>
           <CardTitle className="font-heading text-xl text-destructive flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Danger Zone
+            Delete Course
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-destructive-light/10 p-4 rounded-lg border border-destructive-light">
-            <h3 className="font-medium text-destructive mb-2">Delete Course</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+        <CardContent>
+          <div className="flex items-start justify-between">
+            <p className="text-sm text-muted-foreground flex-1 mr-4">
               Once you delete a course, there is no going back. This will permanently delete the course, 
               all its content, student enrollments, and submission data.
             </p>
@@ -128,14 +141,31 @@ const SettingsTab = ({ courseId }: SettingsTabProps) => {
                   <DialogTitle>Are you absolutely sure?</DialogTitle>
                   <DialogDescription>
                     This action cannot be undone. This will permanently delete the course
-                    "Full Stack Web Development Bootcamp" and remove all associated data.
+                    and remove all associated data including student submissions.
                   </DialogDescription>
                 </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="delete-confirmation" className="text-sm font-medium">
+                      Type "Delete Course" to confirm:
+                    </Label>
+                    <Input
+                      id="delete-confirmation"
+                      value={deleteConfirmationText}
+                      onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                      placeholder="Delete Course"
+                    />
+                  </div>
+                </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                  <Button variant="outline" onClick={handleCloseDeleteDialog}>
                     Cancel
                   </Button>
-                  <Button variant="destructive" onClick={handleDeleteCourse}>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleDeleteCourse}
+                    disabled={deleteConfirmationText !== 'Delete Course'}
+                  >
                     Delete Course
                   </Button>
                 </DialogFooter>
