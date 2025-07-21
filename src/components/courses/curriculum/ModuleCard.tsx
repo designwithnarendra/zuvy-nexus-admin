@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ChevronDown, GripVertical, FolderOpen, Edit, Trash2, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ContentItem, LearningItem } from './types';
@@ -38,6 +39,7 @@ const ModuleCard = ({
   onDropItem
 }: ModuleCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Map content type to learning item type
   const mapContentTypeToLearningItemType = (type: string): string => {
@@ -138,17 +140,42 @@ const ModuleCard = ({
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(item.id);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Delete Module</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to delete "{item.title}"? This action cannot be undone and will remove all learning items within this module.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => {
+                          onDelete(item.id);
+                          setDeleteDialogOpen(false);
+                        }}
+                      >
+                        Delete Module
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <ChevronDown className={cn(
                   "h-5 w-5 transition-transform",
                   item.isExpanded && "rotate-180"

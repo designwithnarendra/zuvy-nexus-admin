@@ -74,7 +74,7 @@ const SingleCoursePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-6xl">
+    <div className="container mx-auto px-6 py-8 max-w-7xl">
       {/* Header Section */}
       <div className="mb-8">
         {/* Top Navigation Row */}

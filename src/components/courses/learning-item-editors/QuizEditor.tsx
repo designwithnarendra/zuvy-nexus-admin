@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { 
   Select,
@@ -14,10 +15,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+interface MCQOption {
+  id: string;
+  text: string;
+}
+
 interface Question {
   id: string;
-  type: 'mcq' | 'open-ended';
+  type: 'mcq';
   text: string;
+  options: MCQOption[];
+  correctAnswerId: string;
 }
 
 interface QuizData {
@@ -50,16 +58,71 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  const addQuestion = (type: 'mcq' | 'open-ended') => {
+  const addQuestion = () => {
+    const defaultOptions: MCQOption[] = [
+      { id: `option-${Date.now()}-1`, text: '' },
+      { id: `option-${Date.now()}-2`, text: '' }
+    ];
+    
     const newQuestion: Question = {
       id: `question-${Date.now()}`,
-      type,
+      type: 'mcq',
       text: '',
+      options: defaultOptions,
+      correctAnswerId: defaultOptions[0].id
     };
     
     setData(prev => ({
       ...prev,
       questions: [...prev.questions, newQuestion]
+    }));
+  };
+
+  const updateQuestion = (questionId: string, field: keyof Question, value: any) => {
+    setData(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => 
+        q.id === questionId ? { ...q, [field]: value } : q
+      )
+    }));
+  };
+
+  const addOption = (questionId: string) => {
+    setData(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => 
+        q.id === questionId ? {
+          ...q,
+          options: [...q.options, { id: `option-${Date.now()}`, text: '' }]
+        } : q
+      )
+    }));
+  };
+
+  const updateOption = (questionId: string, optionId: string, text: string) => {
+    setData(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => 
+        q.id === questionId ? {
+          ...q,
+          options: q.options.map(opt => 
+            opt.id === optionId ? { ...opt, text } : opt
+          )
+        } : q
+      )
+    }));
+  };
+
+  const removeOption = (questionId: string, optionId: string) => {
+    setData(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => 
+        q.id === questionId ? {
+          ...q,
+          options: q.options.filter(opt => opt.id !== optionId),
+          correctAnswerId: q.correctAnswerId === optionId ? q.options[0]?.id || '' : q.correctAnswerId
+        } : q
+      )
     }));
   };
 
@@ -76,7 +139,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
 
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Quiz' : 'Edit Quiz'}
+      title=""
       type="quiz"
       mode={mode}
       onSave={handleSubmit}
@@ -117,24 +180,14 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Questions ({data.questions.length})</h3>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addQuestion('mcq')}
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add MCQ
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addQuestion('open-ended')}
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Open-ended
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={addQuestion}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add MCQ
+                </Button>
               </div>
               
               {data.questions.length === 0 ? (
@@ -142,7 +195,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
                   No questions added yet. Add a question to get started.
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {data.questions.map((question, index) => (
                     <div 
                       key={question.id} 
@@ -153,30 +206,74 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
                           variant="ghost"
                           size="icon"
                           onClick={() => removeQuestion(question.id)}
+                          className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="flex items-center gap-2 mb-3">
+                      
+                      <div className="flex items-center gap-2 mb-4">
                         <span className="font-medium">Question {index + 1}</span>
-                        <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">
-                          {question.type === 'mcq' ? 'Multiple Choice' : 'Open-ended'}
+                        <span className="bg-primary-light text-primary px-2 py-1 rounded text-xs">
+                          Multiple Choice
                         </span>
                       </div>
                       
-                      <div className="pl-4 border-l-2 border-primary/20">
-                        {/* This would be replaced with the actual question editor components */}
-                        <p className="text-sm text-muted-foreground">
-                          {question.type === 'mcq' 
-                            ? 'MCQ editor would be integrated here' 
-                            : 'Open-ended question editor would be integrated here'}
-                        </p>
-                        <Button 
-                          variant="link" 
-                          className="p-0 h-auto text-xs"
-                        >
-                          Edit Question
-                        </Button>
+                      <div className="space-y-4">
+                        {/* Question Text */}
+                        <div className="space-y-2">
+                          <Label htmlFor={`question-${question.id}`}>Question</Label>
+                          <Textarea
+                            id={`question-${question.id}`}
+                            value={question.text}
+                            onChange={(e) => updateQuestion(question.id, 'text', e.target.value)}
+                            placeholder="Enter your question"
+                            rows={3}
+                          />
+                        </div>
+                        
+                        {/* Options */}
+                        <div className="space-y-3">
+                          <Label>Options (Select the correct answer)</Label>
+                          <RadioGroup 
+                            value={question.correctAnswerId} 
+                            onValueChange={(value) => updateQuestion(question.id, 'correctAnswerId', value)}
+                          >
+                            {question.options.map((option, optionIndex) => (
+                              <div key={option.id} className="flex items-center gap-3">
+                                <RadioGroupItem value={option.id} id={option.id} />
+                                <div className="flex-1 flex items-center gap-2">
+                                  <Input
+                                    value={option.text}
+                                    onChange={(e) => updateOption(question.id, option.id, e.target.value)}
+                                    placeholder={`Option ${optionIndex + 1}`}
+                                  />
+                                  {question.options.length > 2 && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeOption(question.id, option.id)}
+                                      className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                          
+                          {question.options.length < 4 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addOption(question.id)}
+                            >
+                              <PlusCircle className="mr-2 h-4 w-4" />
+                              Add Option
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

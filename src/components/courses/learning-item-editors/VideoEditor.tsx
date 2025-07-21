@@ -39,7 +39,7 @@ const DEFAULT_VIDEO_DATA: VideoData = {
  * VideoEditor
  * 
  * Editor component for creating and editing videos.
- * Supports video uploads, URLs, YouTube, and Vimeo.
+ * Supports video uploads and YouTube URLs.
  */
 export function VideoEditor({
   initialData = DEFAULT_VIDEO_DATA,
@@ -78,28 +78,19 @@ export function VideoEditor({
     }
   };
   
-  // Extract video ID from YouTube or Vimeo URL
-  const extractVideoId = (url: string, platform: 'youtube' | 'vimeo'): string | null => {
-    if (platform === 'youtube') {
-      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-      return match ? match[1] : null;
-    } else if (platform === 'vimeo') {
-      const match = url.match(/vimeo\.com\/(?:.*\/)?(?:videos\/)?([0-9]+)/);
-      return match ? match[1] : null;
-    }
-    return null;
+  // Extract video ID from YouTube URL
+  const extractVideoId = (url: string): string | null => {
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    return match ? match[1] : null;
   };
   
-  // Generate embed URL for YouTube or Vimeo
+  // Generate embed URL for YouTube
   const getEmbedUrl = (): string | null => {
     if (!videoData.url) return null;
     
     if (videoData.sourceType === 'youtube') {
-      const videoId = extractVideoId(videoData.url, 'youtube');
+      const videoId = extractVideoId(videoData.url);
       return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-    } else if (videoData.sourceType === 'vimeo') {
-      const videoId = extractVideoId(videoData.url, 'vimeo');
-      return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
     }
     
     return videoData.url;

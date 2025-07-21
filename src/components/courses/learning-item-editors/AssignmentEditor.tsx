@@ -73,13 +73,22 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
     onSave(data);
   };
 
+  const customFooterContent = (
+    <>
+      <Button variant="outline" onClick={onCancel}>Cancel</Button>
+      <Button onClick={handleSubmit}>
+        {mode === 'create' ? 'Add Assignment' : 'Save Changes'}
+      </Button>
+    </>
+  );
+
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Assignment' : 'Edit Assignment'}
       type="assignment"
       mode={mode}
       onSave={handleSubmit}
       onCancel={onCancel}
+      footerContent={customFooterContent}
     >
       <div className="space-y-6">
         <div className="space-y-2">
@@ -192,9 +201,6 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
               />
             </PopoverContent>
           </Popover>
-          <p className="text-sm text-muted-foreground">
-            Leave empty if there is no due date
-          </p>
         </div>
       </div>
     </BaseEditor>

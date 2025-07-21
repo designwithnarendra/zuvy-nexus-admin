@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Users, UserPlus, FileSpreadsheet, Search } from 'lucide-react';
+import { Users, UserPlus, FileSpreadsheet, Search, Trash2, UserMinus, UserCheck } from 'lucide-react';
 
 // Import our new components
 import MasterStudentTable, { Student } from './students/MasterStudentTable';
@@ -53,6 +53,10 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [batchFilter, setBatchFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Multi-select state
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  const [bulkAssignBatch, setBulkAssignBatch] = useState('');;
   
   // Mock data - in a real app this would come from an API
   const [students, setStudents] = useState<Student[]>(generateMockStudents());
@@ -127,6 +131,54 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
     console.log('Contact student:', studentId);
   };
 
+  // Multi-select handlers
+  const handleSelectStudent = (studentId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedStudents([...selectedStudents, studentId]);
+    } else {
+      setSelectedStudents(selectedStudents.filter(id => id !== studentId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedStudents(filteredStudents.map(s => s.id));
+    } else {
+      setSelectedStudents([]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    // Only delete students that can be deleted
+    const studentsToDelete = selectedStudents.filter(studentId => {
+      const student = students.find(s => s.id === studentId);
+      return student && (!student.batch || batches.find(b => b.name === student.batch)?.status === 'Not Started' || !student.batch);
+    });
+    
+    setStudents(students.filter(s => !studentsToDelete.includes(s.id)));
+    setSelectedStudents([]);
+  };
+
+  const handleBulkDropout = () => {
+    setStudents(students.map(s => 
+      selectedStudents.includes(s.id) ? { ...s, status: 'dropout' } : s
+    ));
+    setSelectedStudents([]);
+  };
+
+  const handleBulkAssignToBatch = () => {
+    if (!bulkAssignBatch) return;
+    
+    const batchName = batches.find(b => b.id === bulkAssignBatch)?.name;
+    if (!batchName) return;
+    
+    setStudents(students.map(s => 
+      selectedStudents.includes(s.id) ? { ...s, batch: batchName } : s
+    ));
+    setSelectedStudents([]);
+    setBulkAssignBatch('');
+  };
+
   return (
     <div className="w-full max-w-none space-y-6">
       {/* Header */}
@@ -138,6 +190,50 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
           </p>
         </div>
       </div>
+
+      {/* Bulk Actions Bar - Show when students are selected */}
+      {selectedStudents.length > 0 && (
+        <div className="bg-muted/50 p-4 rounded-lg border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium">
+                {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <Select value={bulkAssignBatch} onValueChange={setBulkAssignBatch}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Assign to batch..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {batches.map(batch => (
+                      <SelectItem key={batch.id} value={batch.id}>{batch.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {bulkAssignBatch && (
+                  <Button size="sm" onClick={handleBulkAssignToBatch}>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Assign
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={handleBulkDropout}>
+                <UserMinus className="h-4 w-4 mr-2" />
+                Mark as Dropout
+              </Button>
+              <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedStudents([])}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search and Filters */}
       <div className="flex items-center gap-4">
@@ -202,6 +298,10 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
         onDropoutStudent={handleDropoutStudent}
         onViewStudent={handleViewStudent}
         onContactStudent={handleContactStudent}
+        selectedStudents={selectedStudents}
+        onSelectStudent={handleSelectStudent}
+        onSelectAll={handleSelectAll}
+        showMultiSelect={true}
       />
 
       {/* Add Student Modal */}

@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import ProblemDetailsForm from './coding-creator/ProblemDetailsForm';
 import TestCasesEditor from './coding-creator/TestCasesEditor';
-import CreateTopicModal from './CreateTopicModal';
 
 interface CodingProblemCreatorProps {
   onSave: () => void;
@@ -21,15 +20,11 @@ interface TestCase {
 }
 
 const CodingProblemCreator = ({ onSave }: CodingProblemCreatorProps) => {
-  const [isCreateTopicOpen, setIsCreateTopicOpen] = useState(false);
   const [problemData, setProblemData] = useState({
     title: '',
     description: '',
     topic: '',
     difficulty: '',
-    points: 20,
-    timeLimit: 1800,
-    memoryLimit: 256,
     language: 'javascript'
   });
 
@@ -82,7 +77,6 @@ const CodingProblemCreator = ({ onSave }: CodingProblemCreatorProps) => {
       <ProblemDetailsForm
         data={problemData}
         onDataChange={handleInputChange}
-        onCreateTopic={() => setIsCreateTopicOpen(true)}
       />
 
       <Accordion type="multiple" defaultValue={["test-cases"]} className="space-y-4">
@@ -145,14 +139,6 @@ const CodingProblemCreator = ({ onSave }: CodingProblemCreatorProps) => {
         </Button>
       </div>
 
-      <CreateTopicModal
-        isOpen={isCreateTopicOpen}
-        onClose={() => setIsCreateTopicOpen(false)}
-        onTopicCreated={(topic) => {
-          handleInputChange('topic', topic);
-          setIsCreateTopicOpen(false);
-        }}
-      />
     </div>
   );
 };

@@ -18,7 +18,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
       <TabsList className="grid w-full grid-cols-6 bg-card border border-border rounded-lg p-1 h-12">
         <TabsTrigger 
           value="general" 
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <Info className="h-4 w-4" />
           <span className="hidden sm:inline">General Details</span>
@@ -26,7 +26,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsTrigger>
         <TabsTrigger 
           value="curriculum"
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <BookOpen className="h-4 w-4" />
           <span className="hidden sm:inline">Curriculum</span>
@@ -34,7 +34,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsTrigger>
         <TabsTrigger 
           value="students"
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <Users className="h-4 w-4" />
           <span className="hidden sm:inline">Students</span>
@@ -42,7 +42,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsTrigger>
         <TabsTrigger 
           value="batches"
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <UserCheck className="h-4 w-4" />
           <span className="hidden sm:inline">Batches</span>
@@ -50,7 +50,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsTrigger>
         <TabsTrigger 
           value="submissions"
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <FileText className="h-4 w-4" />
           <span className="hidden sm:inline">Submissions</span>
@@ -58,7 +58,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsTrigger>
         <TabsTrigger 
           value="settings"
-          className="flex items-center justify-center gap-2 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
         >
           <Settings className="h-4 w-4" />
           <span>Settings</span>

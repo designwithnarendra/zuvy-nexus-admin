@@ -152,33 +152,39 @@ Key libraries beyond standard React/TypeScript:
 ### Complete UI/UX Overhaul - 8 Phases Completed
 
 **Phase 1: Tag System Removal**
+
 - Removed topic/tag functionality from `CourseCard.tsx`, `AllCoursesPage.tsx`, `GeneralDetailsTab.tsx`
 - Updated course creation modal and mock data accordingly
 - Simplified course interface to focus on core properties
 
 **Phase 2: Course Page Header Redesign**
+
 - Redesigned `SingleCoursePage.tsx` header with new button layout
 - Added "Back to Course Library", "Preview as Student", "Publish Course" buttons
 - Removed redundant course info display (topic/duration/learners)
 - Updated `CourseViewTabs.tsx` for 6-column grid with Batches tab
 
 **Phase 3: General Details Updates**
+
 - Changed title from "Course Information" to "General Details" in `GeneralDetailsTab.tsx`
 - Fixed Course Start Date field with custom calendar picker styling
 - Removed "Course Image" label for cleaner interface
 
 **Phase 4: Curriculum Tab Major Overhaul**
+
 - Enhanced `CurriculumTab.tsx` with improved spacing (24px module gaps, 16px item gaps)
 - Updated side panel system for 50% width with custom footer content
 - Improved `ModuleCard.tsx` and `LearningItemCard.tsx` with larger text and destructive styling
 - Enhanced all learning item editors (Video, Live Class, Assignment, etc.) with better UX
 
 **Phase 5: New Batches Tab Implementation**
+
 - Created `BatchesTab.tsx` with 2-step batch creation process
 - Implemented batch cards with instructor info, student counts, status badges
 - Added modal system for batch creation with CSV upload functionality
 
 **Phase 6: Students Tab Complete Restructure**
+
 - Completely rebuilt `StudentsTab.tsx` removing old tabbed interface
 - Added search bar and filters for batch/status
 - Generated 50 realistic mock students with attendance data
@@ -186,6 +192,7 @@ Key libraries beyond standard React/TypeScript:
 - Changed student status values to 'active', 'dropout', 'graduated'
 
 **Phase 7: Content Bank Updates**
+
 - Updated `QuestionBankPage.tsx` removing redundant "All questions" heading
 - Moved question count to main "Question Bank" heading
 - Removed bulk upload button from header
@@ -194,6 +201,7 @@ Key libraries beyond standard React/TypeScript:
 - Implemented pagination with 10/20/50/100 items per page options
 
 **Phase 8: Settings & Polish**
+
 - Updated `SettingsTab.tsx` changing "Danger Zone" to "Delete Course"
 - Improved delete course layout with right-aligned button
 - Added confirmation text field requiring "Delete Course" to be typed
@@ -202,23 +210,26 @@ Key libraries beyond standard React/TypeScript:
 ### Key UI/UX Improvements
 
 **Design Consistency:**
+
 - Applied consistent spacing (6px = space-y-6 = 24px gaps throughout)
 - Used destructive color styling for delete actions across components
 - Implemented shadow-4dp and hover effects consistently
 
 **Data Management:**
+
 - Created comprehensive mock data matching TypeScript interfaces
 - Generated realistic educational scenarios (students, batches, questions)
 - Maintained data consistency across all components
 
 **User Experience:**
+
 - Streamlined workflows (2-step batch creation, simplified course management)
 - Added confirmation patterns for destructive actions
 - Improved navigation with proper back buttons and breadcrumbs
 
 ## Compact Conversation rules
 
-- Run /compact command after every 5 successful tasks from the planned tasks
+- Run /compact command after every 3 successful tasks
 
 ## Encouragement Rule
 

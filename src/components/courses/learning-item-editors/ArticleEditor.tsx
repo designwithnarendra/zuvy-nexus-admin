@@ -83,14 +83,23 @@ export function ArticleEditor({
     
     onSave(articleData);
   };
+
+  const customFooterContent = (
+    <>
+      <Button variant="outline" onClick={onCancel}>Cancel</Button>
+      <Button onClick={handleSubmit}>
+        {mode === 'create' ? 'Add Article' : 'Save Changes'}
+      </Button>
+    </>
+  );
   
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create New Article' : 'Edit Article'}
       type="article"
       mode={mode}
       onSave={handleSubmit}
       onCancel={onCancel}
+      footerContent={customFooterContent}
     >
       <div className="space-y-6">
         {/* Title */}
@@ -138,17 +147,53 @@ export function ArticleEditor({
         
         {/* Render different content inputs based on the selected content type */}
         {articleData.contentType === 'rich-text' && (
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={articleData.content}
-              onChange={(e) => handleInputChange('content', e.target.value)}
-              placeholder="Write your article content here..."
-              className="min-h-[300px]"
-            />
-            <div className="text-sm text-muted-foreground">
-              Estimated read time: {articleData.estimatedReadTime || '< 1'} minute(s)
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="content">Content</Label>
+              <div className="border rounded-md">
+                {/* Rich text formatting toolbar */}
+                <div className="flex items-center gap-2 p-2 border-b bg-muted/30">
+                  <Button variant="ghost" size="sm" type="button">
+                    <strong>B</strong>
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    <em>I</em>
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    <u>U</u>
+                  </Button>
+                  <div className="w-px h-4 bg-border mx-1" />
+                  <Button variant="ghost" size="sm" type="button">
+                    H1
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    H2
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    H3
+                  </Button>
+                  <div className="w-px h-4 bg-border mx-1" />
+                  <Button variant="ghost" size="sm" type="button">
+                    •
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    1.
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button">
+                    Link
+                  </Button>
+                </div>
+                <Textarea
+                  id="content"
+                  value={articleData.content}
+                  onChange={(e) => handleInputChange('content', e.target.value)}
+                  placeholder="Write your article content here..."
+                  className="min-h-[300px] border-0 resize-none focus-visible:ring-0"
+                />
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Estimated read time: {articleData.estimatedReadTime || '< 1'} minute(s)
+              </div>
             </div>
           </div>
         )}

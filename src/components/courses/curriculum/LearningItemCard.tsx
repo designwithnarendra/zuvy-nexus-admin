@@ -1,5 +1,7 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { GripVertical, Edit, Trash2, FileText, Video, ClipboardCheck, Code, BookOpen } from 'lucide-react';
 import { LearningItem } from './types';
 
@@ -10,6 +12,8 @@ interface LearningItemCardProps {
 }
 
 const LearningItemCard = ({ learningItem, onDelete, onEdit }: LearningItemCardProps) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const getItemIcon = (type: string) => {
     switch (type) {
       case 'reading': return FileText;
@@ -47,14 +51,39 @@ const LearningItemCard = ({ learningItem, onDelete, onEdit }: LearningItemCardPr
         >
           <Edit className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
-          onClick={onDelete}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Learning Item</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{learningItem.title}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => {
+                  onDelete();
+                  setDeleteDialogOpen(false);
+                }}
+              >
+                Delete Item
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +45,10 @@ interface MasterStudentTableProps {
   onDropoutStudent: (studentId: string) => void;
   onViewStudent: (studentId: string) => void;
   onContactStudent: (studentId: string) => void;
+  selectedStudents?: string[];
+  onSelectStudent?: (studentId: string, checked: boolean) => void;
+  onSelectAll?: (checked: boolean) => void;
+  showMultiSelect?: boolean;
 }
 
 const MasterStudentTable = ({
@@ -53,7 +57,11 @@ const MasterStudentTable = ({
   onDeleteStudent,
   onDropoutStudent,
   onViewStudent,
-  onContactStudent
+  onContactStudent,
+  selectedStudents = [],
+  onSelectStudent,
+  onSelectAll,
+  showMultiSelect = false
 }: MasterStudentTableProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dropoutDialogOpen, setDropoutDialogOpen] = useState(false);
@@ -105,9 +113,10 @@ const MasterStudentTable = ({
   // Format student data for the table
   const formatStudentData = (student: Student) => {
     const canDelete = canDeleteStudent(student);
-    const isDropped = student.status === 'Dropped';
+    const isDropped = student.status === 'dropout';
+    const isSelected = selectedStudents.includes(student.id);
     
-    return {
+    const baseData = {
       ...student,
       progress: (
         <div className="flex items-center gap-2">
@@ -123,9 +132,9 @@ const MasterStudentTable = ({
       status: (
         <Badge 
           variant={
-            student.status === 'Active' ? 'default' : 
-            student.status === 'At Risk' ? 'destructive' :
-            student.status === 'Completed' ? 'secondary' :
+            student.status === 'active' ? 'default' : 
+            student.status === 'dropout' ? 'destructive' :
+            student.status === 'graduated' ? 'secondary' :
             'outline'
           }
         >
@@ -172,31 +181,65 @@ const MasterStudentTable = ({
         </DropdownMenu>
       )
     };
+
+    // Add checkbox column if multi-select is enabled
+    if (showMultiSelect) {
+      return {
+        select: (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelectStudent?.(student.id, !!checked)}
+            aria-label={`Select ${student.name}`}
+          />
+        ),
+        ...baseData
+      };
+    }
+
+    return baseData;
   };
 
-  const studentColumns = [
+  // Handle select all functionality
+  const allSelected = students.length > 0 && selectedStudents.length === students.length;
+  const someSelected = selectedStudents.length > 0 && selectedStudents.length < students.length;
+
+  const baseColumns = [
     { key: 'name', label: 'Student Name' },
     { key: 'email', label: 'Email' },
     { key: 'batch', label: 'Batch' },
     { key: 'enrolledDate', label: 'Enrolled Date' },
     { key: 'progress', label: 'Progress' },
+    { key: 'attendance', label: 'Attendance (Out of 20 Classes)' },
     { key: 'lastActive', label: 'Last Active' },
     { key: 'status', label: 'Status' },
     { key: 'actions', label: 'Actions', sortable: false }
   ];
 
+  // Add checkbox column if multi-select is enabled
+  const studentColumns = showMultiSelect ? [
+    { 
+      key: 'select', 
+      label: (
+        <Checkbox
+          checked={allSelected}
+          indeterminate={someSelected}
+          onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+          aria-label="Select all students"
+        />
+      ), 
+      sortable: false 
+    },
+    ...baseColumns
+  ] : baseColumns;
+
   return (
     <>
-      <Card className="shadow-4dp">
-        <CardContent className="p-6">
-          <DataTable
-            data={students.map(formatStudentData)}
-            columns={studentColumns}
-            searchable
-            filterable
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        data={students.map(formatStudentData)}
+        columns={studentColumns}
+        searchable={false}
+        filterable={false}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

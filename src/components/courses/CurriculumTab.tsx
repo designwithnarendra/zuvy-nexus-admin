@@ -618,7 +618,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         onOpenChange={setFocusPanelOpen}
         title={activeEditor ? `${editorMode === 'create' ? 'Add' : 'Edit'} ${formatItemType(activeEditor)}` : ''}
         width="full"
-        className="w-1/2 min-w-[40%]"
+        className={activeEditor === 'assessment' ? "w-3/5 min-w-[40%]" : "w-1/2 min-w-[40%]"}
       >
         {renderEditor()}
       </FocusPanel>

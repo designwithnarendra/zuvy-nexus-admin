@@ -198,7 +198,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
 
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Assessment' : 'Edit Assessment'}
+      title=""
       type="assessment"
       mode={mode}
       onSave={handleSubmit}
@@ -280,11 +280,21 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                      question.type === 'mcq' 
+                                        ? 'bg-primary-light text-primary' 
+                                        : 'bg-info-light text-info'
+                                    }`}>
                                       {question.type === 'mcq' ? 'MCQ' : 'Coding'}
                                     </span>
-                                    <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
-                                      {question.difficulty}
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                      question.difficulty === 'easy' 
+                                        ? 'bg-success-light text-success-dark' 
+                                        : question.difficulty === 'medium'
+                                        ? 'bg-warning-light text-warning-dark'
+                                        : 'bg-destructive-light text-destructive-dark'
+                                    }`}>
+                                      {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
                                     </span>
                                   </div>
                                   <p className="text-sm font-medium">{question.title}</p>
@@ -326,11 +336,21 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                             <div className="flex justify-between items-start">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    question.type === 'mcq' 
+                                      ? 'bg-primary-light text-primary' 
+                                      : 'bg-info-light text-info'
+                                  }`}>
                                     {question.type === 'mcq' ? 'MCQ' : 'Coding'}
                                   </span>
-                                  <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
-                                    {question.difficulty}
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    question.difficulty === 'easy' 
+                                      ? 'bg-success-light text-success-dark' 
+                                      : question.difficulty === 'medium'
+                                      ? 'bg-warning-light text-warning-dark'
+                                      : 'bg-destructive-light text-destructive-dark'
+                                  }`}>
+                                    {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
                                   </span>
                                 </div>
                                 <p className="text-sm font-medium">{question.title}</p>

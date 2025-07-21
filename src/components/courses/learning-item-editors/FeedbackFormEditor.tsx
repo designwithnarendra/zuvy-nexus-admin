@@ -33,6 +33,12 @@ interface FeedbackQuestion {
   text: string;
   required: boolean;
   options?: string[]; // For multiple/single choice questions
+  ratingScale?: {
+    scale: '1-5' | '1-7' | '1-10';
+    lowLabel: string;
+    midLabel: string;
+    highLabel: string;
+  };
 }
 
 interface FeedbackFormData {
@@ -74,8 +80,14 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
       id: `question-${Date.now()}`,
       type: 'short-text',
       text: '',
-      required: false,
-      options: []
+      required: true,
+      options: [],
+      ratingScale: {
+        scale: '1-5',
+        lowLabel: 'Poor',
+        midLabel: 'Average',
+        highLabel: 'Excellent'
+      }
     };
     
     setData(prev => ({
@@ -164,13 +176,22 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
     onSave(data);
   };
 
+  const customFooterContent = (
+    <>
+      <Button variant="outline" onClick={onCancel}>Cancel</Button>
+      <Button onClick={handleSubmit}>
+        {mode === 'create' ? 'Add Feedback Form' : 'Save Changes'}
+      </Button>
+    </>
+  );
+
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Feedback Form' : 'Edit Feedback Form'}
       type="feedback"
       mode={mode}
       onSave={handleSubmit}
       onCancel={onCancel}
+      footerContent={customFooterContent}
     >
       <div className="space-y-8">
         <div className="space-y-2">
@@ -232,6 +253,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeQuestion(question.id)}
+                                    className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
@@ -316,6 +338,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => removeOption(question.id, optionIndex)}
+                                                className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
                                               >
                                                 <Trash2 className="h-4 w-4" />
                                               </Button>
@@ -327,6 +350,84 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                           No options added yet
                                         </div>
                                       )}
+                                    </div>
+                                  )}
+                                  
+                                  {question.type === 'rating' && (
+                                    <div className="space-y-4">
+                                      <div className="space-y-2">
+                                        <Label htmlFor={`rating-scale-${question.id}`}>Rating Scale</Label>
+                                        <Select
+                                          value={question.ratingScale?.scale || '1-5'}
+                                          onValueChange={(value) => 
+                                            updateQuestion(question.id, 'ratingScale', {
+                                              ...question.ratingScale,
+                                              scale: value
+                                            })
+                                          }
+                                        >
+                                          <SelectTrigger id={`rating-scale-${question.id}`}>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="1-5">1 to 5</SelectItem>
+                                            <SelectItem value="1-7">1 to 7</SelectItem>
+                                            <SelectItem value="1-10">1 to 10</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                          <Label htmlFor={`low-label-${question.id}`}>Low Label (1)</Label>
+                                          <Input
+                                            id={`low-label-${question.id}`}
+                                            value={question.ratingScale?.lowLabel || ''}
+                                            onChange={(e) => 
+                                              updateQuestion(question.id, 'ratingScale', {
+                                                ...question.ratingScale,
+                                                lowLabel: e.target.value
+                                              })
+                                            }
+                                            placeholder="e.g., Poor"
+                                          />
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                          <Label htmlFor={`mid-label-${question.id}`}>
+                                            Middle Label ({question.ratingScale?.scale === '1-5' ? '3' : 
+                                                          question.ratingScale?.scale === '1-7' ? '4' : '5'})
+                                          </Label>
+                                          <Input
+                                            id={`mid-label-${question.id}`}
+                                            value={question.ratingScale?.midLabel || ''}
+                                            onChange={(e) => 
+                                              updateQuestion(question.id, 'ratingScale', {
+                                                ...question.ratingScale,
+                                                midLabel: e.target.value
+                                              })
+                                            }
+                                            placeholder="e.g., Average"
+                                          />
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                          <Label htmlFor={`high-label-${question.id}`}>
+                                            High Label ({question.ratingScale?.scale?.split('-')[1]})
+                                          </Label>
+                                          <Input
+                                            id={`high-label-${question.id}`}
+                                            value={question.ratingScale?.highLabel || ''}
+                                            onChange={(e) => 
+                                              updateQuestion(question.id, 'ratingScale', {
+                                                ...question.ratingScale,
+                                                highLabel: e.target.value
+                                              })
+                                            }
+                                            placeholder="e.g., Excellent"
+                                          />
+                                        </div>
+                                      </div>
                                     </div>
                                   )}
                                 </div>

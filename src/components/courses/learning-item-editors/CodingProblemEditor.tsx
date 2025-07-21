@@ -37,7 +37,12 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
       title: '',
       description: '',
       problemStatement: '',
-      testCases: [],
+      testCases: [{
+        id: `test-${Date.now()}`,
+        input: '',
+        expectedOutput: '',
+        isHidden: false
+      }],
       allowedLanguages: ['JavaScript', 'Python'],
       starterCode: '// Your code here'
     }
@@ -95,13 +100,22 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
     onSave(data);
   };
 
+  const customFooterContent = (
+    <>
+      <Button variant="outline" onClick={onCancel}>Cancel</Button>
+      <Button onClick={handleSubmit}>
+        {mode === 'create' ? 'Add Coding Problem' : 'Save Changes'}
+      </Button>
+    </>
+  );
+
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Coding Problem' : 'Edit Coding Problem'}
       type="coding"
       mode={mode}
       onSave={handleSubmit}
       onCancel={onCancel}
+      footerContent={customFooterContent}
       tabs={[
         {
           id: 'details',
@@ -150,8 +164,63 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
           label: 'Test Cases',
           content: (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex items-center">
                 <h3 className="text-lg font-medium">Test Cases ({data.testCases.length})</h3>
+              </div>
+              
+              <div className="space-y-6">
+                {data.testCases.map((testCase, index) => (
+                  <div key={testCase.id} className="border rounded-md p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="font-medium">Test Case {index + 1}</h4>
+                      <button
+                        type="button"
+                        className="text-sm text-destructive hover:underline"
+                        onClick={() => removeTestCase(testCase.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor={`input-${testCase.id}`}>Input</Label>
+                        <Textarea
+                          id={`input-${testCase.id}`}
+                          value={testCase.input}
+                          onChange={(e) => updateTestCase(testCase.id, 'input', e.target.value)}
+                          placeholder="Enter test case input"
+                          rows={2}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`output-${testCase.id}`}>Expected Output</Label>
+                        <Textarea
+                          id={`output-${testCase.id}`}
+                          value={testCase.expectedOutput}
+                          onChange={(e) => updateTestCase(testCase.id, 'expectedOutput', e.target.value)}
+                          placeholder="Enter expected output"
+                          rows={2}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`hidden-${testCase.id}`}
+                          checked={testCase.isHidden}
+                          onCheckedChange={(checked) => updateTestCase(testCase.id, 'isHidden', checked === true)}
+                        />
+                        <Label htmlFor={`hidden-${testCase.id}`} className="font-normal">
+                          Hidden test case (not visible to students)
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-center">
                 <button
                   type="button"
                   className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90"
@@ -160,64 +229,6 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
                   Add Test Case
                 </button>
               </div>
-              
-              {data.testCases.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No test cases added yet. Add a test case to get started.
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {data.testCases.map((testCase, index) => (
-                    <div key={testCase.id} className="border rounded-md p-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-medium">Test Case {index + 1}</h4>
-                        <button
-                          type="button"
-                          className="text-sm text-destructive hover:underline"
-                          onClick={() => removeTestCase(testCase.id)}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor={`input-${testCase.id}`}>Input</Label>
-                          <Textarea
-                            id={`input-${testCase.id}`}
-                            value={testCase.input}
-                            onChange={(e) => updateTestCase(testCase.id, 'input', e.target.value)}
-                            placeholder="Enter test case input"
-                            rows={2}
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor={`output-${testCase.id}`}>Expected Output</Label>
-                          <Textarea
-                            id={`output-${testCase.id}`}
-                            value={testCase.expectedOutput}
-                            onChange={(e) => updateTestCase(testCase.id, 'expectedOutput', e.target.value)}
-                            placeholder="Enter expected output"
-                            rows={2}
-                          />
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`hidden-${testCase.id}`}
-                            checked={testCase.isHidden}
-                            onCheckedChange={(checked) => updateTestCase(testCase.id, 'isHidden', checked === true)}
-                          />
-                          <Label htmlFor={`hidden-${testCase.id}`} className="font-normal">
-                            Hidden test case (not visible to students)
-                          </Label>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           ),
         },
