@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { BaseEditor } from './BaseEditor';
 import { Input } from '@/components/ui/input';

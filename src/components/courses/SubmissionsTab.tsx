@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+'use client'
+
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -9,11 +11,8 @@ import {
   ClipboardCheck,
   BookOpen
 } from 'lucide-react';
-import { BatchSelector } from './submissions/BatchSelector';
 import { ContentItemGrid } from './submissions/ContentItemGrid';
 import { StudentSubmissionsTable } from './submissions/StudentSubmissionsTable';
-import { Batch } from '@/types';
-import { mockBatches } from '@/types/mock-data';
 
 // Mock submission types
 const submissionTypes = [
@@ -30,27 +29,8 @@ interface SubmissionsTabProps {
 }
 
 const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
-  const [batches, setBatches] = useState<Batch[]>([]);
-  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [activeSubmissionType, setActiveSubmissionType] = useState('assessments');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Fetch batches for this course
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Filter batches for this course
-      const courseBatches = mockBatches.filter(batch => batch.courseId === courseId);
-      setBatches(courseBatches);
-      setIsLoading(false);
-    }, 500);
-  }, [courseId]);
-
-  const handleBatchSelect = (batchId: string) => {
-    setSelectedBatchId(batchId);
-    setSelectedItemId(null); // Reset selected item when batch changes
-  };
 
   const handleItemSelect = (itemId: string) => {
     setSelectedItemId(itemId);
@@ -60,33 +40,10 @@ const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
     setSelectedItemId(null);
   };
 
-  // If no batch is selected, show the batch selection screen
-  if (!selectedBatchId) {
-    return (
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold">Select a Batch to View Submissions</h2>
-        <BatchSelector 
-          batches={batches} 
-          onSelectBatch={handleBatchSelect} 
-          isLoading={isLoading}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">
-          Submissions for {batches.find(b => b.id === selectedBatchId)?.name}
-        </h2>
-        <BatchSelector 
-          batches={batches} 
-          selectedBatchId={selectedBatchId}
-          onSelectBatch={handleBatchSelect}
-          isCompact={true}
-          isLoading={isLoading}
-        />
+        <h2 className="text-xl font-semibold">Course Submissions</h2>
       </div>
 
       <Card>
@@ -114,13 +71,13 @@ const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
               <TabsContent key={type.id} value={type.id} className="p-4">
                 {!selectedItemId ? (
                   <ContentItemGrid 
-                    batchId={selectedBatchId}
+                    courseId={courseId}
                     submissionType={type.id}
                     onSelectItem={handleItemSelect}
                   />
                 ) : (
                   <StudentSubmissionsTable 
-                    batchId={selectedBatchId}
+                    courseId={courseId}
                     itemId={selectedItemId}
                     submissionType={type.id}
                     onBack={handleBackToItems}

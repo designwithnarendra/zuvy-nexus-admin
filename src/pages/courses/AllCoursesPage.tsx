@@ -1,6 +1,8 @@
 
+'use client'
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -177,7 +179,7 @@ const dummyCourses = [
 const AllCoursesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
-  const navigate = useNavigate();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -200,7 +202,7 @@ const AllCoursesPage = () => {
   });
 
   const handleCourseClick = (courseId: string) => {
-    navigate(`/courses/${courseId}`);
+    router.push(`/courses/${courseId}`);
   };
 
   const handleCreateCourse = () => {

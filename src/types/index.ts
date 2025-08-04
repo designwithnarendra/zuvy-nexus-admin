@@ -311,4 +311,86 @@ export type Submission =
   | CodingSubmission
   | AssessmentSubmission
   | ProjectSubmission
-  | FeedbackSubmission; 
+  | FeedbackSubmission;
+
+// ==========================================
+// Role-Based Access Control Types
+// ==========================================
+
+export type UserRole = 'Admin' | 'Ops' | 'Instructor';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  dateAdded: string; // ISO date string
+  status: 'active' | 'inactive' | 'pending';
+  avatar?: string;
+}
+
+export interface Role {
+  id: string;
+  name: UserRole;
+  description: string;
+  permissions: Permission[];
+  isSystem: boolean; // true for default roles, false for custom roles
+  color?: string;
+}
+
+export interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+}
+
+export interface RolePermission {
+  roleId: string;
+  permissionId: string;
+  allowed: boolean;
+}
+
+// Action types based on the reference image
+export type ActionType = 
+  | 'User/Role Management'
+  | 'Create/Edit Roles & Permissions'
+  | 'Assign/Revoke Roles'
+  | 'Access Review Reminders'
+  | 'Create & Schedule Assessments'
+  | 'View Analytics (Class Response)'
+  | 'Create/Edit Quizzes'
+  | 'View Individual student grades'
+  | 'Delete/Publish Courses'
+  | 'View Assigned Courses Only'
+  | 'Instructor Analytics'
+  | 'Student Onboarding'
+  | 'Request Technical Support (Self)';
+
+export interface Action {
+  id: string;
+  name: ActionType;
+  description: string;
+  category: 'User Management' | 'Content Management' | 'Analytics' | 'Operations' | 'Support';
+}
+
+export interface RoleActionPermission {
+  roleId: string;
+  actionId: string;
+  allowed: boolean;
+  scopeType?: 'full' | 'scoped' | 'none';
+  scopeDescription?: string;
+}
+
+// Invite functionality types
+export interface InviteLink {
+  id: string;
+  role: UserRole;
+  token: string;
+  expiresAt: string; // ISO date string
+  createdBy: string; // User ID
+  createdAt: string; // ISO date string
+  used: boolean;
+  usedBy?: string; // User ID who used the invite
+  usedAt?: string; // ISO date string
+} 

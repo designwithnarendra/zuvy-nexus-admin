@@ -1,0 +1,7 @@
+{
+  "/content-bank/page": "app/content-bank/page.js",
+  "/courses/page": "app/courses/page.js",
+  "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
+  "/settings/users/page": "app/settings/users/page.js",
+  "/settings/manage-roles/page": "app/settings/manage-roles/page.js"
+}

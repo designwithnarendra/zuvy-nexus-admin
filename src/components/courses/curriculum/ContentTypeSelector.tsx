@@ -1,16 +1,18 @@
 
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Calendar, Video, FileText, BookOpen, PlayCircle, MessageSquare, Code, ClipboardCheck } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AssessmentBuilderModal from '../assessment-builder/AssessmentBuilderModal';
-import LiveClassCreator from '../LiveClassCreator';
-import VideoCreator from '../VideoCreator';
-import ArticleCreator from '../ArticleCreator';
-import AssignmentCreator from '../AssignmentCreator';
-import QuizCreator from '../QuizCreator';
-import FeedbackFormCreator from '../FeedbackFormCreator';
-import CodingProblemCreator from '../CodingProblemCreator';
+import { LiveClassEditor } from '../learning-item-editors/LiveClassEditor';
+import { VideoEditor } from '../learning-item-editors/VideoEditor';
+import { ArticleEditor } from '../learning-item-editors/ArticleEditor';
+import { AssignmentEditor } from '../learning-item-editors/AssignmentEditor';
+import { QuizEditor } from '../learning-item-editors/QuizEditor';
+import { FeedbackFormEditor } from '../learning-item-editors/FeedbackFormEditor';
+import { CodingProblemEditor } from '../learning-item-editors/CodingProblemEditor';
 
 interface ContentTypeSelectorProps {
   onClose: () => void;
@@ -91,22 +93,139 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
     onClose();
   };
 
+  // Mock data for editors
+  const getInitialData = (type: string) => {
+    switch (type) {
+      case 'live-class':
+        return {
+          title: '',
+          description: '',
+          startDate: new Date(),
+          startTime: '10:00',
+          endTime: '11:00',
+          hostName: ''
+        };
+      case 'video':
+        return {
+          title: '',
+          description: '',
+          sourceType: 'youtube' as const,
+          url: '',
+          duration: 0
+        };
+      case 'article':
+        return {
+          title: '',
+          content: '',
+          contentType: 'rich-text' as const,
+          estimatedReadTime: 5
+        };
+      case 'assignment':
+        return {
+          title: '',
+          instructions: '',
+          allowedSubmissionTypes: ['file', 'text'] as ('file' | 'text')[],
+          dueDate: undefined
+        };
+      case 'quiz':
+        return {
+          title: '',
+          description: '',
+          questions: [],
+          timeLimit: undefined,
+          randomizeQuestions: false
+        };
+      case 'feedback-form':
+        return {
+          title: '',
+          questions: []
+        };
+      case 'coding-problem':
+        return {
+          title: '',
+          description: '',
+          problemStatement: '',
+          testCases: [{
+            id: `test-${Date.now()}`,
+            input: '',
+            expectedOutput: '',
+            isHidden: false
+          }],
+          allowedLanguages: ['JavaScript', 'Python'],
+          starterCode: '// Your code here'
+        };
+      default:
+        return {};
+    }
+  };
+
   const renderCreator = () => {
+    const initialData = getInitialData(creatorView || '');
+    
     switch (creatorView) {
       case 'live-class':
-        return <LiveClassCreator onSave={handleCreatorClose} />;
+        return (
+          <LiveClassEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'video':
-        return <VideoCreator onSave={handleCreatorClose} />;
+        return (
+          <VideoEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'article':
-        return <ArticleCreator onSave={handleCreatorClose} />;
+        return (
+          <ArticleEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'assignment':
-        return <AssignmentCreator onSave={handleCreatorClose} />;
+        return (
+          <AssignmentEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'quiz':
-        return <QuizCreator onSave={handleCreatorClose} />;
+        return (
+          <QuizEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'feedback-form':
-        return <FeedbackFormCreator onSave={handleCreatorClose} />;
+        return (
+          <FeedbackFormEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'coding-problem':
-        return <CodingProblemCreator onSave={handleCreatorClose} />;
+        return (
+          <CodingProblemEditor
+            mode="create"
+            initialData={initialData}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       default:
         return null;
     }
@@ -115,22 +234,7 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
   if (creatorView) {
     return (
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCreatorView(null)}
-              >
-                ← Back
-              </Button>
-              <DialogTitle className="font-heading text-xl">
-                Create {contentTypes.find(item => item.type === creatorView)?.title}
-              </DialogTitle>
-            </div>
-          </DialogHeader>
-          
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0">
           {renderCreator()}
         </DialogContent>
       </Dialog>

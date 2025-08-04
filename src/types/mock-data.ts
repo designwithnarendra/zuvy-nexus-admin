@@ -442,17 +442,25 @@ export const mockStudents: Student[] = [
 export const mockBatches: Batch[] = [
   {
     id: 'batch-1',
-    name: 'Web Dev Cohort 2024-A',
-    courseId: 'course-1',
+    name: 'Full Stack Batch 2024-A',
+    courseId: '1',
     status: 'ongoing',
     startDate: '2024-01-15T00:00:00Z',
     endDate: '2024-03-15T00:00:00Z'
   },
   {
     id: 'batch-2',
-    name: 'React Masters Cohort 2024-A',
-    courseId: 'course-2',
-    status: 'not_started',
+    name: 'Full Stack Batch 2024-B', 
+    courseId: '1',
+    status: 'ongoing',
+    startDate: '2024-02-01T00:00:00Z',
+    endDate: '2024-05-01T00:00:00Z'
+  },
+  {
+    id: 'batch-3',
+    name: 'Data Science Cohort 2024-A',
+    courseId: '2',
+    status: 'ongoing',
     startDate: '2024-02-01T00:00:00Z',
     endDate: '2024-04-15T00:00:00Z'
   }

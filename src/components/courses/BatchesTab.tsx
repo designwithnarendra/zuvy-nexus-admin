@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -7,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Users, Plus, Upload, Eye, UserCheck, Calendar, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface BatchesTabProps {
   courseId: string;
@@ -65,7 +67,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
     instructorEmail: '',
     capEnrollment: ''
   });
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const getStatusColor = (status: string) => {
     switch (status) {

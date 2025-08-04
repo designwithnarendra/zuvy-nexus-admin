@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Bot, ChevronDown, Eye, Edit, Trash2 } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 import MCQCreator from '@/components/courses/MCQCreator';
-import CodingProblemCreator from '@/components/courses/CodingProblemCreator';
+import { CodingProblemEditor } from '@/components/courses/learning-item-editors/CodingProblemEditor';
 import BulkUploadModal from '@/components/content-bank/BulkUploadModal';
 import AIGenerationModal from '@/components/content-bank/AIGenerationModal';
 import OpenEndedCreator from '@/components/courses/OpenEndedCreator';
@@ -184,7 +186,28 @@ const QuestionBankPage = () => {
       case 'MCQ':
         return <MCQCreator onSave={handleCreateQuestion} />;
       case 'Coding':
-        return <CodingProblemCreator onSave={handleCreateQuestion} />;
+        return (
+          <CodingProblemEditor
+            mode="create"
+            initialData={{
+              title: '',
+              description: '',
+              problemStatement: '',
+              testCases: [{
+                id: `test-${Date.now()}`,
+                input: '',
+                expectedOutput: '',
+                isHidden: false
+              }],
+              allowedLanguages: ['JavaScript', 'Python'],
+              starterCode: '// Your code here'
+            }}
+            onSave={(data) => {
+              handleCreateQuestion(data);
+            }}
+            onCancel={() => setIsCreateDialogOpen(false)}
+          />
+        );
       case 'Open Ended':
         return <OpenEndedCreator onSave={handleCreateQuestion} />;
       default:

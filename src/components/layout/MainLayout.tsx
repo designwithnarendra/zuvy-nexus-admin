@@ -1,7 +1,10 @@
+'use client'
+
 import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Layers, Database, LogOut } from 'lucide-react';
+import { LayoutDashboard, Layers, Database, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface MainLayoutProps {
@@ -9,26 +12,32 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const location = useLocation();
+  const pathname = usePathname();
   
   const navigationItems = [
     {
       name: 'Dashboard',
       href: '/',
       icon: LayoutDashboard,
-      active: location.pathname === '/'
+      active: pathname === '/'
     },
     {
       name: 'Course Studio',
       href: '/courses',
       icon: Layers,
-      active: location.pathname.startsWith('/courses')
+      active: pathname.startsWith('/courses')
     },
     {
       name: 'Content Bank',
       href: '/content-bank',
       icon: Database,
-      active: location.pathname.startsWith('/content-bank')
+      active: pathname.startsWith('/content-bank')
+    },
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: Settings,
+      active: pathname.startsWith('/settings')
     }
   ];
 
@@ -38,7 +47,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex h-16 items-center justify-between w-full px-6">
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center space-x-3">
+            <Link href="/" className="flex items-center space-x-3">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-heading font-bold text-lg">Z</span>
               </div>
@@ -51,7 +60,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 return (
                   <Link
                     key={item.name}
-                    to={item.href}
+                    href={item.href}
                     className={cn(
                       "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
                       item.active

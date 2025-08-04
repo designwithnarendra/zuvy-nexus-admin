@@ -1,6 +1,9 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Table, 
   TableBody, 
@@ -49,6 +52,7 @@ import {
 } from '@/types';
 import { 
   mockStudents, 
+  mockBatches,
   mockAssignmentSubmissions, 
   mockQuizSubmissions, 
   mockCodingSubmissions, 
@@ -64,20 +68,22 @@ import {
 } from '@/types/mock-data';
 
 interface StudentSubmissionsTableProps {
-  batchId: string;
+  courseId: string;
   itemId: string;
   submissionType: string;
   onBack: () => void;
 }
 
 export const StudentSubmissionsTable = ({ 
-  batchId, 
+  courseId, 
   itemId, 
   submissionType, 
   onBack 
 }: StudentSubmissionsTableProps) => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+  const [batches, setBatches] = useState<any[]>([]);
+  const [selectedBatch, setSelectedBatch] = useState<string>('all');
   const [item, setItem] = useState<LearningItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewSubmission, setViewSubmission] = useState<Submission | null>(null);
@@ -123,16 +129,21 @@ export const StudentSubmissionsTable = ({
       // Filter submissions for this item
       const itemSubmissions = allSubmissions.filter(sub => sub.itemId === itemId);
       
-      // Get students
-      const studentIds = itemSubmissions.map(sub => sub.studentId);
-      const relevantStudents = mockStudents.filter(s => studentIds.includes(s.id));
+      // Get students from all batches for this course
+      const courseBatches = mockBatches.filter(batch => batch.courseId === courseId);
+      const allStudentsInCourse = mockStudents; // For now, using all students
       
+      // Get students who have submissions for this item
+      const studentIds = itemSubmissions.map(sub => sub.studentId);
+      const relevantStudents = allStudentsInCourse.filter(s => studentIds.includes(s.id));
+      
+      setBatches(courseBatches);
       setItem(contentItem);
       setSubmissions(itemSubmissions);
       setStudents(relevantStudents);
       setIsLoading(false);
     }, 500);
-  }, [batchId, itemId, submissionType]);
+  }, [courseId, itemId, submissionType]);
 
   const handleViewSubmission = (submission: Submission) => {
     setViewSubmission(submission);
@@ -149,6 +160,19 @@ export const StudentSubmissionsTable = ({
       )
     );
   };
+
+  // Filter submissions and students based on selected batch
+  const getFilteredData = () => {
+    if (selectedBatch === 'all') {
+      return { filteredSubmissions: submissions, filteredStudents: students };
+    }
+    
+    // For now, we'll show all since we don't have batch assignments in mock data
+    // In a real app, students would have batchId and we'd filter by it
+    return { filteredSubmissions: submissions, filteredStudents: students };
+  };
+
+  const { filteredSubmissions, filteredStudents } = getFilteredData();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -489,6 +513,7 @@ export const StudentSubmissionsTable = ({
   const getColumns = () => {
     const baseColumns = [
       { header: 'Student', accessor: 'studentId' },
+      { header: 'Batch', accessor: 'batch' },
       { header: 'Submission Date', accessor: 'submissionDate' },
     ];
     
@@ -538,10 +563,30 @@ export const StudentSubmissionsTable = ({
       
       <Card>
         <CardHeader>
-          <CardTitle>{item.title} - Student Submissions</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>{item.title} - Student Submissions</CardTitle>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                {filteredSubmissions.length} submissions
+              </div>
+              <Select value={selectedBatch} onValueChange={setSelectedBatch}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filter by batch" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Batches</SelectItem>
+                  {batches.map((batch) => (
+                    <SelectItem key={batch.id} value={batch.id}>
+                      {batch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          {submissions.length === 0 ? (
+          {filteredSubmissions.length === 0 ? (
             <div className="text-center p-4 text-muted-foreground">
               No submissions found for this item.
             </div>
@@ -555,7 +600,7 @@ export const StudentSubmissionsTable = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {submissions.map((submission) => (
+                {filteredSubmissions.map((submission) => (
                   <TableRow key={submission.id}>
                     {columns.map((column) => {
                       if (column.accessor === 'studentId') {
@@ -573,6 +618,16 @@ export const StudentSubmissionsTable = ({
                         return (
                           <TableCell key={column.accessor}>
                             {formatDate(submission.submissionDate)}
+                          </TableCell>
+                        );
+                      }
+                      
+                      if (column.accessor === 'batch') {
+                        return (
+                          <TableCell key={column.accessor}>
+                            <Badge variant="outline">
+                              Batch 1
+                            </Badge>
                           </TableCell>
                         );
                       }
