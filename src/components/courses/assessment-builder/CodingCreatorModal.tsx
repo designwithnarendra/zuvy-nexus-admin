@@ -127,7 +127,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="problem-title">Problem Title *</Label>
+                <Label htmlFor="problem-title" className="font-semibold">Problem Title *</Label>
                 <Input
                   id="problem-title"
                   placeholder="e.g., Two Sum, Reverse Linked List"
@@ -137,7 +137,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="problem-description">Problem Description *</Label>
+                <Label htmlFor="problem-description" className="font-semibold">Problem Description *</Label>
                 <Textarea
                   id="problem-description"
                   placeholder="Describe the problem, including constraints and examples..."
@@ -149,7 +149,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Topic *</Label>
+                  <Label className="font-semibold">Topic *</Label>
                   {isCreatingTopic ? (
                     <Input
                       placeholder="Enter new topic and press Enter"
@@ -181,7 +181,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Difficulty *</Label>
+                  <Label className="font-semibold">Difficulty *</Label>
                   <Select value={problemData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty" />
@@ -199,7 +199,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="points">Points</Label>
+                  <Label htmlFor="points" className="font-semibold">Points</Label>
                   <Input
                     id="points"
                     type="number"
@@ -210,7 +210,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="time-limit">Time Limit (seconds)</Label>
+                  <Label htmlFor="time-limit" className="font-semibold">Time Limit (seconds)</Label>
                   <Input
                     id="time-limit"
                     type="number"
@@ -221,7 +221,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="memory-limit">Memory Limit (MB)</Label>
+                  <Label htmlFor="memory-limit" className="font-semibold">Memory Limit (MB)</Label>
                   <Input
                     id="memory-limit"
                     type="number"
@@ -233,7 +233,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
               </div>
 
               <div className="space-y-2">
-                <Label>Programming Language</Label>
+                <Label className="font-semibold">Programming Language</Label>
                 <Select value={problemData.language} onValueChange={(value) => handleInputChange('language', value)}>
                   <SelectTrigger className="w-[200px]">
                     <SelectValue />
@@ -303,7 +303,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
                               
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label className="text-xs">Input</Label>
+                                  <Label className="text-xs font-semibold">Input</Label>
                                   <Textarea
                                     placeholder="Enter test input..."
                                     value={testCase.input}
@@ -312,7 +312,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label className="text-xs">Expected Output</Label>
+                                  <Label className="text-xs font-semibold">Expected Output</Label>
                                   <Textarea
                                     placeholder="Enter expected output..."
                                     value={testCase.expectedOutput}

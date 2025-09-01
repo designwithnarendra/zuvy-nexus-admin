@@ -197,7 +197,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
     >
       <div className="space-y-8">
         <div className="space-y-2">
-          <Label htmlFor="title">Form Title</Label>
+          <Label htmlFor="title" className="font-semibold">Form Title</Label>
           <Input
             id="title"
             value={data.title}
@@ -264,7 +264,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                 <div className="space-y-4">
                                   <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                      <Label htmlFor={`question-type-${question.id}`}>Question Type</Label>
+                                      <Label htmlFor={`question-type-${question.id}`} className="font-semibold">Question Type</Label>
                                       <Select
                                         value={question.type}
                                         onValueChange={(value) => updateQuestion(question.id, 'type', value)}
@@ -284,7 +284,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                     
                                     <div className="space-y-2">
                                       <div className="flex items-center justify-between">
-                                        <Label htmlFor={`question-required-${question.id}`}>Required</Label>
+                                        <Label htmlFor={`question-required-${question.id}`} className="font-semibold">Required</Label>
                                         <input
                                           id={`question-required-${question.id}`}
                                           type="checkbox"
@@ -297,7 +297,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                   </div>
                                   
                                   <div className="space-y-2">
-                                    <Label htmlFor={`question-text-${question.id}`}>Question Text</Label>
+                                    <Label htmlFor={`question-text-${question.id}`} className="font-semibold">Question Text</Label>
                                     <Input
                                       id={`question-text-${question.id}`}
                                       value={question.text}
@@ -358,7 +358,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                   {question.type === 'rating' && (
                                     <div className="space-y-4">
                                       <div className="space-y-2">
-                                        <Label htmlFor={`rating-scale-${question.id}`}>Rating Scale</Label>
+                                        <Label htmlFor={`rating-scale-${question.id}`} className="font-semibold">Rating Scale</Label>
                                         <Select
                                           value={question.ratingScale?.scale || '1-5'}
                                           onValueChange={(value) => 
@@ -381,7 +381,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                       
                                       <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
-                                          <Label htmlFor={`low-label-${question.id}`}>Low Label (1)</Label>
+                                          <Label htmlFor={`low-label-${question.id}`} className="font-semibold">Low Label (1)</Label>
                                           <Input
                                             id={`low-label-${question.id}`}
                                             value={question.ratingScale?.lowLabel || ''}
@@ -396,7 +396,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                         </div>
                                         
                                         <div className="space-y-2">
-                                          <Label htmlFor={`mid-label-${question.id}`}>
+                                          <Label htmlFor={`mid-label-${question.id}`} className="font-semibold">
                                             Middle Label ({question.ratingScale?.scale === '1-5' ? '3' : 
                                                           question.ratingScale?.scale === '1-7' ? '4' : '5'})
                                           </Label>
@@ -414,7 +414,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
                                         </div>
                                         
                                         <div className="space-y-2">
-                                          <Label htmlFor={`high-label-${question.id}`}>
+                                          <Label htmlFor={`high-label-${question.id}`} className="font-semibold">
                                             High Label ({question.ratingScale?.scale?.split('-')[1]})
                                           </Label>
                                           <Input

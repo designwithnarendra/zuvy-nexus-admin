@@ -49,36 +49,34 @@ const UserInviteSection = ({ onInviteGenerated }: UserInviteSectionProps) => {
     <div className="space-y-6">
       {/* Invite Users Section */}
       <div className="bg-card rounded-lg border p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
+        <div className="flex items-start justify-between gap-12">
+          <div className="space-y-2 flex-1">
             <h2 className="text-xl font-semibold tracking-tight">Invite Users via Link</h2>
             <p className="text-muted-foreground">
               Generated invite links will be automatically copied to your clipboard. Share them with the intended users who will be automatically assigned the selected role upon signup.
             </p>
           </div>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
-          <Button
-            onClick={() => generateInviteLink('Ops')}
-            disabled={isGeneratingOps}
-            className="flex items-center space-x-2"
-            size="lg"
-          >
-            <Users className="h-4 w-4" />
-            <span>{isGeneratingOps ? 'Generating...' : 'Invite Ops'}</span>
-          </Button>
           
-          <Button
-            variant="secondary"
-            onClick={() => generateInviteLink('Instructor')}
-            disabled={isGeneratingInstructor}
-            className="flex items-center space-x-2"
-            size="lg"
-          >
-            <GraduationCap className="h-4 w-4" />
-            <span>{isGeneratingInstructor ? 'Generating...' : 'Invite Instructors'}</span>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+            <Button
+              onClick={() => generateInviteLink('Ops')}
+              disabled={isGeneratingOps}
+              className="flex items-center space-x-2 h-12 px-8"
+            >
+              <Users className="h-4 w-4" />
+              <span>{isGeneratingOps ? 'Generating...' : 'Invite Ops'}</span>
+            </Button>
+            
+            <Button
+              variant="secondary"
+              onClick={() => generateInviteLink('Instructor')}
+              disabled={isGeneratingInstructor}
+              className="flex items-center space-x-2 h-12 px-8"
+            >
+              <GraduationCap className="h-4 w-4" />
+              <span>{isGeneratingInstructor ? 'Generating...' : 'Invite Instructors'}</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

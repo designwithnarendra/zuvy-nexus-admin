@@ -140,7 +140,7 @@ const StudentBulkUploadModal = ({
             
             <TabsContent value="file" className="space-y-4 pt-4">
               <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="file-upload">Upload File</Label>
+                <Label htmlFor="file-upload" className="font-semibold">Upload File</Label>
                 <Input
                   id="file-upload"
                   type="file"
@@ -162,7 +162,7 @@ const StudentBulkUploadModal = ({
             
             <TabsContent value="url" className="space-y-4 pt-4">
               <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="sheet-url">Google Sheets URL</Label>
+                <Label htmlFor="sheet-url" className="font-semibold">Google Sheets URL</Label>
                 <Input
                   id="sheet-url"
                   type="url"
@@ -178,7 +178,7 @@ const StudentBulkUploadModal = ({
           </Tabs>
           
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="file-type">File Type</Label>
+            <Label htmlFor="file-type" className="font-semibold">File Type</Label>
             <Select value={fileType} onValueChange={(value) => setFileType(value as 'csv' | 'excel' | 'sheets')}>
               <SelectTrigger id="file-type">
                 <SelectValue placeholder="Select file type" />
@@ -192,7 +192,7 @@ const StudentBulkUploadModal = ({
           </div>
           
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="batch">Assign to Batch (Optional)</Label>
+            <Label htmlFor="batch" className="font-semibold">Assign to Batch (Optional)</Label>
             <Select value={selectedBatchId} onValueChange={setSelectedBatchId}>
               <SelectTrigger id="batch">
                 <SelectValue placeholder="Select a batch" />

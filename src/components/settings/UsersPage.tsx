@@ -170,7 +170,7 @@ const UsersPage = () => {
               <div className="space-y-6 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Name *</Label>
+                    <Label htmlFor="name" className="font-semibold">Name *</Label>
                     <Input
                       id="name"
                       value={newUser.name}
@@ -180,7 +180,7 @@ const UsersPage = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="font-semibold">Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -192,7 +192,7 @@ const UsersPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>Select Role *</Label>
+                  <Label className="font-semibold">Select Role *</Label>
                   <RoleSelector
                     selectedRole={newUser.role || undefined}
                     onRoleSelect={(role) => setNewUser(prev => ({ ...prev, role }))}
@@ -319,7 +319,7 @@ const UsersPage = () => {
             <div className="space-y-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="editName">Name *</Label>
+                  <Label htmlFor="editName" className="font-semibold">Name *</Label>
                   <Input
                     id="editName"
                     value={editingUser?.name || ''}
@@ -329,7 +329,7 @@ const UsersPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="editEmail">Email *</Label>
+                  <Label htmlFor="editEmail" className="font-semibold">Email *</Label>
                   <Input
                     id="editEmail"
                     type="email"
@@ -341,7 +341,7 @@ const UsersPage = () => {
               </div>
               
               <div className="space-y-2">
-                <Label>Select Role *</Label>
+                <Label className="font-semibold">Select Role *</Label>
                 <RoleSelector
                   selectedRole={editingUser?.role}
                   onRoleSelect={(role) => setEditingUser(prev => prev ? { ...prev, role } : null)}

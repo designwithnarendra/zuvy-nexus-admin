@@ -31,7 +31,7 @@ const ProblemDetailsForm = ({ data, onDataChange }: ProblemDetailsFormProps) => 
   return (
     <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="problem-title">Problem Title *</Label>
+          <Label htmlFor="problem-title" className="font-semibold">Problem Title *</Label>
           <Input
             id="problem-title"
             placeholder="e.g., Two Sum, Reverse Linked List"
@@ -41,7 +41,7 @@ const ProblemDetailsForm = ({ data, onDataChange }: ProblemDetailsFormProps) => 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="problem-description">Problem Description *</Label>
+          <Label htmlFor="problem-description" className="font-semibold">Problem Description *</Label>
           <Textarea
             id="problem-description"
             placeholder="Describe the problem, including constraints and examples..."
@@ -53,7 +53,7 @@ const ProblemDetailsForm = ({ data, onDataChange }: ProblemDetailsFormProps) => 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Topic *</Label>
+            <Label className="font-semibold">Topic *</Label>
             <Select value={data.topic} onValueChange={(value) => onDataChange('topic', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Search or select topic" />
@@ -69,7 +69,7 @@ const ProblemDetailsForm = ({ data, onDataChange }: ProblemDetailsFormProps) => 
           </div>
 
           <div className="space-y-2">
-            <Label>Difficulty *</Label>
+            <Label className="font-semibold">Difficulty *</Label>
             <Select value={data.difficulty} onValueChange={(value) => onDataChange('difficulty', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select difficulty" />
@@ -87,7 +87,7 @@ const ProblemDetailsForm = ({ data, onDataChange }: ProblemDetailsFormProps) => 
 
 
         <div className="space-y-2">
-          <Label>Programming Language</Label>
+          <Label className="font-semibold">Programming Language</Label>
           <Select value={data.language} onValueChange={(value) => onDataChange('language', value)}>
             <SelectTrigger className="w-[200px]">
               <SelectValue />

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   FileText, 
@@ -46,48 +45,44 @@ const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
         <h2 className="text-xl font-semibold">Course Submissions</h2>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <Tabs 
-            value={activeSubmissionType} 
-            onValueChange={setActiveSubmissionType}
-            className="w-full"
-          >
-            <TabsList className="w-full grid border-b rounded-none bg-card" 
-              style={{ gridTemplateColumns: `repeat(${submissionTypes.length}, 1fr)` }}>
-              {submissionTypes.map(type => (
-                <TabsTrigger 
-                  key={type.id} 
-                  value={type.id}
-                  className="flex items-center gap-2 data-[state=active]:bg-background rounded-none border-b-2 border-b-transparent data-[state=active]:border-b-primary"
-                >
-                  <type.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{type.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+      <Tabs 
+        value={activeSubmissionType} 
+        onValueChange={setActiveSubmissionType}
+        className="w-full"
+      >
+        <TabsList className="grid w-full rounded-none border-b bg-transparent p-0 h-auto" 
+          style={{ gridTemplateColumns: `repeat(${submissionTypes.length}, 1fr)` }}>
+          {submissionTypes.map(type => (
+            <TabsTrigger 
+              key={type.id} 
+              value={type.id}
+              className="flex items-center gap-2 rounded-none border-b-2 border-b-transparent bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
+            >
+              <type.icon className="h-4 w-4" />
+              <span className="hidden sm:inline">{type.label}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-            {submissionTypes.map(type => (
-              <TabsContent key={type.id} value={type.id} className="p-4">
-                {!selectedItemId ? (
-                  <ContentItemGrid 
-                    courseId={courseId}
-                    submissionType={type.id}
-                    onSelectItem={handleItemSelect}
-                  />
-                ) : (
-                  <StudentSubmissionsTable 
-                    courseId={courseId}
-                    itemId={selectedItemId}
-                    submissionType={type.id}
-                    onBack={handleBackToItems}
-                  />
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-      </Card>
+        {submissionTypes.map(type => (
+          <TabsContent key={type.id} value={type.id} className="mt-6">
+            {!selectedItemId ? (
+              <ContentItemGrid 
+                courseId={courseId}
+                submissionType={type.id}
+                onSelectItem={handleItemSelect}
+              />
+            ) : (
+              <StudentSubmissionsTable 
+                courseId={courseId}
+                itemId={selectedItemId}
+                submissionType={type.id}
+                onBack={handleBackToItems}
+              />
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };

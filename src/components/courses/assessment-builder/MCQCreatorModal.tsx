@@ -127,7 +127,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="question-title">Question Title *</Label>
+                <Label htmlFor="question-title" className="font-semibold">Question Title *</Label>
                 <Textarea
                   id="question-title"
                   placeholder="Enter your question..."
@@ -138,7 +138,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
+                <Label htmlFor="description" className="font-semibold">Description (Optional)</Label>
                 <Textarea
                   id="description"
                   placeholder="Add context or additional information..."
@@ -150,7 +150,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Topic *</Label>
+                  <Label className="font-semibold">Topic *</Label>
                   {isCreatingTopic ? (
                     <Input
                       placeholder="Enter new topic and press Enter"
@@ -182,7 +182,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Difficulty *</Label>
+                  <Label className="font-semibold">Difficulty *</Label>
                   <Select value={questionData.difficulty || undefined} onValueChange={(value) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty" />
@@ -200,7 +200,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="points">Points</Label>
+                  <Label htmlFor="points" className="font-semibold">Points</Label>
                   <Input
                     id="points"
                     type="number"
@@ -211,7 +211,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="time-limit">Time Limit (seconds)</Label>
+                  <Label htmlFor="time-limit" className="font-semibold">Time Limit (seconds)</Label>
                   <Input
                     id="time-limit"
                     type="number"
@@ -228,7 +228,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-base font-medium">Answer Options *</Label>
+                  <Label className="text-base font-medium font-semibold">Answer Options *</Label>
                   <Button variant="outline" size="sm" onClick={addOption}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Option
@@ -243,7 +243,7 @@ const MCQCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsCrea
                           checked={option.isCorrect}
                           onCheckedChange={(checked) => handleCorrectChange(option.id, checked as boolean)}
                         />
-                        <Label className="text-sm text-muted-foreground">
+                        <Label className="text-sm text-muted-foreground font-semibold">
                           Correct
                         </Label>
                       </div>

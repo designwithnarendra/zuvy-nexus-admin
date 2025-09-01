@@ -119,10 +119,6 @@ const SingleCoursePage = () => {
             {course.status}
           </Badge>
         </div>
-        
-        <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
-          {course.description}
-        </p>
       </div>
 
       {/* Course Management Tabs */}

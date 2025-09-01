@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Bot, ChevronDown, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Settings, ChevronDown, Eye, Edit, Trash2 } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
-import MCQCreator from '@/components/courses/MCQCreator';
 import { CodingProblemEditor } from '@/components/courses/learning-item-editors/CodingProblemEditor';
 import BulkUploadModal from '@/components/content-bank/BulkUploadModal';
-import AIGenerationModal from '@/components/content-bank/AIGenerationModal';
-import OpenEndedCreator from '@/components/courses/OpenEndedCreator';
+import ManageTopicsModal from '@/components/content-bank/ManageTopicsModal';
+import OpenEndedCreatorModal from '@/components/content-bank/OpenEndedCreatorModal';
+import MCQCreatorModal from '@/components/content-bank/MCQCreatorModal';
 
 interface Question {
   id: string;
@@ -27,7 +27,9 @@ interface Question {
 const QuestionBankPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
-  const [isAIGenerationOpen, setIsAIGenerationOpen] = useState(false);
+  const [isManageTopicsOpen, setIsManageTopicsOpen] = useState(false);
+  const [isOpenEndedModalOpen, setIsOpenEndedModalOpen] = useState(false);
+  const [isMCQModalOpen, setIsMCQModalOpen] = useState(false);
   const [createType, setCreateType] = useState<'MCQ' | 'Coding' | 'Open Ended'>('MCQ');
 
   // Expanded questions data with 30+ items
@@ -162,8 +164,14 @@ const QuestionBankPage = () => {
   };
 
   const handleCreateTypeSelect = (type: 'MCQ' | 'Coding' | 'Open Ended') => {
-    setCreateType(type);
-    setIsCreateDialogOpen(true);
+    if (type === 'Open Ended') {
+      setIsOpenEndedModalOpen(true);
+    } else if (type === 'MCQ') {
+      setIsMCQModalOpen(true);
+    } else {
+      setCreateType(type);
+      setIsCreateDialogOpen(true);
+    }
   };
 
   const handlePreviewQuestion = (questionId: string) => {
@@ -183,33 +191,34 @@ const QuestionBankPage = () => {
 
   const renderQuestionCreator = () => {
     switch (createType) {
-      case 'MCQ':
-        return <MCQCreator onSave={handleCreateQuestion} />;
       case 'Coding':
         return (
           <CodingProblemEditor
             mode="create"
             initialData={{
               title: '',
-              description: '',
               problemStatement: '',
+              constraints: '',
+              difficulty: '',
+              topic: '',
               testCases: [{
                 id: `test-${Date.now()}`,
-                input: '',
+                inputs: [{
+                  id: `input-${Date.now()}`,
+                  type: 'int',
+                  value: ''
+                }],
+                outputType: 'int',
                 expectedOutput: '',
                 isHidden: false
-              }],
-              allowedLanguages: ['JavaScript', 'Python'],
-              starterCode: '// Your code here'
+              }]
             }}
             onSave={(data) => {
-              handleCreateQuestion(data);
+              handleCreateQuestion();
             }}
             onCancel={() => setIsCreateDialogOpen(false)}
           />
         );
-      case 'Open Ended':
-        return <OpenEndedCreator onSave={handleCreateQuestion} />;
       default:
         return null;
     }
@@ -229,11 +238,11 @@ const QuestionBankPage = () => {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={() => setIsAIGenerationOpen(true)}
+            onClick={() => setIsManageTopicsOpen(true)}
             className="shadow-4dp"
           >
-            <Bot className="h-4 w-4 mr-2" />
-            Generate with AI
+            <Settings className="h-4 w-4 mr-2" />
+            Manage Topics
           </Button>
           
           <DropdownMenu>
@@ -290,9 +299,19 @@ const QuestionBankPage = () => {
         onClose={() => setIsBulkUploadOpen(false)}
       />
       
-      <AIGenerationModal
-        isOpen={isAIGenerationOpen}
-        onClose={() => setIsAIGenerationOpen(false)}
+      <ManageTopicsModal
+        isOpen={isManageTopicsOpen}
+        onClose={() => setIsManageTopicsOpen(false)}
+      />
+      
+      <OpenEndedCreatorModal
+        isOpen={isOpenEndedModalOpen}
+        onClose={() => setIsOpenEndedModalOpen(false)}
+      />
+      
+      <MCQCreatorModal
+        isOpen={isMCQModalOpen}
+        onClose={() => setIsMCQModalOpen(false)}
       />
     </div>
   );

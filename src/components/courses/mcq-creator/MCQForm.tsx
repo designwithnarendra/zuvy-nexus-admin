@@ -24,7 +24,7 @@ const MCQForm = ({ data, onDataChange }: MCQFormProps) => {
   return (
     <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="question-title">Question Title *</Label>
+          <Label htmlFor="question-title" className="font-semibold">Question Title *</Label>
           <Textarea
             id="question-title"
             placeholder="Enter your question..."
@@ -35,7 +35,7 @@ const MCQForm = ({ data, onDataChange }: MCQFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description (Optional)</Label>
+          <Label htmlFor="description" className="font-semibold">Description (Optional)</Label>
           <Textarea
             id="description"
             placeholder="Add context or additional information..."
@@ -47,7 +47,7 @@ const MCQForm = ({ data, onDataChange }: MCQFormProps) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Topic *</Label>
+            <Label className="font-semibold">Topic *</Label>
             <Select value={data.topic} onValueChange={(value) => onDataChange('topic', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Search or select topic" />
@@ -63,7 +63,7 @@ const MCQForm = ({ data, onDataChange }: MCQFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label>Difficulty *</Label>
+            <Label className="font-semibold">Difficulty *</Label>
             <Select value={data.difficulty} onValueChange={(value) => onDataChange('difficulty', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select difficulty" />

@@ -153,7 +153,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
           content: (
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="font-semibold">Title</Label>
                 <Input
                   id="title"
                   value={data.title}
@@ -163,7 +163,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="font-semibold">Description</Label>
                 <Textarea
                   id="description"
                   value={data.description}
@@ -224,7 +224,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
                       <div className="space-y-4">
                         {/* Question Text */}
                         <div className="space-y-2">
-                          <Label htmlFor={`question-${question.id}`}>Question</Label>
+                          <Label htmlFor={`question-${question.id}`} className="font-semibold">Question</Label>
                           <Textarea
                             id={`question-${question.id}`}
                             value={question.text}
@@ -290,7 +290,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
           content: (
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
+                <Label htmlFor="timeLimit" className="font-semibold">Time Limit (minutes)</Label>
                 <Input
                   id="timeLimit"
                   type="number"
@@ -303,7 +303,7 @@ export function QuizEditor({ initialData, onSave, onCancel, mode }: QuizEditorPr
               
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="randomize">Randomize Question Order</Label>
+                  <Label htmlFor="randomize" className="font-semibold">Randomize Question Order</Label>
                   <p className="text-sm text-muted-foreground">
                     Questions will be presented in a random order to each student
                   </p>

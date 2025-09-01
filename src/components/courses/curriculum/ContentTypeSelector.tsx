@@ -160,68 +160,73 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
   };
 
   const renderCreator = () => {
-    const initialData = getInitialData(creatorView || '');
-    
     switch (creatorView) {
       case 'live-class':
+        const liveClassData = getInitialData('live-class');
         return (
           <LiveClassEditor
             mode="create"
-            initialData={initialData}
+            initialData={liveClassData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'video':
+        const videoData = getInitialData('video');
         return (
           <VideoEditor
             mode="create"
-            initialData={initialData}
+            initialData={videoData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'article':
+        const articleData = getInitialData('article');
         return (
           <ArticleEditor
             mode="create"
-            initialData={initialData}
+            initialData={articleData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'assignment':
+        const assignmentData = getInitialData('assignment');
         return (
           <AssignmentEditor
             mode="create"
-            initialData={initialData}
+            initialData={assignmentData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'quiz':
+        const quizData = getInitialData('quiz');
         return (
           <QuizEditor
             mode="create"
-            initialData={initialData}
+            initialData={quizData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'feedback-form':
+        const feedbackData = getInitialData('feedback-form');
         return (
           <FeedbackFormEditor
             mode="create"
-            initialData={initialData}
+            initialData={feedbackData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
         );
       case 'coding-problem':
+        const codingData = getInitialData('coding-problem');
         return (
           <CodingProblemEditor
             mode="create"
-            initialData={initialData}
+            initialData={codingData as any}
             onSave={handleCreatorClose}
             onCancel={handleCreatorClose}
           />
@@ -243,7 +248,7 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
 
   return (
     <>
-      <div className="mt-4 p-4 border rounded-lg bg-muted/20">
+      <div className="mt-4">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-medium">Add Learning Content</h4>
           <Button

@@ -22,7 +22,7 @@ const dummyCourses = [
     learnerCount: 124,
     duration: '12 weeks',
     topic: 'Web Development',
-    status: 'published' as const,
+    status: 'ongoing' as const,
     tags: ['JavaScript', 'React', 'Node.js'],
     imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop'
   },
@@ -75,7 +75,7 @@ const dummyCourses = [
     learnerCount: 78,
     duration: '5 weeks',
     topic: 'Programming',
-    status: 'published' as const,
+    status: 'ongoing' as const,
     tags: ['JavaScript', 'Advanced', 'ES6+'],
     imageUrl: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=225&fit=crop'
   },
@@ -265,6 +265,7 @@ const AllCoursesPage = () => {
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="published">Published</SelectItem>
+              <SelectItem value="ongoing">Ongoing</SelectItem>
               <SelectItem value="draft">Draft</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="archived">Archived</SelectItem>
@@ -358,7 +359,7 @@ const AllCoursesPage = () => {
           
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Course Name *</Label>
+              <Label htmlFor="title" className="font-semibold">Course Name *</Label>
               <Input
                 id="title"
                 value={newCourse.title}
@@ -368,7 +369,7 @@ const AllCoursesPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Course Description *</Label>
+              <Label htmlFor="description" className="font-semibold">Course Description *</Label>
               <Textarea
                 id="description"
                 value={newCourse.description}
@@ -379,7 +380,7 @@ const AllCoursesPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (weeks) *</Label>
+              <Label htmlFor="duration" className="font-semibold">Duration (weeks) *</Label>
               <Input
                 id="duration"
                 value={newCourse.duration}

@@ -94,7 +94,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
     >
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title" className="font-semibold">Title</Label>
           <Input
             id="title"
             value={data.title}
@@ -104,7 +104,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="instructions">Instructions</Label>
+          <Label htmlFor="instructions" className="font-semibold">Instructions</Label>
           <Textarea
             id="instructions"
             value={data.instructions}
@@ -115,7 +115,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
         </div>
         
         <div className="space-y-2">
-          <Label>Upload Instructions (PDF)</Label>
+          <Label className="font-semibold">Upload Instructions (PDF)</Label>
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <div className="border rounded-md p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors">
@@ -154,7 +154,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
         </div>
         
         <div className="space-y-2">
-          <Label>Allowed Submission Types</Label>
+          <Label className="font-semibold">Allowed Submission Types</Label>
           <div className="flex flex-col gap-2">
             <div className="flex items-center space-x-2">
               <Checkbox 
@@ -162,7 +162,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
                 checked={data.allowedSubmissionTypes.includes('file')}
                 onCheckedChange={(checked) => handleSubmissionTypeChange('file', checked === true)}
               />
-              <Label htmlFor="file-submission" className="font-normal">
+              <Label htmlFor="file-submission" className="font-normal font-semibold">
                 File Upload
               </Label>
             </div>
@@ -172,7 +172,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
                 checked={data.allowedSubmissionTypes.includes('text')}
                 onCheckedChange={(checked) => handleSubmissionTypeChange('text', checked === true)}
               />
-              <Label htmlFor="text-submission" className="font-normal">
+              <Label htmlFor="text-submission" className="font-normal font-semibold">
                 Text Response
               </Label>
             </div>
@@ -180,7 +180,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="dueDate">Due Date</Label>
+          <Label htmlFor="dueDate" className="font-semibold">Due Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -147,19 +147,37 @@ const PermissionsMatrix = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {actions.map((action) => (
-              <TableRow key={action.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium max-w-xs">
-                  <div>
-                    <div className="font-medium">{action.name}</div>
-                  </div>
-                </TableCell>
-                {roles.filter(role => role.name === 'Ops' || role.name === 'Instructor').map((role) => (
-                  <TableCell key={role.id} className="text-center">
-                    {renderPermissionCell(role.id, action.id)}
+            {Object.entries(groupedActions).map(([category, categoryActions]) => (
+              <React.Fragment key={category}>
+                {/* Category Header Row */}
+                <TableRow key={`category-${category}`} className={cn("", getCategoryColor(category))}>
+                  <TableCell colSpan={3} className="font-semibold text-sm py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-current opacity-60"></div>
+                      {category}
+                      <span className="text-xs text-muted-foreground font-normal">
+                        ({categoryActions.length} action{categoryActions.length > 1 ? 's' : ''})
+                      </span>
+                    </div>
                   </TableCell>
+                </TableRow>
+                {/* Actions in this category */}
+                {categoryActions.map((action) => (
+                  <TableRow key={action.id} className="hover:bg-muted/50">
+                    <TableCell className="font-medium max-w-xs pl-8">
+                      <div>
+                        <div className="font-medium">{action.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{action.description}</div>
+                      </div>
+                    </TableCell>
+                    {roles.filter(role => role.name === 'Ops' || role.name === 'Instructor').map((role) => (
+                      <TableCell key={role.id} className="text-center">
+                        {renderPermissionCell(role.id, action.id)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>

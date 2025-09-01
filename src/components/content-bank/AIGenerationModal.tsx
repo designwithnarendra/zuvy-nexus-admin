@@ -181,7 +181,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="topics">Topics *</Label>
+                  <Label htmlFor="topics" className="font-semibold">Topics *</Label>
                   <Textarea
                     id="topics"
                     placeholder="e.g., React Hooks, JavaScript ES6, Async Programming"
@@ -195,7 +195,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Question Types *</Label>
+                  <Label className="font-semibold">Question Types *</Label>
                   <div className="space-y-2">
                     {questionTypes.map((type) => (
                       <div key={type.value} className="flex items-center space-x-2">
@@ -205,7 +205,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
                             handleQuestionTypeToggle(type.value, checked as boolean)
                           }
                         />
-                        <Label className="text-sm">{type.label}</Label>
+                        <Label className="text-sm font-semibold">{type.label}</Label>
                       </div>
                     ))}
                   </div>
@@ -214,7 +214,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Difficulty Level</Label>
+                  <Label className="font-semibold">Difficulty Level</Label>
                   <Select value={setupData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty or leave blank for mixed" />
@@ -231,7 +231,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">Number of Questions</Label>
+                  <Label htmlFor="quantity" className="font-semibold">Number of Questions</Label>
                   <Input
                     id="quantity"
                     type="number"
@@ -243,7 +243,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="context">Additional Context (Optional)</Label>
+                  <Label htmlFor="context" className="font-semibold">Additional Context (Optional)</Label>
                   <Textarea
                     id="context"
                     placeholder="Any specific requirements or context for the questions..."

@@ -29,6 +29,7 @@ interface ArticleEditorProps {
   mode: 'create' | 'edit';
   onSave: (data: ArticleData) => void;
   onCancel: () => void;
+  hideCancel?: boolean;
 }
 
 const DEFAULT_ARTICLE_DATA: ArticleData = {
@@ -48,6 +49,7 @@ export function ArticleEditor({
   mode,
   onSave,
   onCancel,
+  hideCancel = false,
 }: ArticleEditorProps) {
   const [articleData, setArticleData] = useState<ArticleData>(initialData);
   
@@ -88,8 +90,8 @@ export function ArticleEditor({
 
   const customFooterContent = (
     <>
-      <Button variant="outline" onClick={onCancel}>Cancel</Button>
-      <Button onClick={handleSubmit}>
+      {!hideCancel && <Button variant="outline" onClick={onCancel}>Cancel</Button>}
+      <Button onClick={handleSubmit} className={hideCancel ? 'ml-auto' : ''}>
         {mode === 'create' ? 'Add Article' : 'Save Changes'}
       </Button>
     </>
@@ -106,7 +108,7 @@ export function ArticleEditor({
       <div className="space-y-6">
         {/* Title */}
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title" className="font-semibold">Title</Label>
           <Input
             id="title"
             value={articleData.title}
@@ -125,21 +127,21 @@ export function ArticleEditor({
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="rich-text" id="rich-text" />
-              <Label htmlFor="rich-text" className="cursor-pointer flex items-center">
+              <Label htmlFor="rich-text" className="cursor-pointer flex items-center font-semibold">
                 <FileText className="h-4 w-4 mr-1" />
                 Rich Text
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="external-link" id="external-link" />
-              <Label htmlFor="external-link" className="cursor-pointer flex items-center">
+              <Label htmlFor="external-link" className="cursor-pointer flex items-center font-semibold">
                 <Link className="h-4 w-4 mr-1" />
                 External Link
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="file-upload" id="file-upload" />
-              <Label htmlFor="file-upload" className="cursor-pointer flex items-center">
+              <Label htmlFor="file-upload" className="cursor-pointer flex items-center font-semibold">
                 <FileUp className="h-4 w-4 mr-1" />
                 File Upload
               </Label>
@@ -151,7 +153,7 @@ export function ArticleEditor({
         {articleData.contentType === 'rich-text' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content" className="font-semibold">Content</Label>
               <div className="border rounded-md">
                 {/* Rich text formatting toolbar */}
                 <div className="flex items-center gap-2 p-2 border-b bg-muted/30">
@@ -202,7 +204,7 @@ export function ArticleEditor({
         
         {articleData.contentType === 'external-link' && (
           <div className="space-y-2">
-            <Label htmlFor="externalLink">External Link</Label>
+            <Label htmlFor="externalLink" className="font-semibold">External Link</Label>
             <Input
               id="externalLink"
               value={articleData.externalLink || ''}

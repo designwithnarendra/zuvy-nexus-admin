@@ -18,6 +18,7 @@ export interface BaseEditorProps {
   footerContent?: React.ReactNode;
   description?: string;
   className?: string;
+  hideCancel?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ export function BaseEditor({
   footerContent,
   description,
   className,
+  hideCancel = false,
 }: BaseEditorProps) {
   // Format the title based on the mode and type
   const formattedTitle = `${mode === 'create' ? 'Create' : 'Edit'} ${type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}`;
@@ -72,8 +74,10 @@ export function BaseEditor({
         <div className="flex justify-between mt-auto pt-6 border-t bg-background sticky bottom-0">
           {footerContent || (
             <>
-              <Button variant="outline" onClick={onCancel}>Cancel</Button>
-              <Button onClick={onSave}>{mode === 'create' ? 'Create' : 'Save Changes'}</Button>
+              {!hideCancel && <Button variant="outline" onClick={onCancel}>Cancel</Button>}
+              <Button onClick={onSave} className={hideCancel ? 'ml-auto' : ''}>
+                {mode === 'create' ? 'Create' : 'Save Changes'}
+              </Button>
             </>
           )}
         </div>
@@ -97,8 +101,10 @@ export function BaseEditor({
       <div className="flex justify-between mt-auto pt-6 border-t bg-background sticky bottom-0">
         {footerContent || (
           <>
-            <Button variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button onClick={onSave}>{mode === 'create' ? 'Create' : 'Save Changes'}</Button>
+            {!hideCancel && <Button variant="outline" onClick={onCancel}>Cancel</Button>}
+            <Button onClick={onSave} className={hideCancel ? 'ml-auto' : ''}>
+              {mode === 'create' ? 'Create' : 'Save Changes'}
+            </Button>
           </>
         )}
       </div>

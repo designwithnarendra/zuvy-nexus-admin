@@ -88,7 +88,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="question-title">Question Title *</Label>
+                <Label htmlFor="question-title" className="font-semibold">Question Title *</Label>
                 <Textarea
                   id="question-title"
                   placeholder="Enter your question..."
@@ -99,7 +99,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description/Context</Label>
+                <Label htmlFor="description" className="font-semibold">Description/Context</Label>
                 <Textarea
                   id="description"
                   placeholder="Provide additional context, examples, or instructions..."
@@ -111,7 +111,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Topic *</Label>
+                  <Label className="font-semibold">Topic *</Label>
                   {isCreatingTopic ? (
                     <Input
                       placeholder="Enter new topic and press Enter"
@@ -143,7 +143,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Difficulty *</Label>
+                  <Label className="font-semibold">Difficulty *</Label>
                   <Select value={questionData.difficulty || undefined} onValueChange={(value) => handleInputChange('difficulty', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select difficulty" />
@@ -161,7 +161,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="points">Points</Label>
+                  <Label htmlFor="points" className="font-semibold">Points</Label>
                   <Input
                     id="points"
                     type="number"
@@ -172,7 +172,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="time-limit">Time Limit (seconds)</Label>
+                  <Label htmlFor="time-limit" className="font-semibold">Time Limit (seconds)</Label>
                   <Input
                     id="time-limit"
                     type="number"
@@ -183,7 +183,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="word-limit">Word Limit</Label>
+                  <Label htmlFor="word-limit" className="font-semibold">Word Limit</Label>
                   <Input
                     id="word-limit"
                     type="number"
@@ -195,7 +195,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, set
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="expected-answer">Expected Answer/Rubric (Optional)</Label>
+                <Label htmlFor="expected-answer" className="font-semibold">Expected Answer/Rubric (Optional)</Label>
                 <Textarea
                   id="expected-answer"
                   placeholder="Provide a sample answer or grading rubric to help with evaluation..."

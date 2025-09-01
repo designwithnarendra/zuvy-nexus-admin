@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,6 +16,7 @@ import StudentBulkUploadModal from './students/StudentBulkUploadModal';
 
 interface StudentsTabProps {
   courseId: string;
+  initialBatchFilter?: string | null;
 }
 
 // Generate 50 students with realistic data
@@ -48,12 +49,12 @@ const generateMockStudents = (): Student[] => {
   });
 };
 
-const StudentsTab = ({ courseId }: StudentsTabProps) => {
+const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
   // State for UI controls
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [batchFilter, setBatchFilter] = useState('all');
+  const [batchFilter, setBatchFilter] = useState(initialBatchFilter || 'all');
   const [statusFilter, setStatusFilter] = useState('all');
   
   // Multi-select state
@@ -81,6 +82,13 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
       studentCount: 25
     }
   ]);
+
+  // Update batch filter when initialBatchFilter changes
+  useEffect(() => {
+    if (initialBatchFilter) {
+      setBatchFilter(initialBatchFilter);
+    }
+  }, [initialBatchFilter]);
 
   // Filtered students based on search and filters
   const filteredStudents = students.filter(student => {
@@ -131,6 +139,17 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
 
   const handleContactStudent = (studentId: string) => {
     console.log('Contact student:', studentId);
+  };
+
+  const handleBatchChange = (studentId: string, newBatch: string | null) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId 
+        ? { ...student, batch: newBatch }
+        : student
+    ));
+    
+    const student = students.find(s => s.id === studentId);
+    console.log(`Changed ${student?.name}'s batch to:`, newBatch || 'Unassigned');
   };
 
   // Multi-select handlers
@@ -300,6 +319,7 @@ const StudentsTab = ({ courseId }: StudentsTabProps) => {
         onDropoutStudent={handleDropoutStudent}
         onViewStudent={handleViewStudent}
         onContactStudent={handleContactStudent}
+        onBatchChange={handleBatchChange}
         selectedStudents={selectedStudents}
         onSelectStudent={handleSelectStudent}
         onSelectAll={handleSelectAll}

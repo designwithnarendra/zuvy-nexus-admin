@@ -5,22 +5,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Trash2 } from 'lucide-react';
+
+interface TestCaseInput {
+  id: string;
+  type: string;
+  value: string;
+}
 
 interface TestCase {
   id: string;
-  input: string;
+  inputs: TestCaseInput[];
+  outputType: string;
   expectedOutput: string;
   isHidden: boolean;
 }
 
 interface CodingProblemData {
   title: string;
-  description: string;
   problemStatement: string;
+  constraints: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard' | '';
+  topic: string;
   testCases: TestCase[];
-  allowedLanguages: string[];
-  starterCode: string;
 }
 
 interface CodingProblemEditorProps {
@@ -31,21 +41,40 @@ interface CodingProblemEditorProps {
 }
 
 export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: CodingProblemEditorProps) {
-  const availableLanguages = ['JavaScript', 'Python', 'Java', 'C++'];
+  const availableTopics = [
+    'JavaScript Basics',
+    'React Fundamentals', 
+    'Node.js',
+    'Algorithms',
+    'Data Structures',
+    'CSS Layout',
+    'TypeScript',
+    'Database Concepts',
+    'System Design',
+    'Web APIs',
+    'Testing',
+    'Performance Optimization'
+  ];
+  const dataTypes = ['int', 'str', 'float', 'array', 'object', 'boolean'];
   
   const [data, setData] = useState<CodingProblemData>(
     initialData || {
       title: '',
-      description: '',
       problemStatement: '',
+      constraints: '',
+      difficulty: '',
+      topic: '',
       testCases: [{
         id: `test-${Date.now()}`,
-        input: '',
+        inputs: [{
+          id: `input-${Date.now()}`,
+          type: 'int',
+          value: ''
+        }],
+        outputType: 'int',
         expectedOutput: '',
         isHidden: false
-      }],
-      allowedLanguages: ['JavaScript', 'Python'],
-      starterCode: '// Your code here'
+      }]
     }
   );
 
@@ -53,24 +82,15 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleLanguageChange = (language: string, checked: boolean) => {
-    if (checked) {
-      setData(prev => ({
-        ...prev,
-        allowedLanguages: [...prev.allowedLanguages, language]
-      }));
-    } else {
-      setData(prev => ({
-        ...prev,
-        allowedLanguages: prev.allowedLanguages.filter(lang => lang !== language)
-      }));
-    }
-  };
-
   const addTestCase = () => {
     const newTestCase: TestCase = {
       id: `test-${Date.now()}`,
-      input: '',
+      inputs: [{
+        id: `input-${Date.now()}`,
+        type: 'int',
+        value: ''
+      }],
+      outputType: 'int',
       expectedOutput: '',
       isHidden: false
     };
@@ -86,6 +106,47 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
       ...prev,
       testCases: prev.testCases.map(tc => 
         tc.id === id ? { ...tc, [field]: value } : tc
+      )
+    }));
+  };
+
+  const addTestCaseInput = (testCaseId: string) => {
+    const newInput: TestCaseInput = {
+      id: `input-${Date.now()}`,
+      type: 'int',
+      value: ''
+    };
+    
+    setData(prev => ({
+      ...prev,
+      testCases: prev.testCases.map(tc => 
+        tc.id === testCaseId ? { ...tc, inputs: [...tc.inputs, newInput] } : tc
+      )
+    }));
+  };
+
+  const removeTestCaseInput = (testCaseId: string, inputId: string) => {
+    setData(prev => ({
+      ...prev,
+      testCases: prev.testCases.map(tc => 
+        tc.id === testCaseId ? { 
+          ...tc, 
+          inputs: tc.inputs.filter(input => input.id !== inputId)
+        } : tc
+      )
+    }));
+  };
+
+  const updateTestCaseInput = (testCaseId: string, inputId: string, field: keyof TestCaseInput, value: string) => {
+    setData(prev => ({
+      ...prev,
+      testCases: prev.testCases.map(tc => 
+        tc.id === testCaseId ? {
+          ...tc,
+          inputs: tc.inputs.map(input => 
+            input.id === inputId ? { ...input, [field]: value } : input
+          )
+        } : tc
       )
     }));
   };
@@ -124,7 +185,7 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
           content: (
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="font-semibold">Title</Label>
                 <Input
                   id="title"
                   value={data.title}
@@ -134,18 +195,7 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={data.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
-                  placeholder="Enter a brief description"
-                  rows={3}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="problemStatement">Problem Statement</Label>
+                <Label htmlFor="problemStatement" className="font-semibold">Problem Statement</Label>
                 <Textarea
                   id="problemStatement"
                   value={data.problemStatement}
@@ -157,6 +207,57 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
                   You can use markdown for formatting code blocks, lists, etc.
                 </p>
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="constraints" className="font-semibold">Constraints</Label>
+                <Textarea
+                  id="constraints"
+                  value={data.constraints}
+                  onChange={(e) => handleChange('constraints', e.target.value)}
+                  placeholder="Enter constraints (e.g., 1 ≤ n ≤ 10^5, time limit: 2s)"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="font-semibold">Difficulty</Label>
+                  <RadioGroup
+                    value={data.difficulty}
+                    onValueChange={(value) => handleChange('difficulty', value)}
+                    className="flex space-x-6"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Easy" id="easy" />
+                      <Label htmlFor="easy" className="font-normal">Easy</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Medium" id="medium" />
+                      <Label htmlFor="medium" className="font-normal">Medium</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Hard" id="hard" />
+                      <Label htmlFor="hard" className="font-normal">Hard</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-semibold">Topic</Label>
+                  <Select value={data.topic} onValueChange={(value) => handleChange('topic', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select topic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableTopics.map((topic) => (
+                        <SelectItem key={topic} value={topic}>
+                          {topic}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           ),
         },
@@ -165,45 +266,120 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
           label: 'Test Cases',
           content: (
             <div className="space-y-6">
-              <div className="flex items-center">
-                <h3 className="text-lg font-medium">Test Cases ({data.testCases.length})</h3>
-              </div>
-              
               <div className="space-y-6">
                 {data.testCases.map((testCase, index) => (
-                  <div key={testCase.id} className="border rounded-md p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="font-medium">Test Case {index + 1}</h4>
-                      <button
-                        type="button"
-                        className="text-sm text-destructive hover:underline"
+                  <div key={testCase.id} className="border rounded-lg p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h6 className="text-base font-semibold">Test Case {index + 1}</h6>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => removeTestCase(testCase.id)}
+                        className="text-destructive hover:text-destructive-dark"
                       >
+                        <Trash2 className="h-4 w-4 mr-2" />
                         Remove
-                      </button>
+                      </Button>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`input-${testCase.id}`}>Input</Label>
-                        <Textarea
-                          id={`input-${testCase.id}`}
-                          value={testCase.input}
-                          onChange={(e) => updateTestCase(testCase.id, 'input', e.target.value)}
-                          placeholder="Enter test case input"
-                          rows={2}
-                        />
+                    <div className="space-y-6">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label className="font-semibold">Input</Label>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => addTestCaseInput(testCase.id)}
+                              className="text-primary hover:text-primary-dark"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add Input
+                            </Button>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            {testCase.inputs.map((input, inputIndex) => (
+                              <div key={input.id} className="flex items-center gap-3">
+                                <Select
+                                  value={input.type}
+                                  onValueChange={(value) => updateTestCaseInput(testCase.id, input.id, 'type', value)}
+                                >
+                                  <SelectTrigger className="w-28">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {dataTypes.map((type) => (
+                                      <SelectItem key={type} value={type}>
+                                        {type}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                
+                                <Input
+                                  value={input.value}
+                                  onChange={(e) => updateTestCaseInput(testCase.id, input.id, 'value', e.target.value)}
+                                  placeholder={`Add a ${input.type} (e.g., ${
+                                    input.type === 'int' ? '42' :
+                                    input.type === 'str' ? 'hello world' :
+                                    input.type === 'float' ? '3.14' :
+                                    input.type === 'array' ? '[1, 2, 3]' :
+                                    input.type === 'object' ? '{"key": "value"}' :
+                                    'true'
+                                  })`}
+                                  className="flex-1"
+                                />
+                                
+                                {testCase.inputs.length > 1 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeTestCaseInput(testCase.id, input.id)}
+                                    className="text-destructive hover:text-destructive-dark"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor={`output-${testCase.id}`}>Expected Output</Label>
-                        <Textarea
-                          id={`output-${testCase.id}`}
-                          value={testCase.expectedOutput}
-                          onChange={(e) => updateTestCase(testCase.id, 'expectedOutput', e.target.value)}
-                          placeholder="Enter expected output"
-                          rows={2}
-                        />
+                      <div className="space-y-3">
+                        <Label className="font-semibold">Output</Label>
+                        <div className="flex items-center gap-3">
+                          <Select
+                            value={testCase.outputType}
+                            onValueChange={(value) => updateTestCase(testCase.id, 'outputType', value)}
+                          >
+                            <SelectTrigger className="w-28">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dataTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          
+                          <Input
+                            value={testCase.expectedOutput}
+                            onChange={(e) => updateTestCase(testCase.id, 'expectedOutput', e.target.value)}
+                            placeholder={`Add a ${testCase.outputType} (e.g., ${
+                              testCase.outputType === 'int' ? '42' :
+                              testCase.outputType === 'str' ? 'hello world' :
+                              testCase.outputType === 'float' ? '3.14' :
+                              testCase.outputType === 'array' ? '[1, 2, 3]' :
+                              testCase.outputType === 'object' ? '{"key": "value"}' :
+                              'true'
+                            })`}
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
                       
                       <div className="flex items-center space-x-2">
@@ -222,57 +398,18 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
               </div>
 
               <div className="flex justify-center">
-                <button
-                  type="button"
-                  className="px-3 py-1 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90"
+                <Button
+                  variant="ghost"
                   onClick={addTestCase}
+                  className="text-primary hover:text-primary-dark"
                 >
+                  <Plus className="h-4 w-4 mr-2" />
                   Add Test Case
-                </button>
+                </Button>
               </div>
             </div>
           ),
-        },
-        {
-          id: 'codeSetup',
-          label: 'Code Setup',
-          content: (
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label>Allowed Programming Languages</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {availableLanguages.map((language) => (
-                    <div key={language} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`lang-${language}`}
-                        checked={data.allowedLanguages.includes(language)}
-                        onCheckedChange={(checked) => handleLanguageChange(language, checked === true)}
-                      />
-                      <Label htmlFor={`lang-${language}`} className="font-normal">
-                        {language}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="starterCode">Starter Code</Label>
-                <Textarea
-                  id="starterCode"
-                  value={data.starterCode}
-                  onChange={(e) => handleChange('starterCode', e.target.value)}
-                  placeholder="// Provide starter code for students"
-                  className="font-mono"
-                  rows={10}
-                />
-                <p className="text-sm text-muted-foreground">
-                  This code will be pre-populated in the student's code editor
-                </p>
-              </div>
-            </div>
-          ),
-        },
+        }
       ]}
     >
       {/* Children is required but not used when tabs are provided */}

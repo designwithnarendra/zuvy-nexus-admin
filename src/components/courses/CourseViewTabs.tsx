@@ -1,4 +1,7 @@
 
+'use client'
+
+import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Info, BookOpen, Users, Settings, FileText, UserCheck } from 'lucide-react';
 import GeneralDetailsTab from './GeneralDetailsTab';
@@ -13,8 +16,32 @@ interface CourseViewTabsProps {
 }
 
 const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
+  const [activeTab, setActiveTab] = useState('general');
+  const [batchFilter, setBatchFilter] = useState<string | null>(null);
+  const studentsTabRef = useRef<HTMLDivElement>(null);
+
+  // Listen for navigation events from BatchesTab
+  useEffect(() => {
+    const handleNavigateToStudents = (event: CustomEvent) => {
+      const { batchName } = event.detail;
+      setBatchFilter(batchName);
+      setActiveTab('students');
+      
+      // Scroll to students tab after it renders
+      setTimeout(() => {
+        studentsTabRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    };
+
+    window.addEventListener('navigateToStudents', handleNavigateToStudents as EventListener);
+
+    return () => {
+      window.removeEventListener('navigateToStudents', handleNavigateToStudents as EventListener);
+    };
+  }, []);
+
   return (
-    <Tabs defaultValue="general" className="w-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-6 bg-card border border-border rounded-lg p-1 h-12">
         <TabsTrigger 
           value="general" 
@@ -74,8 +101,8 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
           <CurriculumTab courseId={courseId} />
         </TabsContent>
         
-        <TabsContent value="students" className="mt-0">
-          <StudentsTab courseId={courseId} />
+        <TabsContent value="students" className="mt-0" ref={studentsTabRef}>
+          <StudentsTab courseId={courseId} initialBatchFilter={batchFilter} />
         </TabsContent>
         
         <TabsContent value="batches" className="mt-0">

@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,6 @@ import { ContentItem, LearningItem } from './types';
 import LearningItemCard from './LearningItemCard';
 import ContentTypeSelector from './ContentTypeSelector';
 import { LearningItemType } from '@/components/ui/learning-item-card';
-import { ContentBankItemType } from '@/components/ui/content-bank-panel';
 
 
 interface ModuleCardProps {
@@ -26,6 +25,9 @@ interface ModuleCardProps {
   onAddItem?: (type: string) => void;
   onEditItem?: (itemId: string, type: string) => void;
   onDropItem?: (moduleId: string, item: any) => void;
+  onReorderLearningItems?: (moduleId: string, items: LearningItem[]) => void;
+  onEditModule?: (moduleId: string) => void;
+  isDragging?: boolean;
 }
 
 const ModuleCard = ({ 
@@ -38,10 +40,36 @@ const ModuleCard = ({
   getContentIndex,
   onAddItem,
   onEditItem,
-  onDropItem
+  onDropItem,
+  onReorderLearningItems,
+  onEditModule,
+  isDragging = false
 }: ModuleCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Ref for auto-scroll functionality
+  const contentTypeSelectorRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll handler for Add Content
+  const handleToggleAddContent = () => {
+    onToggleAddContent(item.id);
+    // If we're opening the content selector, scroll to it
+    if (!item.showAddContent) {
+      setTimeout(() => {
+        contentTypeSelectorRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }, 100);
+    }
+  };
+  
+  // Learning item drag and drop states
+  const [draggedLearningItemId, setDraggedLearningItemId] = useState<string | null>(null);
+  const [dragOverLearningIndex, setDragOverLearningIndex] = useState<number | null>(null);
+  const [isLearningItemDragging, setIsLearningItemDragging] = useState(false);
 
   // Map content type to learning item type
   const mapContentTypeToLearningItemType = (type: string): string => {
@@ -111,12 +139,131 @@ const ModuleCard = ({
     }
   };
 
+  // Learning item drag and drop handlers
+  const handleLearningItemDragStart = (e: React.DragEvent, itemId: string, index: number) => {
+    setDraggedLearningItemId(itemId);
+    setIsLearningItemDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', itemId);
+    
+    // Set drag image to be slightly transparent
+    if (e.currentTarget instanceof HTMLElement) {
+      e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+    }
+  };
+
+  const handleLearningItemDragEnd = () => {
+    setDraggedLearningItemId(null);
+    setDragOverLearningIndex(null);
+    setIsLearningItemDragging(false);
+  };
+
+  const handleLearningItemDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    
+    if (!draggedLearningItemId || !item.items) return;
+    
+    const draggedIndex = item.items.findIndex(learningItem => learningItem.id === draggedLearningItemId);
+    if (draggedIndex === -1 || draggedIndex === index) return;
+    
+    // Get the mouse position relative to the element
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const midpoint = rect.height / 2;
+    
+    // Determine if we're in the top or bottom half
+    let targetIndex = index;
+    if (draggedIndex > index) {
+      // Dragging up - insert before if in top half, after if in bottom half
+      targetIndex = y < midpoint ? index : index + 1;
+    } else {
+      // Dragging down - insert before if in top half, after if in bottom half  
+      targetIndex = y < midpoint ? index - 1 : index;
+    }
+    
+    if (targetIndex !== dragOverLearningIndex && targetIndex >= 0 && targetIndex <= item.items.length) {
+      setDragOverLearningIndex(targetIndex);
+    }
+  };
+
+  const handleLearningItemDragLeave = (e: React.DragEvent) => {
+    // Only clear drag over if we're leaving the learning items container entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverLearningIndex(null);
+    }
+  };
+
+  const handleLearningItemDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!draggedLearningItemId || dragOverLearningIndex === null || !item.items) return;
+    
+    const draggedIndex = item.items.findIndex(learningItem => learningItem.id === draggedLearningItemId);
+    if (draggedIndex === -1) return;
+    
+    // Use the dragOverLearningIndex for more precise positioning
+    let targetIndex = dragOverLearningIndex;
+    
+    // Adjust for the removal of the dragged item
+    if (targetIndex > draggedIndex) {
+      targetIndex--;
+    }
+    
+    if (targetIndex === draggedIndex) return;
+    
+    // Create new array with reordered items
+    const newItems = [...item.items];
+    const [draggedItem] = newItems.splice(draggedIndex, 1);
+    newItems.splice(targetIndex, 0, draggedItem);
+    
+    // Call the reorder callback
+    if (onReorderLearningItems) {
+      onReorderLearningItems(item.id, newItems);
+    }
+    
+    setDragOverLearningIndex(null);
+  };
+
+  // Keyboard support for learning item reordering
+  const handleLearningItemKeyDown = (e: React.KeyboardEvent, itemId: string, index: number) => {
+    if (!item.items) return;
+    
+    if (e.key === 'ArrowUp' && e.altKey && index > 0) {
+      e.preventDefault();
+      const newItems = [...item.items];
+      const [learningItem] = newItems.splice(index, 1);
+      newItems.splice(index - 1, 0, learningItem);
+      
+      if (onReorderLearningItems) {
+        onReorderLearningItems(item.id, newItems);
+      }
+    } else if (e.key === 'ArrowDown' && e.altKey && index < item.items.length - 1) {
+      e.preventDefault();
+      const newItems = [...item.items];
+      const [learningItem] = newItems.splice(index, 1);
+      newItems.splice(index + 1, 0, learningItem);
+      
+      if (onReorderLearningItems) {
+        onReorderLearningItems(item.id, newItems);
+      }
+    }
+  };
+
   return (
-    <Card className="shadow-4dp">
+    <Card className={cn("shadow-4dp transition-all duration-200", isDragging && "shadow-lg ring-2 ring-primary/20")}>
       <Collapsible open={item.isExpanded} onOpenChange={() => onToggle(item.id)}>
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className="cursor-grab text-muted-foreground hover:text-foreground">
+            <div 
+              className={cn(
+                "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-muted/50",
+                isDragging && "text-primary bg-primary/10"
+              )}
+              title="Drag to reorder"
+            >
               <GripVertical className="h-5 w-5" />
             </div>
             <CollapsibleTrigger className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
@@ -128,7 +275,14 @@ const ModuleCard = ({
                   <h3 className="font-heading font-semibold text-lg">
                     {getContentIndex(index)}: {item.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm">{item.description}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {item.description}
+                    {item.isExpanded && item.items && item.items.length > 0 && (
+                      <span className="ml-2 text-xs">
+                        • Drag learning items to reorder within this module
+                      </span>
+                    )}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -137,8 +291,17 @@ const ModuleCard = ({
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Navigate to edit page
+                    // Only allow editing for Module 1: Introduction to Web Development
+                    if (item.title === 'Introduction to Web Development' && onEditModule) {
+                      onEditModule(item.id);
+                    } else {
+                      // Show a disabled state or tooltip for other modules
+                      console.log('Editing not available for this module');
+                    }
                   }}
+                  disabled={item.title !== 'Introduction to Web Development'}
+                  className={item.title !== 'Introduction to Web Development' ? 'opacity-50 cursor-not-allowed' : ''}
+                  title={item.title === 'Introduction to Web Development' ? 'Edit module' : 'Editing not available for this module'}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -198,14 +361,44 @@ const ModuleCard = ({
             onDrop={handleDrop}
           >
             <div className="space-y-4">
-              {item.items?.slice(0, item.isExpanded ? (item.items.length > 10 ? 10 : item.items.length) : item.items.length).map((learningItem) => (
-                <LearningItemCard
-                  key={learningItem.id}
-                  learningItem={learningItem}
-                  onDelete={() => onDeleteLearningItem(item.id, learningItem.id)}
-                  onEdit={() => handleEditLearningItem(learningItem)}
-                />
-              ))}
+              <div 
+                className="space-y-4"
+                onDragLeave={handleLearningItemDragLeave}
+              >
+                {/* Drop indicator for very top of learning items */}
+                {dragOverLearningIndex === 0 && draggedLearningItemId && item.items && item.items.findIndex(li => li.id === draggedLearningItemId) !== 0 && (
+                  <div className="h-0.5 bg-primary rounded-full shadow-lg mb-2" />
+                )}
+                
+                {item.items?.slice(0, item.isExpanded ? (item.items.length > 10 ? 10 : item.items.length) : item.items.length).map((learningItem, learningItemIndex) => {
+                  const showDropIndicator = dragOverLearningIndex === learningItemIndex && draggedLearningItemId && draggedLearningItemId !== learningItem.id;
+                  const showDropIndicatorBelow = dragOverLearningIndex === learningItemIndex + 1 && draggedLearningItemId && draggedLearningItemId !== learningItem.id;
+                  
+                  return (
+                    <div key={learningItem.id} className="relative">
+                      <LearningItemCard
+                        learningItem={learningItem}
+                        index={learningItemIndex}
+                        onDelete={() => onDeleteLearningItem(item.id, learningItem.id)}
+                        onEdit={() => handleEditLearningItem(learningItem)}
+                        isDragging={draggedLearningItemId === learningItem.id}
+                        onDragStart={handleLearningItemDragStart}
+                        onDragEnd={handleLearningItemDragEnd}
+                        onDragOver={handleLearningItemDragOver}
+                        onDrop={handleLearningItemDrop}
+                        onKeyDown={handleLearningItemKeyDown}
+                        showDropIndicator={showDropIndicator || showDropIndicatorBelow}
+                        dropPosition={showDropIndicator ? 'above' : 'below'}
+                      />
+                    </div>
+                  );
+                })}
+                
+                {/* Drop indicator for very bottom of learning items */}
+                {item.items && dragOverLearningIndex === item.items.length && draggedLearningItemId && (
+                  <div className="h-0.5 bg-primary rounded-full shadow-lg mt-2" />
+                )}
+              </div>
               
               {item.items && item.items.length > 10 && item.isExpanded && (
                 <Button 
@@ -219,13 +412,15 @@ const ModuleCard = ({
 
               {/* Add Content Section */}
               {item.showAddContent ? (
-                <ContentTypeSelector 
-                  onClose={() => onToggleAddContent(item.id)}
-                  onSelect={(type) => handleContentTypeSelect(type)}
-                />
+                <div ref={contentTypeSelectorRef}>
+                  <ContentTypeSelector 
+                    onClose={() => onToggleAddContent(item.id)}
+                    onSelect={(type) => handleContentTypeSelect(type)}
+                  />
+                </div>
               ) : (
                 <Button
-                  onClick={() => onToggleAddContent(item.id)}
+                  onClick={handleToggleAddContent}
                   variant="outline"
                   size="default"
                   className="w-full mt-2"
