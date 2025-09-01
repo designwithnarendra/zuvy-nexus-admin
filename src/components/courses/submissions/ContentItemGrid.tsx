@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -40,7 +42,7 @@ import {
 } from '@/types/mock-data';
 
 interface ContentItemGridProps {
-  batchId: string;
+  courseId: string;
   submissionType: string;
   onSelectItem: (itemId: string) => void;
 }
@@ -69,7 +71,7 @@ const getIconByType = (type: string) => {
   }
 };
 
-export const ContentItemGrid = ({ batchId, submissionType, onSelectItem }: ContentItemGridProps) => {
+export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: ContentItemGridProps) => {
   const [items, setItems] = useState<LearningItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
@@ -138,7 +140,7 @@ export const ContentItemGrid = ({ batchId, submissionType, onSelectItem }: Conte
       setItems(contentItems);
       setIsLoading(false);
     }, 500);
-  }, [submissionType, batchId]);
+  }, [submissionType, courseId]);
 
   if (isLoading) {
     return (

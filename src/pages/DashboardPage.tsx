@@ -1,4 +1,6 @@
 
+'use client'
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,11 +16,11 @@ import {
   MessageSquare,
   TrendingDown
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import PerformanceWidget from '@/components/shared/PerformanceWidget';
 
 const DashboardPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
 
   const recentActivity = [
@@ -178,7 +180,7 @@ const DashboardPage = () => {
   };
 
   const handleCourseClick = (courseId: string) => {
-    navigate(`/courses/${courseId}`);
+    router.push(`/courses/${courseId}`);
   };
 
   return (

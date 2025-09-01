@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -7,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Users, Plus, Upload, Eye, UserCheck, Calendar, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface BatchesTabProps {
   courseId: string;
@@ -65,7 +67,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
     instructorEmail: '',
     capEnrollment: ''
   });
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -109,8 +111,15 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
   };
 
   const handleViewStudents = (batchId: string) => {
-    // In a real app, this would navigate to a batch detail page
-    console.log('Viewing students for batch:', batchId);
+    // Find the batch to get its name
+    const batch = batches.find(b => b.id === batchId);
+    if (batch) {
+      // Navigate to students tab with the batch pre-selected using a custom event
+      // This is more reliable than hash navigation for complex state management
+      window.dispatchEvent(new CustomEvent('navigateToStudents', { 
+        detail: { batchName: batch.name, batchId: batch.id } 
+      }));
+    }
   };
 
   return (
@@ -207,7 +216,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
           {currentStep === 1 ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="batchName">Batch Name *</Label>
+                <Label htmlFor="batchName" className="font-semibold">Batch Name *</Label>
                 <Input
                   id="batchName"
                   value={newBatchData.name}
@@ -217,7 +226,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="instructorEmail">Instructor Email *</Label>
+                <Label htmlFor="instructorEmail" className="font-semibold">Instructor Email *</Label>
                 <Input
                   id="instructorEmail"
                   type="email"
@@ -228,7 +237,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="capEnrollment">Cap Enrollment *</Label>
+                <Label htmlFor="capEnrollment" className="font-semibold">Cap Enrollment *</Label>
                 <Input
                   id="capEnrollment"
                   type="number"

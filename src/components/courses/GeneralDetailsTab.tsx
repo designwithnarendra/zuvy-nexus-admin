@@ -1,11 +1,13 @@
 
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Upload, Image, Calendar } from 'lucide-react';
+import { Upload, Image, Calendar, Trash2 } from 'lucide-react';
 
 interface GeneralDetailsTabProps {
   courseId: string;
@@ -37,6 +39,10 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, imageUrl: '' }));
+  };
+
   const handleSave = () => {
     console.log('Saving course data:', formData);
   };
@@ -61,11 +67,11 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                   <Image className="h-12 w-12 text-primary opacity-60" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 <label className="cursor-pointer">
                   <Button variant="secondary" size="sm" className="pointer-events-none">
                     <Upload className="h-4 w-4 mr-2" />
-                    Upload New
+                    Upload New Image
                   </Button>
                   <input
                     type="file"
@@ -74,6 +80,16 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                     className="sr-only"
                   />
                 </label>
+                {formData.imageUrl && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Remove Image
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -81,7 +97,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
           {/* Form Fields */}
           <div className="lg:col-span-2 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Course Title</Label>
+              <Label htmlFor="title" className="font-semibold">Course Title</Label>
               <Input
                 id="title"
                 value={formData.title}
@@ -91,7 +107,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="font-semibold">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description}
@@ -103,7 +119,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="duration">Duration (weeks)</Label>
+                <Label htmlFor="duration" className="font-semibold">Duration (weeks)</Label>
                 <Input
                   id="duration"
                   type="number"
@@ -115,7 +131,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="startDate">Course Start Date</Label>
+                <Label htmlFor="startDate" className="font-semibold">Course Start Date</Label>
                 <div className="relative">
                   <Input
                     id="startDate"
@@ -128,31 +144,30 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                 </div>
               </div>
             </div>
+
+            {/* Language Selection */}
+            <div className="space-y-4">
+              <Label className="text-sm font-semibold">Course Language</Label>
+              <RadioGroup
+                value={formData.language}
+                onValueChange={(value) => handleInputChange('language', value)}
+                className="flex gap-6"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="English" id="english" />
+                  <Label htmlFor="english">English</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Hindi" id="hindi" />
+                  <Label htmlFor="hindi">Hindi</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Kannada" id="kannada" />
+                  <Label htmlFor="kannada">Kannada</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </div>
-        </div>
-
-
-        {/* Language Selection */}
-        <div className="space-y-4">
-          <Label className="text-sm font-medium">Course Language</Label>
-          <RadioGroup
-            value={formData.language}
-            onValueChange={(value) => handleInputChange('language', value)}
-            className="flex gap-6"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="English" id="english" />
-              <Label htmlFor="english">English</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Hindi" id="hindi" />
-              <Label htmlFor="hindi">Hindi</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Kannada" id="kannada" />
-              <Label htmlFor="kannada">Kannada</Label>
-            </div>
-          </RadioGroup>
         </div>
 
         <div className="flex justify-end pt-4 border-t">

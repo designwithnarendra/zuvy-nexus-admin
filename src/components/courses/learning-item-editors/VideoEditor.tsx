@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { BaseEditor } from './BaseEditor';
 import { Input } from '@/components/ui/input';
@@ -39,7 +41,7 @@ const DEFAULT_VIDEO_DATA: VideoData = {
  * VideoEditor
  * 
  * Editor component for creating and editing videos.
- * Supports video uploads, URLs, YouTube, and Vimeo.
+ * Supports video uploads and YouTube URLs.
  */
 export function VideoEditor({
   initialData = DEFAULT_VIDEO_DATA,
@@ -78,28 +80,19 @@ export function VideoEditor({
     }
   };
   
-  // Extract video ID from YouTube or Vimeo URL
-  const extractVideoId = (url: string, platform: 'youtube' | 'vimeo'): string | null => {
-    if (platform === 'youtube') {
-      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-      return match ? match[1] : null;
-    } else if (platform === 'vimeo') {
-      const match = url.match(/vimeo\.com\/(?:.*\/)?(?:videos\/)?([0-9]+)/);
-      return match ? match[1] : null;
-    }
-    return null;
+  // Extract video ID from YouTube URL
+  const extractVideoId = (url: string): string | null => {
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    return match ? match[1] : null;
   };
   
-  // Generate embed URL for YouTube or Vimeo
+  // Generate embed URL for YouTube
   const getEmbedUrl = (): string | null => {
     if (!videoData.url) return null;
     
     if (videoData.sourceType === 'youtube') {
-      const videoId = extractVideoId(videoData.url, 'youtube');
+      const videoId = extractVideoId(videoData.url);
       return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-    } else if (videoData.sourceType === 'vimeo') {
-      const videoId = extractVideoId(videoData.url, 'vimeo');
-      return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
     }
     
     return videoData.url;
@@ -153,7 +146,7 @@ export function VideoEditor({
       <div className="space-y-6">
         {/* Title */}
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title" className="font-semibold">Title</Label>
           <Input
             id="title"
             value={videoData.title}
@@ -164,7 +157,7 @@ export function VideoEditor({
         
         {/* Description */}
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="font-semibold">Description</Label>
           <Textarea
             id="description"
             value={videoData.description}
@@ -176,7 +169,7 @@ export function VideoEditor({
         
         {/* Video Source Selection */}
         <div className="space-y-2">
-          <Label>Video Source</Label>
+          <Label className="font-semibold">Video Source</Label>
           <RadioGroup
             value={videoData.sourceType}
             onValueChange={(value) => handleSourceTypeChange(value as VideoSourceType)}
@@ -184,14 +177,14 @@ export function VideoEditor({
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="youtube" id="youtube" />
-              <Label htmlFor="youtube" className="cursor-pointer flex items-center">
+              <Label htmlFor="youtube" className="cursor-pointer flex items-center font-semibold">
                 <Video className="h-4 w-4 mr-1" />
                 YouTube
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="upload" id="upload" />
-              <Label htmlFor="upload" className="cursor-pointer flex items-center">
+              <Label htmlFor="upload" className="cursor-pointer flex items-center font-semibold">
                 <FileUp className="h-4 w-4 mr-1" />
                 Upload
               </Label>
@@ -203,7 +196,7 @@ export function VideoEditor({
         {videoData.sourceType === 'youtube' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="videoUrl">YouTube URL</Label>
+              <Label htmlFor="videoUrl" className="font-semibold">YouTube URL</Label>
               <Input
                 id="videoUrl"
                 value={videoData.url || ''}
@@ -215,7 +208,7 @@ export function VideoEditor({
             {/* Auto-show thumbnail when URL is provided */}
             {videoData.url && (
               <div className="space-y-2">
-                <Label>Video Thumbnail</Label>
+                <Label className="font-semibold">Video Thumbnail</Label>
                 <div className="aspect-video bg-black rounded-md overflow-hidden">
                   <iframe
                     src={getEmbedUrl() || ''}
@@ -259,7 +252,7 @@ export function VideoEditor({
         
         {/* Transcript */}
         <div className="space-y-4">
-          <Label>Transcript (Optional)</Label>
+          <Label className="font-semibold">Transcript (Optional)</Label>
           
           <div className="space-y-3">
             {/* Text input for transcript */}
@@ -282,7 +275,7 @@ export function VideoEditor({
                 id="transcript-upload"
               />
               <Button variant="outline" size="sm" asChild>
-                <label htmlFor="transcript-upload" className="cursor-pointer">
+                <label htmlFor="transcript-upload" className="cursor-pointer font-semibold">
                   <FileUp className="h-4 w-4 mr-2" />
                   Upload Transcript File
                 </label>

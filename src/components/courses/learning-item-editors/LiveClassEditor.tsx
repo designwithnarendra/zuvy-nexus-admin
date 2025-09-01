@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { BaseEditor } from './BaseEditor';
 import { Input } from '@/components/ui/input';
@@ -115,7 +117,7 @@ export function LiveClassEditor({
       <div className="space-y-6">
         {/* Title */}
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title" className="font-semibold">Title</Label>
           <Input
             id="title"
             value={liveClassData.title}
@@ -126,7 +128,7 @@ export function LiveClassEditor({
         
         {/* Description */}
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="font-semibold">Description</Label>
           <Textarea
             id="description"
             value={liveClassData.description}
@@ -140,7 +142,7 @@ export function LiveClassEditor({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date Picker */}
           <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+            <Label htmlFor="date" className="font-semibold">Date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -171,7 +173,7 @@ export function LiveClassEditor({
           
           {/* Time Inputs */}
           <div className="space-y-2">
-            <Label>Time</Label>
+            <Label className="font-semibold">Time</Label>
             <div className="flex space-x-2 items-center">
               <Input
                 type="time"
@@ -230,16 +232,16 @@ export function LiveClassEditor({
             <div className="bg-muted/50 rounded-md p-4 space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs">Meeting ID</Label>
+                  <Label className="text-xs font-semibold">Meeting ID</Label>
                   <div className="text-sm font-medium">{liveClassData.zoomMeetingId}</div>
                 </div>
                 <div>
-                  <Label className="text-xs">Password</Label>
+                  <Label className="text-xs font-semibold">Password</Label>
                   <div className="text-sm font-medium">{liveClassData.zoomMeetingPassword}</div>
                 </div>
               </div>
               <div>
-                <Label className="text-xs">Meeting URL</Label>
+                <Label className="text-xs font-semibold">Meeting URL</Label>
                 <div className="text-sm font-medium text-blue-600">
                   <a href={liveClassData.zoomMeetingUrl} target="_blank" rel="noopener noreferrer">
                     {liveClassData.zoomMeetingUrl}

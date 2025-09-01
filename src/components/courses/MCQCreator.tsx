@@ -1,10 +1,11 @@
 
+'use client'
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MCQForm from './mcq-creator/MCQForm';
 import OptionsEditor from './mcq-creator/OptionsEditor';
-import CreateTopicModal from './CreateTopicModal';
 
 interface MCQCreatorProps {
   onSave: () => void;
@@ -17,14 +18,11 @@ interface Option {
 }
 
 const MCQCreator = ({ onSave }: MCQCreatorProps) => {
-  const [isCreateTopicOpen, setIsCreateTopicOpen] = useState(false);
   const [questionData, setQuestionData] = useState({
     title: '',
     description: '',
     topic: '',
-    difficulty: '',
-    points: 5,
-    timeLimit: 60
+    difficulty: ''
   });
   
   const [options, setOptions] = useState<Option[]>([
@@ -82,7 +80,6 @@ const MCQCreator = ({ onSave }: MCQCreatorProps) => {
           <MCQForm
             data={questionData}
             onDataChange={handleInputChange}
-            onCreateTopic={() => setIsCreateTopicOpen(true)}
           />
 
           <OptionsEditor
@@ -104,14 +101,6 @@ const MCQCreator = ({ onSave }: MCQCreatorProps) => {
         </TabsContent>
       </Tabs>
 
-      <CreateTopicModal
-        isOpen={isCreateTopicOpen}
-        onClose={() => setIsCreateTopicOpen(false)}
-        onTopicCreated={(topic) => {
-          handleInputChange('topic', topic);
-          setIsCreateTopicOpen(false);
-        }}
-      />
     </div>
   );
 };

@@ -1,5 +1,7 @@
 
-import { useParams, useNavigate } from 'react-router-dom';
+'use client'
+
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, Upload } from 'lucide-react';
@@ -35,11 +37,12 @@ const getCourseById = (id: string) => {
 };
 
 const SingleCoursePage = () => {
-  const { courseId } = useParams<{ courseId: string }>();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const courseId = params?.courseId as string;
   
   if (!courseId) {
-    navigate('/courses');
+    router.push('/courses');
     return null;
   }
 
@@ -51,7 +54,7 @@ const SingleCoursePage = () => {
         <div className="text-center">
           <h1 className="font-heading font-bold text-2xl mb-4">Course Not Found</h1>
           <p className="text-muted-foreground mb-6">The course you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate('/courses')}>
+          <Button onClick={() => router.push('/courses')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Courses
           </Button>
@@ -74,14 +77,14 @@ const SingleCoursePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-6xl">
+    <div className="container mx-auto px-6 py-8 max-w-7xl">
       {/* Header Section */}
       <div className="mb-8">
         {/* Top Navigation Row */}
         <div className="flex items-center justify-between mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/courses')}
+            onClick={() => router.push('/courses')}
             className="hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -116,10 +119,6 @@ const SingleCoursePage = () => {
             {course.status}
           </Badge>
         </div>
-        
-        <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
-          {course.description}
-        </p>
       </div>
 
       {/* Course Management Tabs */}

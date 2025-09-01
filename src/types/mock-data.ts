@@ -442,17 +442,25 @@ export const mockStudents: Student[] = [
 export const mockBatches: Batch[] = [
   {
     id: 'batch-1',
-    name: 'Web Dev Cohort 2024-A',
-    courseId: 'course-1',
+    name: 'Full Stack Batch 2024-A',
+    courseId: '1',
     status: 'ongoing',
     startDate: '2024-01-15T00:00:00Z',
     endDate: '2024-03-15T00:00:00Z'
   },
   {
     id: 'batch-2',
-    name: 'React Masters Cohort 2024-A',
-    courseId: 'course-2',
-    status: 'not_started',
+    name: 'Full Stack Batch 2024-B', 
+    courseId: '1',
+    status: 'ongoing',
+    startDate: '2024-02-01T00:00:00Z',
+    endDate: '2024-05-01T00:00:00Z'
+  },
+  {
+    id: 'batch-3',
+    name: 'Data Science Cohort 2024-A',
+    courseId: '2',
+    status: 'ongoing',
     startDate: '2024-02-01T00:00:00Z',
     endDate: '2024-04-15T00:00:00Z'
   }
@@ -460,16 +468,18 @@ export const mockBatches: Batch[] = [
 
 // Mock Submissions
 export const mockAssignmentSubmissions: AssignmentSubmission[] = [
+  // Assignment 1 submissions - CSS Layout Challenge
   {
     id: 'submission-1',
     studentId: 'student-1',
     itemId: 'assignment-1',
     itemType: 'assignment',
     submissionDate: '2024-02-10T14:30:00Z',
-    status: 'submitted',
+    status: 'graded',
+    content: 'I created a responsive layout using CSS Grid for the main container and Flexbox for the individual components. The layout adapts to different screen sizes using media queries. I implemented a mobile-first approach and ensured all elements are properly aligned and accessible.',
     fileUrl: 'https://example.com/submissions/john-css-layout.zip',
-    grade: undefined,
-    feedback: undefined
+    grade: 92,
+    feedback: 'Excellent work on the responsive design! Your use of CSS Grid and Flexbox is very well implemented. The mobile-first approach shows good understanding of modern CSS practices. Minor suggestion: consider adding more semantic HTML elements for better accessibility.'
   },
   {
     id: 'submission-2',
@@ -478,15 +488,50 @@ export const mockAssignmentSubmissions: AssignmentSubmission[] = [
     itemType: 'assignment',
     submissionDate: '2024-02-12T09:45:00Z',
     status: 'graded',
-    content: 'Here is my CSS layout solution...',
+    content: 'Here is my CSS layout solution using grid and flexbox...',
     grade: 85,
     feedback: 'Good work on the layout, but consider improving the mobile responsiveness.'
+  },
+  {
+    id: 'submission-3',
+    studentId: 'student-3',
+    itemId: 'assignment-1',
+    itemType: 'assignment',
+    submissionDate: '2024-02-11T16:20:00Z',
+    status: 'graded',
+    fileUrl: 'https://example.com/submissions/alice-css-layout.zip',
+    grade: 78,
+    feedback: 'Good understanding of CSS concepts. Layout works well on desktop but needs some adjustments for mobile devices. Consider using more semantic HTML tags.'
+  },
+  {
+    id: 'submission-4',
+    studentId: 'student-4',
+    itemId: 'assignment-1',
+    itemType: 'assignment',
+    submissionDate: '2024-02-13T11:00:00Z',
+    status: 'submitted',
+    content: 'My approach to the CSS layout challenge...',
+    fileUrl: 'https://example.com/submissions/bob-css-layout.zip',
+    grade: undefined,
+    feedback: undefined
+  },
+  {
+    id: 'submission-5',
+    studentId: 'student-5',
+    itemId: 'assignment-1',
+    itemType: 'assignment',
+    submissionDate: '2024-02-14T20:15:00Z',
+    status: 'submitted',
+    content: 'I used CSS Grid for the main layout structure and Flexbox for component alignment. The design is fully responsive and includes hover effects.',
+    grade: undefined,
+    feedback: undefined
   }
 ];
 
 export const mockQuizSubmissions: QuizSubmission[] = [
+  // Quiz 1 submissions - HTML Knowledge Check  
   {
-    id: 'submission-3',
+    id: 'submission-6',
     studentId: 'student-1',
     itemId: 'quiz-1',
     itemType: 'quiz',
@@ -494,7 +539,57 @@ export const mockQuizSubmissions: QuizSubmission[] = [
     status: 'submitted',
     answers: [
       { questionId: 'question-1', answer: '<a>' },
-      { questionId: 'question-2', answer: 'font-size' }
+      { questionId: 'question-2', answer: 'font-size' },
+      { questionId: 'question-3', answer: ['HTML', 'CSS', 'JavaScript'] },
+      { questionId: 'question-4', answer: 'onclick' }
+    ],
+    score: 9,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-7',
+    studentId: 'student-2',
+    itemId: 'quiz-1',
+    itemType: 'quiz',
+    submissionDate: '2024-02-05T14:45:00Z',
+    status: 'submitted',
+    answers: [
+      { questionId: 'question-1', answer: '<div>' },
+      { questionId: 'question-2', answer: 'font-weight' },
+      { questionId: 'question-3', answer: ['HTML', 'CSS'] },
+      { questionId: 'question-4', answer: 'addEventListener' }
+    ],
+    score: 7,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-8',
+    studentId: 'student-3',
+    itemId: 'quiz-1',
+    itemType: 'quiz',  
+    submissionDate: '2024-02-05T16:30:00Z',
+    status: 'submitted',
+    answers: [
+      { questionId: 'question-1', answer: '<a>' },
+      { questionId: 'question-2', answer: 'font-size' },
+      { questionId: 'question-3', answer: ['HTML', 'CSS', 'JavaScript', 'React'] },
+      { questionId: 'question-4', answer: 'onclick' }
+    ],
+    score: 8,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-9',
+    studentId: 'student-4',
+    itemId: 'quiz-1',
+    itemType: 'quiz',
+    submissionDate: '2024-02-06T09:15:00Z',
+    status: 'submitted',
+    answers: [
+      { questionId: 'question-1', answer: '<a>' },
+      { questionId: 'question-2', answer: 'font-size' },
+      { questionId: 'question-3', answer: ['HTML', 'CSS', 'JavaScript'] },
+      { questionId: 'question-4', answer: 'addEventListener' }
     ],
     score: 10,
     totalPossible: 10
@@ -502,20 +597,73 @@ export const mockQuizSubmissions: QuizSubmission[] = [
 ];
 
 export const mockCodingSubmissions: CodingSubmission[] = [
+  // Coding Problem 1 submissions - JavaScript Array Manipulation
   {
-    id: 'submission-4',
-    studentId: 'student-2',
+    id: 'submission-10',
+    studentId: 'student-1',
     itemId: 'coding-1',
     itemType: 'coding',
     submissionDate: '2024-02-20T16:40:00Z',
     status: 'submitted',
-    code: 'function removeDuplicates(arr) {\n  return [...new Set(arr)];\n}',
+    code: 'function removeDuplicates(arr) {\n  // Using Set to remove duplicates efficiently\n  return [...new Set(arr)];\n}\n\n// Alternative approach with filter\nfunction removeDuplicatesAlt(arr) {\n  return arr.filter((item, index) => arr.indexOf(item) === index);\n}',
     language: 'JavaScript',
     testResults: [
-      { testCaseId: 'tc-1', passed: true },
-      { testCaseId: 'tc-2', passed: true }
+      { testCaseId: 'tc-1', passed: true, output: '[1, 2, 3, 4]' },
+      { testCaseId: 'tc-2', passed: true, output: '["a", "b", "c"]' },
+      { testCaseId: 'tc-3', passed: true, output: '[1, "hello", true]' }
     ],
     score: 10,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-11',
+    studentId: 'student-2',
+    itemId: 'coding-1',
+    itemType: 'coding',
+    submissionDate: '2024-02-20T18:20:00Z',
+    status: 'submitted',
+    code: 'function removeDuplicates(arr) {\n  let result = [];\n  for (let i = 0; i < arr.length; i++) {\n    if (!result.includes(arr[i])) {\n      result.push(arr[i]);\n    }\n  }\n  return result;\n}',
+    language: 'JavaScript',
+    testResults: [
+      { testCaseId: 'tc-1', passed: true, output: '[1, 2, 3, 4]' },
+      { testCaseId: 'tc-2', passed: true, output: '["a", "b", "c"]' },
+      { testCaseId: 'tc-3', passed: false, output: '[1, "hello", true, true]', error: 'Duplicate boolean value not removed' }
+    ],
+    score: 7,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-12',
+    studentId: 'student-3',
+    itemId: 'coding-1',
+    itemType: 'coding',
+    submissionDate: '2024-02-21T10:15:00Z',
+    status: 'submitted',
+    code: 'const removeDuplicates = (arr) => {\n  return arr.reduce((acc, current) => {\n    if (!acc.includes(current)) {\n      acc.push(current);\n    }\n    return acc;\n  }, []);\n}',
+    language: 'JavaScript',
+    testResults: [
+      { testCaseId: 'tc-1', passed: true, output: '[1, 2, 3, 4]' },
+      { testCaseId: 'tc-2', passed: true, output: '["a", "b", "c"]' },
+      { testCaseId: 'tc-3', passed: true, output: '[1, "hello", true]' }
+    ],
+    score: 10,
+    totalPossible: 10
+  },
+  {
+    id: 'submission-13',
+    studentId: 'student-4',
+    itemId: 'coding-1',
+    itemType: 'coding',
+    submissionDate: '2024-02-21T14:30:00Z',
+    status: 'submitted',
+    code: 'function removeDuplicates(arr) {\n  // Incomplete solution\n  return arr;\n}',
+    language: 'JavaScript',
+    testResults: [
+      { testCaseId: 'tc-1', passed: false, output: '[1, 2, 3, 4, 1, 2]', error: 'Duplicates not removed' },
+      { testCaseId: 'tc-2', passed: false, output: '["a", "b", "c", "a"]', error: 'Duplicates not removed' },
+      { testCaseId: 'tc-3', passed: false, output: '[1, "hello", true, 1]', error: 'Duplicates not removed' }
+    ],
+    score: 0,
     totalPossible: 10
   }
 ];
@@ -568,32 +716,119 @@ export const mockAssessmentSubmissions: AssessmentSubmission[] = [
 ];
 
 export const mockProjectSubmissions: ProjectSubmission[] = [
+  // Project 1 submissions - Portfolio Website
   {
-    id: 'submission-7',
+    id: 'submission-14',
     studentId: 'student-1',
     itemId: 'project-1',
     itemType: 'project',
     submissionDate: '2024-02-28T23:45:00Z',
-    status: 'submitted',
+    status: 'graded',
+    content: 'I built a responsive portfolio website showcasing my web development skills. The site includes a hero section, about page, project showcase, and contact form. I used CSS Grid and Flexbox for layout, implemented smooth scrolling, and added interactive hover effects. The design is fully responsive and works across all devices.',
     fileUrl: 'https://example.com/submissions/john-portfolio.zip',
     url: 'https://john-portfolio-project.netlify.app',
+    grade: 95,
+    feedback: 'Outstanding work! Your portfolio demonstrates excellent understanding of responsive design principles. The interactive elements and smooth animations enhance the user experience. Code is well-organized and follows best practices. Minor suggestion: consider adding a dark mode toggle for better accessibility.'
+  },
+  {
+    id: 'submission-15',
+    studentId: 'student-2',
+    itemId: 'project-1',
+    itemType: 'project',
+    submissionDate: '2024-02-27T18:20:00Z',
+    status: 'graded',
+    fileUrl: 'https://example.com/submissions/jane-portfolio.zip',
+    url: 'https://jane-dev-portfolio.vercel.app',
+    grade: 88,
+    feedback: 'Great work on the portfolio design! The layout is clean and professional. Good use of CSS animations. Some areas for improvement: mobile responsiveness could be enhanced, and consider optimizing images for better performance.'
+  },
+  {
+    id: 'submission-16',
+    studentId: 'student-3',
+    itemId: 'project-1',
+    itemType: 'project',
+    submissionDate: '2024-03-01T15:30:00Z',
+    status: 'submitted',
+    content: 'My portfolio website includes sections for skills, projects, and contact information. I focused on creating a modern, minimalist design.',
+    fileUrl: 'https://example.com/submissions/alice-portfolio.zip',
+    url: 'https://alice-portfolio.github.io',
+    grade: undefined,
+    feedback: undefined
+  },
+  {
+    id: 'submission-17',
+    studentId: 'student-4',
+    itemId: 'project-1',
+    itemType: 'project',
+    submissionDate: '2024-03-02T12:00:00Z',
+    status: 'submitted',
+    fileUrl: 'https://example.com/submissions/bob-portfolio.zip',
+    url: 'https://bob-webdev.surge.sh',
     grade: undefined,
     feedback: undefined
   }
 ];
 
 export const mockFeedbackSubmissions: FeedbackSubmission[] = [
+  // Feedback Form 1 submissions - Course Structure Feedback
   {
-    id: 'submission-8',
-    studentId: 'student-2',
+    id: 'submission-18',
+    studentId: 'student-1',
     itemId: 'feedback-1',
     itemType: 'feedback',
     submissionDate: '2024-02-08T10:15:00Z',
     status: 'submitted',
     answers: [
+      { questionId: 'fb-q-1', answer: 5 },
+      { questionId: 'fb-q-2', answer: 'The hands-on projects were extremely valuable. They helped me understand how to apply the concepts in real-world scenarios. I particularly enjoyed the portfolio project as it allowed me to showcase my creativity while implementing technical skills.' },
+      { questionId: 'fb-q-3', answer: ['CSS Grid and Flexbox', 'JavaScript ES6 features', 'Responsive design principles'] },
+      { questionId: 'fb-q-4', answer: 4 },
+      { questionId: 'fb-q-5', answer: 'More advanced JavaScript topics like async/await and API integration would be great additions to the curriculum.' }
+    ]
+  },
+  {
+    id: 'submission-19',
+    studentId: 'student-2',
+    itemId: 'feedback-1',
+    itemType: 'feedback',
+    submissionDate: '2024-02-08T14:30:00Z',
+    status: 'submitted',
+    answers: [
       { questionId: 'fb-q-1', answer: 4 },
-      { questionId: 'fb-q-2', answer: 'I found the practical exercises most valuable.' },
-      { questionId: 'fb-q-3', answer: ['CSS', 'JavaScript'] }
+      { questionId: 'fb-q-2', answer: 'I found the practical exercises most valuable for understanding the concepts.' },
+      { questionId: 'fb-q-3', answer: ['CSS', 'JavaScript'] },
+      { questionId: 'fb-q-4', answer: 4 },
+      { questionId: 'fb-q-5', answer: 'The course pace was good, but more examples would be helpful.' }
+    ]
+  },
+  {
+    id: 'submission-20',
+    studentId: 'student-3',
+    itemId: 'feedback-1',
+    itemType: 'feedback',
+    submissionDate: '2024-02-09T09:45:00Z',
+    status: 'submitted',
+    answers: [
+      { questionId: 'fb-q-1', answer: 5 },
+      { questionId: 'fb-q-2', answer: 'The video tutorials were clear and easy to follow. The step-by-step approach made complex topics manageable.' },
+      { questionId: 'fb-q-3', answer: ['HTML semantic elements', 'CSS animations', 'JavaScript functions'] },
+      { questionId: 'fb-q-4', answer: 5 },
+      { questionId: 'fb-q-5', answer: 'Excellent course overall! Would love to see more content on modern frameworks.' }
+    ]
+  },
+  {
+    id: 'submission-21',
+    studentId: 'student-4',
+    itemId: 'feedback-1',
+    itemType: 'feedback',
+    submissionDate: '2024-02-09T16:20:00Z',
+    status: 'submitted',
+    answers: [
+      { questionId: 'fb-q-1', answer: 3 },
+      { questionId: 'fb-q-2', answer: 'The coding challenges were helpful for practice.' },
+      { questionId: 'fb-q-3', answer: ['Basic HTML', 'CSS styling'] },
+      { questionId: 'fb-q-4', answer: 3 },
+      { questionId: 'fb-q-5', answer: 'Some sections moved too quickly. More beginner-friendly explanations would be appreciated.' }
     ]
   }
 ];

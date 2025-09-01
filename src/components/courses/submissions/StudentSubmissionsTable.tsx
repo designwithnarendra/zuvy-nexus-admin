@@ -1,6 +1,8 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Table, 
   TableBody, 
@@ -28,6 +30,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { 
   Student, 
   Submission, 
@@ -49,6 +52,7 @@ import {
 } from '@/types';
 import { 
   mockStudents, 
+  mockBatches,
   mockAssignmentSubmissions, 
   mockQuizSubmissions, 
   mockCodingSubmissions, 
@@ -64,24 +68,29 @@ import {
 } from '@/types/mock-data';
 
 interface StudentSubmissionsTableProps {
-  batchId: string;
+  courseId: string;
   itemId: string;
   submissionType: string;
   onBack: () => void;
 }
 
 export const StudentSubmissionsTable = ({ 
-  batchId, 
+  courseId, 
   itemId, 
   submissionType, 
   onBack 
 }: StudentSubmissionsTableProps) => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+  const [batches, setBatches] = useState<any[]>([]);
+  const [selectedBatch, setSelectedBatch] = useState<string>('all');
   const [item, setItem] = useState<LearningItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewSubmission, setViewSubmission] = useState<Submission | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [approveReAttemptDialogOpen, setApproveReAttemptDialogOpen] = useState(false);
+  const [pendingApprovalSubmissionId, setPendingApprovalSubmissionId] = useState<string>('');
+  const [pendingApprovalStudentName, setPendingApprovalStudentName] = useState<string>('');
 
   // Fetch submissions and students
   useEffect(() => {
@@ -123,32 +132,59 @@ export const StudentSubmissionsTable = ({
       // Filter submissions for this item
       const itemSubmissions = allSubmissions.filter(sub => sub.itemId === itemId);
       
-      // Get students
-      const studentIds = itemSubmissions.map(sub => sub.studentId);
-      const relevantStudents = mockStudents.filter(s => studentIds.includes(s.id));
+      // Get students from all batches for this course
+      const courseBatches = mockBatches.filter(batch => batch.courseId === courseId);
+      const allStudentsInCourse = mockStudents; // For now, using all students
       
+      // Get students who have submissions for this item
+      const studentIds = itemSubmissions.map(sub => sub.studentId);
+      const relevantStudents = allStudentsInCourse.filter(s => studentIds.includes(s.id));
+      
+      setBatches(courseBatches);
       setItem(contentItem);
       setSubmissions(itemSubmissions);
       setStudents(relevantStudents);
       setIsLoading(false);
     }, 500);
-  }, [batchId, itemId, submissionType]);
+  }, [courseId, itemId, submissionType]);
 
   const handleViewSubmission = (submission: Submission) => {
     setViewSubmission(submission);
     setViewDialogOpen(true);
   };
 
-  const handleApproveReAttempt = (submissionId: string) => {
+  const handleApproveReAttemptClick = (submissionId: string, studentId: string) => {
+    setPendingApprovalSubmissionId(submissionId);
+    setPendingApprovalStudentName(getStudentName(studentId));
+    setApproveReAttemptDialogOpen(true);
+  };
+
+  const handleApproveReAttempt = () => {
     // Update the submission to remove the re-attempt request
     setSubmissions(prev => 
       prev.map(sub => 
-        sub.id === submissionId 
+        sub.id === pendingApprovalSubmissionId 
           ? { ...sub, hasReAttemptRequest: false } as AssessmentSubmission
           : sub
       )
     );
+    setApproveReAttemptDialogOpen(false);
+    setPendingApprovalSubmissionId('');
+    setPendingApprovalStudentName('');
   };
+
+  // Filter submissions and students based on selected batch
+  const getFilteredData = () => {
+    if (selectedBatch === 'all') {
+      return { filteredSubmissions: submissions, filteredStudents: students };
+    }
+    
+    // For now, we'll show all since we don't have batch assignments in mock data
+    // In a real app, students would have batchId and we'd filter by it
+    return { filteredSubmissions: submissions, filteredStudents: students };
+  };
+
+  const { filteredSubmissions, filteredStudents } = getFilteredData();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -407,24 +443,26 @@ export const StudentSubmissionsTable = ({
             <div>
               <h3 className="font-medium mb-1">Responses:</h3>
               <ul className="space-y-2">
-                {feedbackSub.responses.map((response, index) => (
-                  <li key={response.questionId} className="bg-muted p-2 rounded-md">
+                {feedbackSub.answers.map((answer, index) => (
+                  <li key={answer.questionId} className="bg-muted p-2 rounded-md">
                     <div>
                       <span className="font-medium">Question {index + 1}:</span>
                     </div>
                     <div className="mt-1">
-                      {response.responseType === 'rating' ? (
+                      {typeof answer.answer === 'number' && answer.answer <= 5 ? (
                         <div className="flex items-center gap-1">
                           {Array(5).fill(0).map((_, i) => (
                             <span 
                               key={i} 
-                              className={`h-4 w-4 rounded-full ${i < parseInt(response.response) ? 'bg-primary' : 'bg-muted-foreground/20'}`}
+                              className={`h-4 w-4 rounded-full ${i < answer.answer ? 'bg-primary' : 'bg-muted-foreground/20'}`}
                             />
                           ))}
-                          <span className="ml-2">{response.response}/5</span>
+                          <span className="ml-2">{answer.answer}/5</span>
                         </div>
+                      ) : Array.isArray(answer.answer) ? (
+                        answer.answer.join(', ')
                       ) : (
-                        response.response
+                        answer.answer
                       )}
                     </div>
                   </li>
@@ -489,6 +527,7 @@ export const StudentSubmissionsTable = ({
   const getColumns = () => {
     const baseColumns = [
       { header: 'Student', accessor: 'studentId' },
+      { header: 'Batch', accessor: 'batch' },
       { header: 'Submission Date', accessor: 'submissionDate' },
     ];
     
@@ -530,34 +569,54 @@ export const StudentSubmissionsTable = ({
   const columns = getColumns();
 
   return (
-    <div className="space-y-4">
-      <Button variant="ghost" size="sm" onClick={onBack}>
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Items
-      </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to {submissionType.charAt(0).toUpperCase() + submissionType.slice(0, -1)} Submissions
+        </Button>
+        
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            {filteredSubmissions.length} submissions
+          </div>
+          <Select value={selectedBatch} onValueChange={setSelectedBatch}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filter by batch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Batches</SelectItem>
+              {batches.map((batch) => (
+                <SelectItem key={batch.id} value={batch.id}>
+                  {batch.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>{item.title} - Student Submissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {submissions.length === 0 ? (
-            <div className="text-center p-4 text-muted-foreground">
-              No submissions found for this item.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableHead key={column.accessor}>{column.header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {submissions.map((submission) => (
-                  <TableRow key={submission.id}>
-                    {columns.map((column) => {
+      <div>
+        <h1 className="text-2xl font-bold mb-2">{item.title}</h1>
+        <p className="text-muted-foreground mb-6">Student Submissions</p>
+        
+        {filteredSubmissions.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
+            No submissions found for this item.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableHead key={column.accessor}>{column.header}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredSubmissions.map((submission) => (
+                <TableRow key={submission.id}>
+                  {columns.map((column) => {
                       if (column.accessor === 'studentId') {
                         return (
                           <TableCell key={column.accessor}>
@@ -573,6 +632,16 @@ export const StudentSubmissionsTable = ({
                         return (
                           <TableCell key={column.accessor}>
                             {formatDate(submission.submissionDate)}
+                          </TableCell>
+                        );
+                      }
+                      
+                      if (column.accessor === 'batch') {
+                        return (
+                          <TableCell key={column.accessor}>
+                            <Badge variant="outline">
+                              Batch 1
+                            </Badge>
                           </TableCell>
                         );
                       }
@@ -657,6 +726,23 @@ export const StudentSubmissionsTable = ({
                         return (
                           <TableCell key={column.accessor}>
                             <div className="flex items-center gap-2">
+                              {submissionType === 'assessments' && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  disabled={!(submission as AssessmentSubmission).hasReAttemptRequest}
+                                  onClick={() => handleApproveReAttemptClick(submission.id, submission.studentId)}
+                                  className={
+                                    (submission as AssessmentSubmission).hasReAttemptRequest
+                                      ? 'text-primary hover:text-primary-dark'
+                                      : 'text-muted-foreground'
+                                  }
+                                >
+                                  <RefreshCw className="h-4 w-4 mr-1" />
+                                  Approve Re-Attempt
+                                </Button>
+                              )}
+                              
                               <Button 
                                 variant="ghost" 
                                 size="sm"
@@ -673,23 +759,6 @@ export const StudentSubmissionsTable = ({
                                 <Download className="h-4 w-4 mr-1" />
                                 Download
                               </Button>
-                              
-                              {submissionType === 'assessments' && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  disabled={!(submission as AssessmentSubmission).hasReAttemptRequest}
-                                  onClick={() => handleApproveReAttempt(submission.id)}
-                                  className={
-                                    (submission as AssessmentSubmission).hasReAttemptRequest
-                                      ? 'text-primary hover:text-primary-dark'
-                                      : 'text-muted-foreground'
-                                  }
-                                >
-                                  <RefreshCw className="h-4 w-4 mr-1" />
-                                  Re-attempt
-                                </Button>
-                              )}
                             </div>
                           </TableCell>
                         );
@@ -702,8 +771,7 @@ export const StudentSubmissionsTable = ({
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+      </div>
       
       {/* Submission View Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
@@ -735,14 +803,39 @@ export const StudentSubmissionsTable = ({
                 variant="default"
                 disabled={!(viewSubmission as AssessmentSubmission).hasReAttemptRequest}
                 onClick={() => {
-                  handleApproveReAttempt(viewSubmission.id);
+                  handleApproveReAttemptClick(viewSubmission.id, viewSubmission.studentId);
                   setViewDialogOpen(false);
                 }}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Approve Re-attempt
+                Approve Re-Attempt
               </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Approve Re-Attempt Confirmation Dialog */}
+      <Dialog open={approveReAttemptDialogOpen} onOpenChange={setApproveReAttemptDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-primary" />
+              Approve Re-Attempt Request
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to allow <strong>{pendingApprovalStudentName}</strong> to re-attempt this assessment?
+              <br /><br />
+              This will reset their current submission and allow them to submit again. Their previous attempt data will be preserved for record-keeping.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveReAttemptDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleApproveReAttempt}>
+              Approve Re-Attempt
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -10,7 +10,7 @@ interface CourseCardProps {
   title: string;
   learnerCount: number;
   duration: string;
-  status: 'draft' | 'published' | 'archived' | 'completed';
+  status: 'draft' | 'published' | 'ongoing' | 'archived' | 'completed';
   imageUrl?: string;
   onClick: () => void;
 }
@@ -27,6 +27,8 @@ const CourseCard = ({
     switch (status) {
       case 'published':
         return 'bg-success-light text-success-dark border-success';
+      case 'ongoing':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'completed':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'draft':

@@ -1,5 +1,7 @@
 
-import { useState } from 'react';
+'use client'
+
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import AddItemMenu from './AddItemMenu';
@@ -17,25 +19,10 @@ import { CodingProblemEditor } from '@/components/courses/learning-item-editors/
 import { LiveClassEditor } from '@/components/courses/learning-item-editors/LiveClassEditor';
 import { FeedbackFormEditor } from '@/components/courses/learning-item-editors/FeedbackFormEditor';
 import { AssessmentEditor } from '@/components/courses/learning-item-editors/AssessmentEditor';
+import { cn } from '@/lib/utils';
 
 import { v4 as uuidv4 } from 'uuid';
 
-// Helper function to convert ContentBankItemType to LearningItemType
-const convertItemType = (type: ContentBankItemType): LearningItemType => {
-  // Map the ContentBankItemType to LearningItemType
-  const typeMap: Record<ContentBankItemType, LearningItemType> = {
-    'article': 'article',
-    'video': 'video',
-    'quiz': 'quiz',
-    'assignment': 'assignment',
-    'coding': 'coding',
-    'liveClass': 'live-class',
-    'feedback': 'feedback',
-    'assessment': 'assessment'
-  };
-  
-  return typeMap[type];
-};
 
 
 
@@ -182,6 +169,34 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     weeks: 0,
     days: 0
   });
+  
+  // Refs for auto-scroll functionality
+  const addModuleFormRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll handler for Add Module/Project
+  const handleShowAddModuleForm = () => {
+    setShowAddModuleForm(true);
+    // Scroll to form after it's rendered
+    setTimeout(() => {
+      addModuleFormRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
+  };
+  
+  // Edit handlers for Module and Project
+  const handleEditModule = (moduleId: string) => {
+    console.log('Editing module:', moduleId);
+    // For simulation, just show an alert
+    alert(`Edit Module functionality enabled for Module 1: Introduction to Web Development (ID: ${moduleId})`);
+  };
+  
+  const handleEditProject = (projectId: string) => {
+    console.log('Editing project:', projectId);
+    // For simulation, just show an alert  
+    alert(`Edit Project functionality enabled for Project 1: Portfolio Website (ID: ${projectId})`);
+  };
 
   // Focus Panel and Editor States
   const [focusPanelOpen, setFocusPanelOpen] = useState(false);
@@ -189,6 +204,206 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
   const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
+
+  // Drag and Drop States
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Persistence function for curriculum order
+  const saveCurriculumOrder = async (items: ContentItem[]) => {
+    try {
+      // In a real implementation, this would make an API call to save the order
+      console.log('Saving curriculum order:', items.map(item => ({ id: item.id, type: item.type, title: item.title })));
+      
+      // Example API call structure:
+      // await fetch(`/api/courses/${courseId}/curriculum/order`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ items: items.map(item => ({ id: item.id, order: items.indexOf(item) })) })
+      // });
+      
+      // For now, we'll just store in localStorage as a demo
+      localStorage.setItem(`curriculum-order-${courseId}`, JSON.stringify(items.map(item => item.id)));
+    } catch (error) {
+      console.error('Failed to save curriculum order:', error);
+      // In a real app, you might want to show a toast notification about the error
+    }
+  };
+
+  // Persistence function for learning item order within modules
+  const saveLearningItemOrder = async (moduleId: string, learningItems: LearningItem[]) => {
+    try {
+      // In a real implementation, this would make an API call to save the learning item order
+      console.log('Saving learning item order for module:', moduleId, learningItems.map(item => ({ id: item.id, title: item.title })));
+      
+      // Example API call structure:
+      // await fetch(`/api/courses/${courseId}/modules/${moduleId}/learning-items/order`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ items: learningItems.map(item => ({ id: item.id, order: learningItems.indexOf(item) })) })
+      // });
+      
+      // For now, we'll just store in localStorage as a demo
+      localStorage.setItem(`learning-items-order-${courseId}-${moduleId}`, JSON.stringify(learningItems.map(item => item.id)));
+    } catch (error) {
+      console.error('Failed to save learning item order:', error);
+      // In a real app, you might want to show a toast notification about the error
+    }
+  };
+
+  // Load saved curriculum order on component mount
+  useEffect(() => {
+    const loadSavedOrder = () => {
+      try {
+        const savedOrder = localStorage.getItem(`curriculum-order-${courseId}`);
+        if (savedOrder) {
+          const orderIds = JSON.parse(savedOrder);
+          // Reorder contentItems based on saved order
+          const reorderedItems = orderIds
+            .map((id: string) => contentItems.find(item => item.id === id))
+            .filter(Boolean);
+          
+          // Add any new items that weren't in the saved order
+          const newItems = contentItems.filter(item => !orderIds.includes(item.id));
+          setContentItems([...reorderedItems, ...newItems]);
+        }
+        
+        // Load saved learning item orders for each module
+        contentItems.forEach(item => {
+          if (item.type === 'module' && item.items) {
+            const savedLearningOrder = localStorage.getItem(`learning-items-order-${courseId}-${item.id}`);
+            if (savedLearningOrder) {
+              const learningOrderIds = JSON.parse(savedLearningOrder);
+              const reorderedLearningItems = learningOrderIds
+                .map((id: string) => item.items?.find(learningItem => learningItem.id === id))
+                .filter(Boolean);
+              
+              // Add any new learning items that weren't in the saved order
+              const newLearningItems = item.items.filter(learningItem => !learningOrderIds.includes(learningItem.id));
+              
+              // Update the module with reordered learning items
+              setContentItems(prev => prev.map(contentItem => 
+                contentItem.id === item.id
+                  ? { ...contentItem, items: [...reorderedLearningItems, ...newLearningItems] }
+                  : contentItem
+              ));
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Failed to load saved curriculum order:', error);
+      }
+    };
+
+    if (contentItems.length > 0) {
+      loadSavedOrder();
+    }
+  }, [courseId]); // Only run when courseId changes
+
+  // Keyboard support for reordering
+  const handleKeyDown = (e: React.KeyboardEvent, itemId: string, index: number) => {
+    if (e.key === 'ArrowUp' && e.altKey && index > 0) {
+      e.preventDefault();
+      const newItems = [...contentItems];
+      const [item] = newItems.splice(index, 1);
+      newItems.splice(index - 1, 0, item);
+      setContentItems(newItems);
+      saveCurriculumOrder(newItems);
+    } else if (e.key === 'ArrowDown' && e.altKey && index < contentItems.length - 1) {
+      e.preventDefault();
+      const newItems = [...contentItems];
+      const [item] = newItems.splice(index, 1);
+      newItems.splice(index + 1, 0, item);
+      setContentItems(newItems);
+      saveCurriculumOrder(newItems);
+    }
+  };
+
+  // Drag and Drop Handlers
+  const handleDragStart = (e: React.DragEvent, itemId: string, index: number) => {
+    setDraggedItemId(itemId);
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', itemId);
+    
+    // Set drag image to be slightly transparent
+    if (e.currentTarget instanceof HTMLElement) {
+      e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItemId(null);
+    setDragOverIndex(null);
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    if (!draggedItemId) return;
+    
+    const draggedIndex = contentItems.findIndex(item => item.id === draggedItemId);
+    if (draggedIndex === -1 || draggedIndex === index) return;
+    
+    // Get the mouse position relative to the element
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const midpoint = rect.height / 2;
+    
+    // Determine if we're in the top or bottom half
+    let targetIndex = index;
+    if (draggedIndex > index) {
+      // Dragging up - insert before if in top half, after if in bottom half
+      targetIndex = y < midpoint ? index : index + 1;
+    } else {
+      // Dragging down - insert before if in top half, after if in bottom half  
+      targetIndex = y < midpoint ? index - 1 : index;
+    }
+    
+    if (targetIndex !== dragOverIndex && targetIndex >= 0 && targetIndex <= contentItems.length) {
+      setDragOverIndex(targetIndex);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only clear drag over if we're leaving the drop container entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverIndex(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (!draggedItemId || dragOverIndex === null) return;
+    
+    const draggedIndex = contentItems.findIndex(item => item.id === draggedItemId);
+    if (draggedIndex === -1) return;
+    
+    // Use the dragOverIndex for more precise positioning
+    let targetIndex = dragOverIndex;
+    
+    // Adjust for the removal of the dragged item
+    if (targetIndex > draggedIndex) {
+      targetIndex--;
+    }
+    
+    if (targetIndex === draggedIndex) return;
+    
+    // Create new array with reordered items
+    const newItems = [...contentItems];
+    const [draggedItem] = newItems.splice(draggedIndex, 1);
+    newItems.splice(targetIndex, 0, draggedItem);
+    
+    setContentItems(newItems);
+    setDragOverIndex(null);
+    
+    // Persist the new order (in a real app, this would make an API call)
+    saveCurriculumOrder(newItems);
+  };
 
   const toggleModule = (itemId: string) => {
     setContentItems(prev => prev.map(item => 
@@ -216,6 +431,18 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     } else {
       setContentItems(prev => prev.filter(item => item.id !== itemId));
     }
+  };
+
+  // Handle reordering learning items within a module
+  const handleReorderLearningItems = (moduleId: string, reorderedItems: LearningItem[]) => {
+    setContentItems(prev => prev.map(item => 
+      item.id === moduleId && item.type === 'module'
+        ? { ...item, items: reorderedItems }
+        : item
+    ));
+    
+    // Persist the new learning item order
+    saveLearningItemOrder(moduleId, reorderedItems);
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -433,6 +660,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
             initialData={editorData}
             onSave={handleSaveLearningItem}
             onCancel={handleCloseEditor}
+            hideCancel={true}
           />
         );
       case 'video':
@@ -551,49 +779,102 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       {/* Main Content */}
       <div className="flex-1 pr-4">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-heading font-semibold text-2xl">Course Curriculum</h2>
+          <div>
+            <h2 className="font-heading font-semibold text-2xl">Course Curriculum</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Drag and drop or use Alt + Arrow keys to reorder modules and projects. Learning items can be reordered within their modules.
+            </p>
+          </div>
         </div>
 
-        <div className="space-y-6">
+        <div 
+          className="space-y-6"
+          role="list"
+          aria-label="Course curriculum items. Use drag and drop or Alt + Arrow keys to reorder."
+          onDragOver={(e) => {
+            // Handle dropping at the very beginning
+            e.preventDefault();
+            if (draggedItemId && e.clientY < e.currentTarget.getBoundingClientRect().top + 50) {
+              setDragOverIndex(0);
+            }
+          }}
+        >
+          {/* Drop indicator for very top */}
+          {dragOverIndex === 0 && draggedItemId && contentItems.findIndex(item => item.id === draggedItemId) !== 0 && (
+            <div className="h-1 bg-primary rounded-full shadow-lg mb-3" />
+          )}
+          
           {contentItems.map((item, index) => (
-            item.type === 'module' ? (
-              <ModuleCard
-                key={item.id}
-                item={item}
-                index={index}
-                onToggle={toggleModule}
-                onDelete={deleteContentItem}
-                onDeleteLearningItem={deleteContentItem}
-                onToggleAddContent={toggleAddContent}
-                getContentIndex={getContentIndex}
-                onAddItem={(type) => handleAddLearningItem(item.id, type as LearningItemType)}
-                onEditItem={(itemId, type) => handleEditLearningItem(item.id, itemId, type)}
-                
-              />
-            ) : (
-              <ProjectCard
-                key={item.id}
-                item={item}
-                index={index}
-                onDelete={deleteContentItem}
-                getContentIndex={getContentIndex}
-                getDifficultyColor={getDifficultyColor}
-              />
-            )
+            <div key={item.id} className="relative">
+              {/* Drop indicator above */}
+              {dragOverIndex === index && draggedItemId && draggedItemId !== item.id && (
+                <div className="absolute -top-3 left-0 right-0 h-1 bg-primary rounded-full z-10 shadow-lg" />
+              )}
+              
+              <div
+                draggable
+                tabIndex={0}
+                role="listitem"
+                aria-label={`${item.type === 'module' ? 'Module' : 'Project'}: ${item.title}. Press Alt + Arrow keys to reorder, or drag to move.`}
+                onDragStart={(e) => handleDragStart(e, item.id, index)}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, item.id, index)}
+                className={cn(
+                  "relative transition-all duration-200 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg",
+                  draggedItemId === item.id && "opacity-40 scale-95 rotate-2",
+                  isDragging && "pointer-events-none"
+                )}
+              >
+                {item.type === 'module' ? (
+                  <ModuleCard
+                    item={item}
+                    index={index}
+                    onToggle={toggleModule}
+                    onDelete={deleteContentItem}
+                    onDeleteLearningItem={deleteContentItem}
+                    onToggleAddContent={toggleAddContent}
+                    getContentIndex={getContentIndex}
+                    onAddItem={(type) => handleAddLearningItem(item.id, type as LearningItemType)}
+                    onEditItem={(itemId, type) => handleEditLearningItem(item.id, itemId, type)}
+                    onReorderLearningItems={handleReorderLearningItems}
+                    onEditModule={handleEditModule}
+                    isDragging={draggedItemId === item.id}
+                  />
+                ) : (
+                  <ProjectCard
+                    item={item}
+                    index={index}
+                    onDelete={deleteContentItem}
+                    getContentIndex={getContentIndex}
+                    getDifficultyColor={getDifficultyColor}
+                    onEditProject={handleEditProject}
+                    isDragging={draggedItemId === item.id}
+                  />
+                )}
+              </div>
+              
+              {/* Drop indicator below last item */}
+              {index === contentItems.length - 1 && dragOverIndex === index + 1 && draggedItemId && (
+                <div className="absolute -bottom-3 left-0 right-0 h-1 bg-primary rounded-full z-10 shadow-lg" />
+              )}
+            </div>
           ))}
         </div>
 
         <Button
           variant="outline"
           className="w-full mt-6"
-          onClick={() => setShowAddModuleForm(true)}
+          onClick={handleShowAddModuleForm}
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Module/Project
         </Button>
 
         {showAddModuleForm && (
-          <div className="mt-6">
+          <div ref={addModuleFormRef} className="mt-6">
             <AddModuleForm
               newModuleData={newModuleData}
               onDataChange={setNewModuleData}
@@ -618,7 +899,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         onOpenChange={setFocusPanelOpen}
         title={activeEditor ? `${editorMode === 'create' ? 'Add' : 'Edit'} ${formatItemType(activeEditor)}` : ''}
         width="full"
-        className="w-1/2 min-w-[40%]"
+        className={activeEditor === 'assessment' ? "w-3/5 min-w-[40%]" : "w-1/2 min-w-[40%]"}
       >
         {renderEditor()}
       </FocusPanel>

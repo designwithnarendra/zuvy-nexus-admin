@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { BaseEditor } from './BaseEditor';
 import { Input } from '@/components/ui/input';
@@ -198,7 +200,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
 
   return (
     <BaseEditor
-      title={mode === 'create' ? 'Create Assessment' : 'Edit Assessment'}
+      title=""
       type="assessment"
       mode={mode}
       onSave={handleSubmit}
@@ -210,7 +212,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
           content: (
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="font-semibold">Title</Label>
                 <Input
                   id="title"
                   value={data.title}
@@ -220,7 +222,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="font-semibold">Description</Label>
                 <Textarea
                   id="description"
                   value={data.description}
@@ -280,11 +282,21 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                      question.type === 'mcq' 
+                                        ? 'bg-primary-light text-primary' 
+                                        : 'bg-info-light text-info'
+                                    }`}>
                                       {question.type === 'mcq' ? 'MCQ' : 'Coding'}
                                     </span>
-                                    <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
-                                      {question.difficulty}
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                      question.difficulty === 'easy' 
+                                        ? 'bg-success-light text-success-dark' 
+                                        : question.difficulty === 'medium'
+                                        ? 'bg-warning-light text-warning-dark'
+                                        : 'bg-destructive-light text-destructive-dark'
+                                    }`}>
+                                      {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
                                     </span>
                                   </div>
                                   <p className="text-sm font-medium">{question.title}</p>
@@ -326,11 +338,21 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                             <div className="flex justify-between items-start">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    question.type === 'mcq' 
+                                      ? 'bg-primary-light text-primary' 
+                                      : 'bg-info-light text-info'
+                                  }`}>
                                     {question.type === 'mcq' ? 'MCQ' : 'Coding'}
                                   </span>
-                                  <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
-                                    {question.difficulty}
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    question.difficulty === 'easy' 
+                                      ? 'bg-success-light text-success-dark' 
+                                      : question.difficulty === 'medium'
+                                      ? 'bg-warning-light text-warning-dark'
+                                      : 'bg-destructive-light text-destructive-dark'
+                                  }`}>
+                                    {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
                                   </span>
                                 </div>
                                 <p className="text-sm font-medium">{question.title}</p>
@@ -479,7 +501,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
               
               {/* Time Limit */}
               <div className="space-y-2">
-                <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
+                <Label htmlFor="timeLimit" className="font-semibold">Time Limit (minutes)</Label>
                 <Input
                   id="timeLimit"
                   type="number"
@@ -491,7 +513,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
               
               {/* Passing Score */}
               <div className="space-y-2">
-                <Label htmlFor="passingScore">Passing Score (%)</Label>
+                <Label htmlFor="passingScore" className="font-semibold">Passing Score (%)</Label>
                 <Input
                   id="passingScore"
                   type="number"
@@ -509,7 +531,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="disableCopyPaste">Disable Copy/Paste</Label>
+                      <Label htmlFor="disableCopyPaste" className="font-semibold">Disable Copy/Paste</Label>
                       <p className="text-sm text-muted-foreground">
                         Prevent students from copying and pasting during the assessment
                       </p>
@@ -523,7 +545,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="trackTabChange">Track Tab Change</Label>
+                      <Label htmlFor="trackTabChange" className="font-semibold">Track Tab Change</Label>
                       <p className="text-sm text-muted-foreground">
                         Monitor if students navigate away from the assessment tab
                       </p>

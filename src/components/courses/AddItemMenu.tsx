@@ -1,16 +1,18 @@
 
+'use client'
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { FileText, Video, ClipboardCheck, Code, BookOpen, PlayCircle, Calendar, MessageSquare } from 'lucide-react';
 import AssessmentBuilderModal from './assessment-builder/AssessmentBuilderModal';
-import LiveClassCreator from './LiveClassCreator';
-import VideoCreator from './VideoCreator';
-import ArticleCreator from './ArticleCreator';
-import AssignmentCreator from './AssignmentCreator';
-import QuizCreator from './QuizCreator';
-import FeedbackFormCreator from './FeedbackFormCreator';
-import CodingProblemCreator from './CodingProblemCreator';
+import { LiveClassEditor } from './learning-item-editors/LiveClassEditor';
+import { VideoEditor } from './learning-item-editors/VideoEditor';
+import { ArticleEditor } from './learning-item-editors/ArticleEditor';
+import { AssignmentEditor } from './learning-item-editors/AssignmentEditor';
+import { QuizEditor } from './learning-item-editors/QuizEditor';
+import { FeedbackFormEditor } from './learning-item-editors/FeedbackFormEditor';
+import { CodingProblemEditor } from './learning-item-editors/CodingProblemEditor';
 
 interface AddItemMenuProps {
   isOpen: boolean;
@@ -98,22 +100,140 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
     setIsAssessmentBuilderOpen(false);
   };
 
+  // Mock data for editors
+  const getInitialData = (type: string) => {
+    switch (type) {
+      case 'live-class':
+        return {
+          title: '',
+          description: '',
+          startDate: new Date(),
+          startTime: '10:00',
+          endTime: '11:00',
+          hostName: '',
+          hostEmail: ''
+        };
+      case 'video':
+        return {
+          title: '',
+          description: '',
+          sourceType: 'youtube' as const,
+          url: '',
+          duration: 0
+        };
+      case 'article':
+        return {
+          title: '',
+          content: '',
+          contentType: 'rich-text' as const,
+          estimatedReadTime: 5
+        };
+      case 'assignment':
+        return {
+          title: '',
+          instructions: '',
+          allowedSubmissionTypes: ['file', 'text'] as ('file' | 'text')[],
+          dueDate: undefined
+        };
+      case 'quiz':
+        return {
+          title: '',
+          description: '',
+          questions: [],
+          timeLimit: undefined,
+          randomizeQuestions: false
+        };
+      case 'feedback-form':
+        return {
+          title: '',
+          questions: []
+        };
+      case 'coding-exercise':
+        return {
+          title: '',
+          description: '',
+          problemStatement: '',
+          testCases: [],
+          allowedLanguages: ['JavaScript', 'Python'],
+          starterCode: '// Your code here'
+        };
+      default:
+        return {};
+    }
+  };
+
   const renderCreator = () => {
     switch (creatorView) {
       case 'live-class':
-        return <LiveClassCreator onSave={handleCreatorClose} />;
+        const liveClassData = getInitialData('live-class');
+        return (
+          <LiveClassEditor
+            mode="create"
+            initialData={liveClassData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'video':
-        return <VideoCreator onSave={handleCreatorClose} />;
+        const videoData = getInitialData('video');
+        return (
+          <VideoEditor
+            mode="create"
+            initialData={videoData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'article':
-        return <ArticleCreator onSave={handleCreatorClose} />;
+        const articleData = getInitialData('article');
+        return (
+          <ArticleEditor
+            mode="create"
+            initialData={articleData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'assignment':
-        return <AssignmentCreator onSave={handleCreatorClose} />;
+        const assignmentData = getInitialData('assignment');
+        return (
+          <AssignmentEditor
+            mode="create"
+            initialData={assignmentData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'quiz':
-        return <QuizCreator onSave={handleCreatorClose} />;
+        const quizData = getInitialData('quiz');
+        return (
+          <QuizEditor
+            mode="create"
+            initialData={quizData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'feedback-form':
-        return <FeedbackFormCreator onSave={handleCreatorClose} />;
+        const feedbackData = getInitialData('feedback-form');
+        return (
+          <FeedbackFormEditor
+            mode="create"
+            initialData={feedbackData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       case 'coding-exercise':
-        return <CodingProblemCreator onSave={handleCreatorClose} />;
+        const codingData = getInitialData('coding-exercise');
+        return (
+          <CodingProblemEditor
+            mode="create"
+            initialData={codingData as any}
+            onSave={handleCreatorClose}
+            onCancel={handleCreatorClose}
+          />
+        );
       default:
         return null;
     }
@@ -122,22 +242,7 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
   if (creatorView) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCreatorView(null)}
-              >
-                ← Back
-              </Button>
-              <DialogTitle className="font-heading text-xl">
-                Create {itemTypes.find(item => item.type === creatorView)?.title}
-              </DialogTitle>
-            </div>
-          </DialogHeader>
-          
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0">
           {renderCreator()}
         </DialogContent>
       </Dialog>

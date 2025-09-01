@@ -1,7 +1,9 @@
+'use client'
+
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,7 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, MoreVertical, UserMinus, UserX, Mail, Eye } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 
@@ -45,6 +48,11 @@ interface MasterStudentTableProps {
   onDropoutStudent: (studentId: string) => void;
   onViewStudent: (studentId: string) => void;
   onContactStudent: (studentId: string) => void;
+  onBatchChange: (studentId: string, newBatch: string | null) => void;
+  selectedStudents?: string[];
+  onSelectStudent?: (studentId: string, checked: boolean) => void;
+  onSelectAll?: (checked: boolean) => void;
+  showMultiSelect?: boolean;
 }
 
 const MasterStudentTable = ({
@@ -53,12 +61,23 @@ const MasterStudentTable = ({
   onDeleteStudent,
   onDropoutStudent,
   onViewStudent,
-  onContactStudent
+  onContactStudent,
+  onBatchChange,
+  selectedStudents = [],
+  onSelectStudent,
+  onSelectAll,
+  showMultiSelect = false
 }: MasterStudentTableProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dropoutDialogOpen, setDropoutDialogOpen] = useState(false);
+  const [batchChangeDialogOpen, setBatchChangeDialogOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
+  const [pendingBatchChange, setPendingBatchChange] = useState<{
+    studentId: string;
+    currentBatch: string | null;
+    newBatch: string | null;
+  } | null>(null);
 
   // Check if a student can be deleted (only if batch hasn't started)
   const canDeleteStudent = (student: Student): boolean => {
@@ -102,13 +121,64 @@ const MasterStudentTable = ({
     }
   };
 
+  // Handle batch change
+  const handleBatchChange = (studentId: string, newBatch: string | null) => {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+
+    // If student is already assigned to a batch, show confirmation dialog
+    if (student.batch && student.batch !== newBatch) {
+      setPendingBatchChange({
+        studentId,
+        currentBatch: student.batch,
+        newBatch
+      });
+      setSelectedStudentName(student.name);
+      setBatchChangeDialogOpen(true);
+    } else {
+      // Direct assignment for unassigned students
+      onBatchChange(studentId, newBatch);
+    }
+  };
+
+  // Confirm batch change
+  const confirmBatchChange = () => {
+    if (pendingBatchChange) {
+      onBatchChange(pendingBatchChange.studentId, pendingBatchChange.newBatch);
+      setBatchChangeDialogOpen(false);
+      setPendingBatchChange(null);
+      setSelectedStudentName('');
+    }
+  };
+
   // Format student data for the table
   const formatStudentData = (student: Student) => {
     const canDelete = canDeleteStudent(student);
-    const isDropped = student.status === 'Dropped';
+    const isDropped = student.status === 'dropout';
+    const isSelected = selectedStudents.includes(student.id);
     
-    return {
+    const baseData = {
       ...student,
+      batch: (
+        <Select
+          value={student.batch || 'unassigned'}
+          onValueChange={(value) => handleBatchChange(student.id, value === 'unassigned' ? null : value)}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Select batch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="unassigned">
+              <span className="text-muted-foreground">Unassigned</span>
+            </SelectItem>
+            {batches.map((batch) => (
+              <SelectItem key={batch.id} value={batch.name}>
+                {batch.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
       progress: (
         <div className="flex items-center gap-2">
           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
@@ -123,9 +193,9 @@ const MasterStudentTable = ({
       status: (
         <Badge 
           variant={
-            student.status === 'Active' ? 'default' : 
-            student.status === 'At Risk' ? 'destructive' :
-            student.status === 'Completed' ? 'secondary' :
+            student.status === 'active' ? 'default' : 
+            student.status === 'dropout' ? 'destructive' :
+            student.status === 'graduated' ? 'secondary' :
             'outline'
           }
         >
@@ -172,31 +242,65 @@ const MasterStudentTable = ({
         </DropdownMenu>
       )
     };
+
+    // Add checkbox column if multi-select is enabled
+    if (showMultiSelect) {
+      return {
+        select: (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelectStudent?.(student.id, !!checked)}
+            aria-label={`Select ${student.name}`}
+          />
+        ),
+        ...baseData
+      };
+    }
+
+    return baseData;
   };
 
-  const studentColumns = [
+  // Handle select all functionality
+  const allSelected = students.length > 0 && selectedStudents.length === students.length;
+  const someSelected = selectedStudents.length > 0 && selectedStudents.length < students.length;
+
+  const baseColumns = [
     { key: 'name', label: 'Student Name' },
     { key: 'email', label: 'Email' },
     { key: 'batch', label: 'Batch' },
     { key: 'enrolledDate', label: 'Enrolled Date' },
     { key: 'progress', label: 'Progress' },
+    { key: 'attendance', label: 'Attendance (Out of 20 Classes)' },
     { key: 'lastActive', label: 'Last Active' },
     { key: 'status', label: 'Status' },
     { key: 'actions', label: 'Actions', sortable: false }
   ];
 
+  // Add checkbox column if multi-select is enabled
+  const studentColumns = showMultiSelect ? [
+    { 
+      key: 'select', 
+      label: (
+        <Checkbox
+          checked={allSelected}
+          indeterminate={someSelected || undefined}
+          onCheckedChange={(checked) => onSelectAll?.(!!checked)}
+          aria-label="Select all students"
+        />
+      ), 
+      sortable: false 
+    },
+    ...baseColumns
+  ] : baseColumns;
+
   return (
     <>
-      <Card className="shadow-4dp">
-        <CardContent className="p-6">
-          <DataTable
-            data={students.map(formatStudentData)}
-            columns={studentColumns}
-            searchable
-            filterable
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        data={students.map(formatStudentData)}
+        columns={studentColumns}
+        searchable={false}
+        filterable={false}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -239,6 +343,33 @@ const MasterStudentTable = ({
             </Button>
             <Button variant="default" onClick={confirmDropout}>
               Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Batch Change Confirmation Dialog */}
+      <Dialog open={batchChangeDialogOpen} onOpenChange={setBatchChangeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-warning" />
+              Confirm Batch Change
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to change <strong>{selectedStudentName}</strong>'s batch from{' '}
+              <strong>{pendingBatchChange?.currentBatch || 'Unassigned'}</strong> to{' '}
+              <strong>{pendingBatchChange?.newBatch || 'Unassigned'}</strong>?
+              <br /><br />
+              This action will move the student to a different batch and may affect their progress tracking.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBatchChangeDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmBatchChange}>
+              Change Batch
             </Button>
           </DialogFooter>
         </DialogContent>

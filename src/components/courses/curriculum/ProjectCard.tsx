@@ -11,6 +11,8 @@ interface ProjectCardProps {
   onDelete: (itemId: string) => void;
   getContentIndex: (index: number) => string;
   getDifficultyColor: (difficulty: string) => string;
+  onEditProject?: (projectId: string) => void;
+  isDragging?: boolean;
 }
 
 const ProjectCard = ({ 
@@ -18,13 +20,21 @@ const ProjectCard = ({
   index, 
   onDelete, 
   getContentIndex, 
-  getDifficultyColor 
+  getDifficultyColor,
+  onEditProject,
+  isDragging = false
 }: ProjectCardProps) => {
   return (
-    <Card className="shadow-4dp">
+    <Card className={cn("shadow-4dp transition-all duration-200", isDragging && "shadow-lg ring-2 ring-primary/20")}>
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
-          <div className="cursor-grab text-muted-foreground hover:text-foreground">
+          <div 
+            className={cn(
+              "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-muted/50",
+              isDragging && "text-primary bg-primary/10"
+            )}
+            title="Drag to reorder"
+          >
             <GripVertical className="h-5 w-5" />
           </div>
           <div className="p-2 rounded-md bg-warning-light text-warning">
@@ -36,21 +46,28 @@ const ProjectCard = ({
                 {getContentIndex(index)}: {item.title}
               </h4>
               <div className="flex items-center gap-2">
-                {item.difficulty && (
-                  <span className={cn(
-                    "px-2 py-1 rounded-md text-xs font-medium border",
-                    getDifficultyColor(item.difficulty)
-                  )}>
-                    {item.difficulty}
-                  </span>
-                )}
-                <Button variant="ghost" size="sm">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => {
+                    // Only allow editing for Project 1: Portfolio Website
+                    if (item.title === 'Portfolio Website' && onEditProject) {
+                      onEditProject(item.id);
+                    } else {
+                      console.log('Editing not available for this project');
+                    }
+                  }}
+                  disabled={item.title !== 'Portfolio Website'}
+                  className={item.title !== 'Portfolio Website' ? 'opacity-50 cursor-not-allowed' : ''}
+                  title={item.title === 'Portfolio Website' ? 'Edit project' : 'Editing not available for this project'}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onDelete(item.id)}
+                  className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
