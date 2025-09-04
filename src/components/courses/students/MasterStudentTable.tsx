@@ -20,7 +20,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, MoreVertical, UserMinus, UserX, Mail, Eye } from 'lucide-react';
+import { AlertCircle, MoreVertical, UserMinus, UserX, Mail, Edit } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 
 export interface Student {
@@ -46,7 +46,7 @@ interface MasterStudentTableProps {
   batches: BatchStatus[];
   onDeleteStudent: (studentId: string) => void;
   onDropoutStudent: (studentId: string) => void;
-  onViewStudent: (studentId: string) => void;
+  onEditStudent: (studentId: string) => void;
   onContactStudent: (studentId: string) => void;
   onBatchChange: (studentId: string, newBatch: string | null) => void;
   selectedStudents?: string[];
@@ -60,7 +60,7 @@ const MasterStudentTable = ({
   batches,
   onDeleteStudent,
   onDropoutStudent,
-  onViewStudent,
+  onEditStudent,
   onContactStudent,
   onBatchChange,
   selectedStudents = [],
@@ -88,7 +88,7 @@ const MasterStudentTable = ({
   };
 
   // Handle student action selection
-  const handleStudentAction = (action: 'delete' | 'dropout' | 'view' | 'contact', student: Student) => {
+  const handleStudentAction = (action: 'delete' | 'dropout' | 'edit' | 'contact', student: Student) => {
     setSelectedStudentId(student.id);
     setSelectedStudentName(student.name);
     
@@ -96,8 +96,8 @@ const MasterStudentTable = ({
       setDeleteDialogOpen(true);
     } else if (action === 'dropout') {
       setDropoutDialogOpen(true);
-    } else if (action === 'view') {
-      onViewStudent(student.id);
+    } else if (action === 'edit') {
+      onEditStudent(student.id);
     } else if (action === 'contact') {
       onContactStudent(student.id);
     }
@@ -211,9 +211,9 @@ const MasterStudentTable = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleStudentAction('view', student)}>
-              <Eye className="h-4 w-4 mr-2" />
-              View Details
+            <DropdownMenuItem onClick={() => handleStudentAction('edit', student)}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Student
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleStudentAction('contact', student)}>
               <Mail className="h-4 w-4 mr-2" />
@@ -232,7 +232,7 @@ const MasterStudentTable = ({
             {canDelete && (
               <DropdownMenuItem 
                 onClick={() => handleStudentAction('delete', student)}
-                className="text-destructive"
+                className="text-destructive hover:bg-red-500 hover:text-white"
               >
                 <UserX className="h-4 w-4 mr-2" />
                 Delete Student

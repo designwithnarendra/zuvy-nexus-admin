@@ -1,11 +1,13 @@
 
 'use client'
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, Upload } from 'lucide-react';
 import CourseViewTabs from '@/components/courses/CourseViewTabs';
+import PublishCourseDialog from '@/components/courses/PublishCourseDialog';
 
 // This would normally come from your API
 const getCourseById = (id: string) => {
@@ -40,6 +42,7 @@ const SingleCoursePage = () => {
   const params = useParams();
   const router = useRouter();
   const courseId = params?.courseId as string;
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   
   if (!courseId) {
     router.push('/courses');
@@ -100,7 +103,10 @@ const SingleCoursePage = () => {
               Preview as Student
             </Button>
             
-            <Button className="bg-primary hover:bg-primary-dark shadow-4dp">
+            <Button 
+              className="bg-primary hover:bg-primary-dark shadow-4dp"
+              onClick={() => setIsPublishDialogOpen(true)}
+            >
               <Upload className="h-4 w-4 mr-2" />
               Publish Course
             </Button>
@@ -123,6 +129,14 @@ const SingleCoursePage = () => {
 
       {/* Course Management Tabs */}
       <CourseViewTabs courseId={courseId} />
+
+      {/* Publish Course Dialog */}
+      <PublishCourseDialog
+        open={isPublishDialogOpen}
+        onOpenChange={setIsPublishDialogOpen}
+        courseId={courseId}
+        onPublish={() => console.log('Course published successfully!')}
+      />
     </div>
   );
 };

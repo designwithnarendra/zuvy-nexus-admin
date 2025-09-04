@@ -133,8 +133,8 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
     ));
   };
 
-  const handleViewStudent = (studentId: string) => {
-    console.log('View student:', studentId);
+  const handleEditStudent = (studentId: string) => {
+    console.log('Edit student:', studentId);
   };
 
   const handleContactStudent = (studentId: string) => {
@@ -317,7 +317,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         batches={batches}
         onDeleteStudent={handleDeleteStudent}
         onDropoutStudent={handleDropoutStudent}
-        onViewStudent={handleViewStudent}
+        onEditStudent={handleEditStudent}
         onContactStudent={handleContactStudent}
         onBatchChange={handleBatchChange}
         selectedStudents={selectedStudents}

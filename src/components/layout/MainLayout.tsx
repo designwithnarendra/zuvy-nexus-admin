@@ -16,12 +16,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   
   const navigationItems = [
     {
-      name: 'Dashboard',
-      href: '/',
-      icon: LayoutDashboard,
-      active: pathname === '/'
-    },
-    {
       name: 'Course Studio',
       href: '/courses',
       icon: Layers,
@@ -65,7 +59,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
                       item.active
                         ? "bg-primary text-primary-foreground shadow-2dp"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        : "text-muted-foreground hover:text-white hover:bg-primary"
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -79,7 +73,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto text-red-500 hover:text-red-600"
+            className="ml-auto text-red-500 hover:text-white hover:bg-red-500"
             title="Logout"
             aria-label="Logout"
           >

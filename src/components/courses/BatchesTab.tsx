@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Users, Plus, Upload, Eye, UserCheck, Calendar, Mail } from 'lucide-react';
+import { Users, Plus, Upload, Eye, UserCheck, Calendar, Mail, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 
@@ -59,8 +59,10 @@ const mockBatches: Batch[] = [
 ];
 
 const BatchesTab = ({ courseId }: BatchesTabProps) => {
-  const [batches] = useState<Batch[]>(mockBatches);
+  const [batches, setBatches] = useState<Batch[]>(mockBatches);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingBatch, setEditingBatch] = useState<Batch | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [newBatchData, setNewBatchData] = useState<NewBatchData>({
     name: '',
@@ -122,6 +124,34 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
     }
   };
 
+  const handleEditBatch = (batch: Batch) => {
+    setEditingBatch(batch);
+    setNewBatchData({
+      name: batch.name,
+      instructorEmail: batch.instructorEmail,
+      capEnrollment: batch.capEnrollment.toString()
+    });
+    setIsEditModalOpen(true);
+    setCurrentStep(1);
+  };
+
+  const handleUpdateBatch = () => {
+    if (editingBatch) {
+      setBatches(prev => prev.map(batch => 
+        batch.id === editingBatch.id 
+          ? { ...batch, ...newBatchData, capEnrollment: parseInt(newBatchData.capEnrollment) }
+          : batch
+      ));
+      setIsEditModalOpen(false);
+      setEditingBatch(null);
+      setNewBatchData({
+        name: '',
+        instructorEmail: '',
+        capEnrollment: ''
+      });
+    }
+  };
+
   return (
     <div className="w-full max-w-none space-y-6">
       {/* Header */}
@@ -158,6 +188,14 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
                     {batch.status.replace('_', ' ')}
                   </Badge>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 hover:bg-primary hover:text-white"
+                  onClick={() => handleEditBatch(batch)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
               </div>
             </CardHeader>
 
@@ -293,6 +331,64 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Batch Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">
+              Edit Batch - {editingBatch?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Update batch details and instructor information.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="editBatchName" className="font-semibold">Batch Name *</Label>
+              <Input
+                id="editBatchName"
+                value={newBatchData.name}
+                onChange={(e) => setNewBatchData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter batch name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="editInstructorEmail" className="font-semibold">Instructor Email *</Label>
+              <Input
+                id="editInstructorEmail"
+                type="email"
+                value={newBatchData.instructorEmail}
+                onChange={(e) => setNewBatchData(prev => ({ ...prev, instructorEmail: e.target.value }))}
+                placeholder="Enter instructor email"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="editCapEnrollment" className="font-semibold">Cap Enrollment *</Label>
+              <Input
+                id="editCapEnrollment"
+                type="number"
+                min="1"
+                value={newBatchData.capEnrollment}
+                onChange={(e) => setNewBatchData(prev => ({ ...prev, capEnrollment: e.target.value }))}
+                placeholder="Maximum number of students"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateBatch} className="bg-primary hover:bg-primary-dark">
+                Update Batch
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

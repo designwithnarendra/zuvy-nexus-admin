@@ -30,6 +30,9 @@ const QuestionBankPage = () => {
   const [isManageTopicsOpen, setIsManageTopicsOpen] = useState(false);
   const [isOpenEndedModalOpen, setIsOpenEndedModalOpen] = useState(false);
   const [isMCQModalOpen, setIsMCQModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [createType, setCreateType] = useState<'MCQ' | 'Coding' | 'Open Ended'>('MCQ');
 
   // Expanded questions data with 30+ items
@@ -110,7 +113,10 @@ const QuestionBankPage = () => {
   const formatQuestionData = (question: Question) => ({
     ...question,
     text: (
-      <div className="max-w-md">
+      <div 
+        className="max-w-md cursor-pointer hover:text-primary"
+        onClick={() => handlePreviewQuestion(question.id)}
+      >
         <p className="font-medium line-clamp-2">{question.text}</p>
       </div>
     ),
@@ -133,16 +139,8 @@ const QuestionBankPage = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handlePreviewQuestion(question.id)}
-          className="h-8 w-8"
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
           onClick={() => handleEditQuestion(question.id)}
-          className="h-8 w-8"
+          className="h-8 w-8 hover:bg-primary hover:text-white"
         >
           <Edit className="h-4 w-4" />
         </Button>
@@ -150,7 +148,7 @@ const QuestionBankPage = () => {
           variant="ghost"
           size="icon"
           onClick={() => handleDeleteQuestion(question.id)}
-          className="h-8 w-8 text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+          className="h-8 w-8 text-destructive hover:bg-red-500 hover:text-white"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -175,13 +173,19 @@ const QuestionBankPage = () => {
   };
 
   const handlePreviewQuestion = (questionId: string) => {
-    console.log('Preview question:', questionId);
-    // In a real app, this would open a preview modal
+    const question = questions.find(q => q.id === questionId);
+    if (question) {
+      setSelectedQuestion(question);
+      setIsPreviewModalOpen(true);
+    }
   };
 
   const handleEditQuestion = (questionId: string) => {
-    console.log('Edit question:', questionId);
-    // In a real app, this would open the edit dialog
+    const question = questions.find(q => q.id === questionId);
+    if (question) {
+      setSelectedQuestion(question);
+      setIsEditModalOpen(true);
+    }
   };
 
   const handleDeleteQuestion = (questionId: string) => {
@@ -313,6 +317,91 @@ const QuestionBankPage = () => {
         isOpen={isMCQModalOpen}
         onClose={() => setIsMCQModalOpen(false)}
       />
+
+      {/* Question Preview Modal */}
+      <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Question Preview
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedQuestion && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Badge className={getTypeColor(selectedQuestion.type)} variant="outline">
+                  {selectedQuestion.type}
+                </Badge>
+                <Badge className={getDifficultyColor(selectedQuestion.difficulty)} variant="outline">
+                  {selectedQuestion.difficulty}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  Topic: {selectedQuestion.topic}
+                </span>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-2">Question:</h3>
+                <p className="text-base">{selectedQuestion.text}</p>
+              </div>
+              
+              <div className="flex justify-between text-sm text-muted-foreground pt-4 border-t">
+                <span>Usage Count: {selectedQuestion.usageCount}</span>
+                <span>Created: {new Date(selectedQuestion.createdDate).toLocaleDateString()}</span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Question Edit Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Edit Question - {selectedQuestion?.type}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="max-h-[70vh] overflow-y-auto">
+            {selectedQuestion && selectedQuestion.type === 'Coding' && (
+              <CodingProblemEditor
+                mode="edit"
+                initialData={{
+                  title: selectedQuestion.text,
+                  description: selectedQuestion.text,
+                  difficulty: selectedQuestion.difficulty as 'Easy' | 'Medium' | 'Hard',
+                  topic: selectedQuestion.topic,
+                  testCases: [],
+                  starterCode: '',
+                  solution: ''
+                }}
+                onSave={() => setIsEditModalOpen(false)}
+                onCancel={() => setIsEditModalOpen(false)}
+              />
+            )}
+            {selectedQuestion && selectedQuestion.type === 'MCQ' && (
+              <div className="space-y-4 p-4">
+                <div className="text-center text-muted-foreground">
+                  MCQ Editor would be displayed here
+                  <p className="text-sm mt-2">Question: {selectedQuestion.text}</p>
+                </div>
+              </div>
+            )}
+            {selectedQuestion && selectedQuestion.type === 'Open Ended' && (
+              <div className="space-y-4 p-4">
+                <div className="text-center text-muted-foreground">
+                  Open Ended Editor would be displayed here
+                  <p className="text-sm mt-2">Question: {selectedQuestion.text}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

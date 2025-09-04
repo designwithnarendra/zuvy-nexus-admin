@@ -55,7 +55,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Course Image */}
           <div className="space-y-4">
-            <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted relative group">
+            <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted">
               {formData.imageUrl ? (
                 <img 
                   src={formData.imageUrl} 
@@ -67,30 +67,33 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                   <Image className="h-12 w-12 text-primary opacity-60" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <label className="cursor-pointer">
-                  <Button variant="secondary" size="sm" className="pointer-events-none">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload New Image
-                  </Button>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="sr-only"
-                  />
-                </label>
-                {formData.imageUrl && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleRemoveImage}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Remove Image
-                  </Button>
-                )}
-              </div>
+            </div>
+            
+            {/* Image Management Buttons */}
+            <div className="flex flex-col gap-2">
+              <label className="cursor-pointer">
+                <Button variant="outline" size="sm" className="w-full pointer-events-none">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload New Image
+                </Button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="sr-only"
+                />
+              </label>
+              {formData.imageUrl && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleRemoveImage}
+                  className="w-full hover:bg-red-500 hover:text-white"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Remove Image
+                </Button>
+              )}
             </div>
           </div>
 
