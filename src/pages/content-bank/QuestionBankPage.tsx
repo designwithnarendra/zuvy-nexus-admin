@@ -229,7 +229,7 @@ const QuestionBankPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
+    <div className="w-full px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

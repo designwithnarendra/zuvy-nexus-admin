@@ -53,7 +53,7 @@ const SingleCoursePage = () => {
   
   if (!course) {
     return (
-      <div className="container mx-auto px-6 py-8">
+      <div className="w-full px-6 py-8">
         <div className="text-center">
           <h1 className="font-heading font-bold text-2xl mb-4">Course Not Found</h1>
           <p className="text-muted-foreground mb-6">The course you're looking for doesn't exist.</p>
@@ -80,7 +80,7 @@ const SingleCoursePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
+    <div className="w-full px-6 py-8">
       {/* Header Section */}
       <div className="mb-8">
         {/* Top Navigation Row */}

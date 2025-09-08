@@ -29,7 +29,7 @@ const SettingsLayout = ({ children }: SettingsLayoutProps) => {
   ];
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
+    <div className="w-full px-6 py-8">
       {/* Secondary Navigation */}
       <nav className="flex items-center space-x-1 mb-8">
         {settingsNavItems.map((item) => {

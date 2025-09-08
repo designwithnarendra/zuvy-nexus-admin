@@ -28,7 +28,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       active: pathname.startsWith('/content-bank')
     },
     {
-      name: 'Settings',
+      name: 'Roles and Permissions',
       href: '/settings',
       icon: Settings,
       active: pathname.startsWith('/settings')
