@@ -11,7 +11,6 @@ import {
   BookOpen
 } from 'lucide-react';
 import { ContentItemGrid } from './submissions/ContentItemGrid';
-import { StudentSubmissionsTable } from './submissions/StudentSubmissionsTable';
 
 // Mock submission types
 const submissionTypes = [
@@ -29,15 +28,6 @@ interface SubmissionsTabProps {
 
 const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
   const [activeSubmissionType, setActiveSubmissionType] = useState('assessments');
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-
-  const handleItemSelect = (itemId: string) => {
-    setSelectedItemId(itemId);
-  };
-
-  const handleBackToItems = () => {
-    setSelectedItemId(null);
-  };
 
   return (
     <div className="space-y-6">
@@ -66,20 +56,11 @@ const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
 
         {submissionTypes.map(type => (
           <TabsContent key={type.id} value={type.id} className="mt-6">
-            {!selectedItemId ? (
-              <ContentItemGrid 
-                courseId={courseId}
-                submissionType={type.id}
-                onSelectItem={handleItemSelect}
-              />
-            ) : (
-              <StudentSubmissionsTable 
-                courseId={courseId}
-                itemId={selectedItemId}
-                submissionType={type.id}
-                onBack={handleBackToItems}
-              />
-            )}
+            <ContentItemGrid 
+              courseId={courseId}
+              submissionType={type.id}
+              onSelectItem={() => {}} // Not used anymore since we navigate directly
+            />
           </TabsContent>
         ))}
       </Tabs>

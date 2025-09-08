@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   FileText, 
@@ -72,6 +73,7 @@ const getIconByType = (type: string) => {
 };
 
 export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: ContentItemGridProps) => {
+  const router = useRouter();
   const [items, setItems] = useState<LearningItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
@@ -181,7 +183,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
           <Card 
             key={item.id} 
             className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onSelectItem(item.id)}
+            onClick={() => router.push(`/submissions/${courseId}/${item.id}?type=${submissionType}`)}
           >
             <CardContent className="p-4">
               <div className="flex items-start justify-between">

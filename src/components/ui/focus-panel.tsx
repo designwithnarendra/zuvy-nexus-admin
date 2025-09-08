@@ -68,19 +68,11 @@ export function FocusPanel({
         <div className="flex flex-col h-full">
           {/* Header */}
           <SheetHeader className={cn("p-6 border-b", headerClassName)}>
-            <div className="flex justify-between items-center">
-              <div>
-                <SheetTitle>{title}</SheetTitle>
-                {description && (
-                  <SheetDescription>{description}</SheetDescription>
-                )}
-              </div>
-              <SheetClose asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Close</span>
-                </Button>
-              </SheetClose>
+            <div className="pr-8">
+              <SheetTitle>{title}</SheetTitle>
+              {description && (
+                <SheetDescription>{description}</SheetDescription>
+              )}
             </div>
           </SheetHeader>
           
@@ -93,7 +85,7 @@ export function FocusPanel({
           
           {/* Footer */}
           {footer && (
-            <SheetFooter className={cn("p-6 border-t", footerClassName)}>
+            <SheetFooter className={cn("p-6 border-t mt-auto", footerClassName)}>
               {footer}
             </SheetFooter>
           )}
