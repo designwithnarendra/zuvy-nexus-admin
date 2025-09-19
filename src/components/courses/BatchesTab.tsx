@@ -113,15 +113,8 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
   };
 
   const handleViewStudents = (batchId: string) => {
-    // Find the batch to get its name
-    const batch = batches.find(b => b.id === batchId);
-    if (batch) {
-      // Navigate to students tab with the batch pre-selected using a custom event
-      // This is more reliable than hash navigation for complex state management
-      window.dispatchEvent(new CustomEvent('navigateToStudents', { 
-        detail: { batchName: batch.name, batchId: batch.id } 
-      }));
-    }
+    // Navigate directly to the batch details page
+    router.push(`/courses/${courseId}/batches/${batchId}`);
   };
 
   const handleEditBatch = (batch: Batch) => {
@@ -172,7 +165,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
       </div>
 
       {/* Batch Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {batches.map((batch) => (
           <Card key={batch.id} className="hover:shadow-hover transition-all duration-200">
             <CardHeader className="pb-3">
@@ -226,7 +219,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => handleViewStudents(batch.id)}
-                className="w-full"
+                className="w-full h-10"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View Students

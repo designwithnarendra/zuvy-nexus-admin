@@ -86,6 +86,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
 
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Assignment' : 'Edit Assignment'}
       type="assignment"
       mode={mode}
       onSave={handleSubmit}

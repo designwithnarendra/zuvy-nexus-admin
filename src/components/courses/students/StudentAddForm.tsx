@@ -30,18 +30,33 @@ interface StudentAddFormProps {
   batches: Batch[];
   onAddStudent: (student: { name: string; email: string; batchId?: string }) => void;
   onCancel?: () => void;
+  editingStudent?: {
+    id: string;
+    name: string;
+    email: string;
+    batch: string | null;
+  } | null;
+  onEditStudent?: (studentId: string, student: { name: string; email: string; batchId?: string }) => void;
 }
 
-const StudentAddForm = ({ batches, onAddStudent, onCancel }: StudentAddFormProps) => {
+const StudentAddForm = ({ batches, onAddStudent, onCancel, editingStudent, onEditStudent }: StudentAddFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditing = !!editingStudent;
+
+  // Get batch ID from batch name for editing
+  const getBatchIdFromName = (batchName: string | null) => {
+    if (!batchName) return undefined;
+    const batch = batches.find(b => b.name === batchName);
+    return batch?.id;
+  };
 
   // Initialize form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      batchId: undefined,
+      name: editingStudent?.name || '',
+      email: editingStudent?.email || '',
+      batchId: getBatchIdFromName(editingStudent?.batch || null),
     },
   });
 
@@ -49,14 +64,22 @@ const StudentAddForm = ({ batches, onAddStudent, onCancel }: StudentAddFormProps
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      await onAddStudent({
-        name: values.name,
-        email: values.email,
-        batchId: values.batchId,
-      });
+      if (isEditing && editingStudent && onEditStudent) {
+        await onEditStudent(editingStudent.id, {
+          name: values.name,
+          email: values.email,
+          batchId: values.batchId,
+        });
+      } else {
+        await onAddStudent({
+          name: values.name,
+          email: values.email,
+          batchId: values.batchId,
+        });
+      }
       form.reset();
     } catch (error) {
-      console.error('Error adding student:', error);
+      console.error(isEditing ? 'Error editing student:' : 'Error adding student:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -128,7 +151,10 @@ const StudentAddForm = ({ batches, onAddStudent, onCancel }: StudentAddFormProps
             </Button>
           )}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Adding...' : 'Add Student'}
+            {isSubmitting
+              ? (isEditing ? 'Updating...' : 'Adding...')
+              : (isEditing ? 'Update Student' : 'Add Student')
+            }
           </Button>
         </div>
       </form>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { 
   Table, 
   TableBody, 
@@ -63,6 +64,9 @@ const SubmissionDetailsPage = ({
   const [selectedBatch, setSelectedBatch] = useState<string>('all');
   const [item, setItem] = useState<LearningItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isReAttemptModalOpen, setIsReAttemptModalOpen] = useState(false);
+  const [selectedSubmissionForReAttempt, setSelectedSubmissionForReAttempt] = useState<string | null>(null);
+  const [approvedReAttempts, setApprovedReAttempts] = useState<Set<string>>(new Set());
 
   // Fetch submissions and students
   useEffect(() => {
@@ -99,7 +103,7 @@ const SubmissionDetailsPage = ({
           break;
         case 'projects':
           submissionData = mockProjectSubmissions as Submission[];
-          itemData = mockProjects.find(p => p.id === itemId) || null;
+          itemData = mockProjects.find(p => p.id === itemId) as any || null;
           break;
       }
       
@@ -110,7 +114,25 @@ const SubmissionDetailsPage = ({
   }, [itemId, submissionType]);
 
   const handleBack = () => {
-    router.push(`/courses/${courseId}`);
+    router.push(`/courses/${courseId}?tab=submissions`);
+  };
+
+  const handleOpenReAttemptModal = (submissionId: string) => {
+    setSelectedSubmissionForReAttempt(submissionId);
+    setIsReAttemptModalOpen(true);
+  };
+
+  const handleApproveReAttempt = () => {
+    if (selectedSubmissionForReAttempt) {
+      setApprovedReAttempts(new Set([...approvedReAttempts, selectedSubmissionForReAttempt]));
+      setIsReAttemptModalOpen(false);
+      setSelectedSubmissionForReAttempt(null);
+    }
+  };
+
+  const handleCancelReAttempt = () => {
+    setIsReAttemptModalOpen(false);
+    setSelectedSubmissionForReAttempt(null);
   };
 
   const filteredSubmissions = selectedBatch === 'all' 
@@ -172,10 +194,10 @@ const SubmissionDetailsPage = ({
     <div className="container mx-auto px-6 py-8 max-w-7xl">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleBack}
-          className="hover:bg-primary hover:text-white"
+          className="hover:text-primary hover:bg-transparent p-0"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Course Submissions
@@ -224,16 +246,8 @@ const SubmissionDetailsPage = ({
       </Card>
 
       {/* Submissions Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Student Submissions</CardTitle>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </CardHeader>
+      <h2 className="text-lg font-semibold mb-6">Student Submissions</h2>
+      <Card className="bg-white">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -265,19 +279,19 @@ const SubmissionDetailsPage = ({
                       <Badge variant="outline">{batch?.name || 'Batch 1'}</Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(submission.submittedAt).toLocaleString()}
+                      {new Date(submission.submissionDate).toLocaleString()}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-muted-foreground" />
-                        {submission.timeTaken || '105m 0s'}
+                        {(submission as any).timeTaken || '105m 0s'}
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className={`font-semibold ${
-                        (submission.score || 75) >= 70 ? 'text-success' : 'text-destructive'
+                        ((submission as any).score || 75) >= 70 ? 'text-success' : 'text-destructive'
                       }`}>
-                        {submission.score || 75}%
+                        {(submission as any).score || 75}%
                       </span>
                     </TableCell>
                     <TableCell>
@@ -287,12 +301,12 @@ const SubmissionDetailsPage = ({
                           variant="outline" 
                           className={getStatusColor(submission.status)}
                         >
-                          {(submission.score || 75) >= 70 ? 'Yes' : 'No'}
+                          {((submission as any).score || 75) >= 70 ? 'Yes' : 'No'}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="font-medium">{submission.attempts || 1}</span>
+                      <span className="font-medium">{(submission as any).attempts || 1}</span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -313,10 +327,15 @@ const SubmissionDetailsPage = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-primary hover:bg-primary hover:text-white"
+                          onClick={() => handleOpenReAttemptModal(submission.id)}
+                          disabled={approvedReAttempts.has(submission.id)}
+                          className={approvedReAttempts.has(submission.id)
+                            ? "text-muted-foreground cursor-not-allowed"
+                            : "text-primary hover:bg-primary hover:text-white"
+                          }
                         >
                           <RefreshCw className="h-4 w-4 mr-1" />
-                          Approve Re-Attempt
+                          {approvedReAttempts.has(submission.id) ? 'Re-Attempt Approved' : 'Approve Re-Attempt'}
                         </Button>
                       </div>
                     </TableCell>
@@ -327,6 +346,26 @@ const SubmissionDetailsPage = ({
           </Table>
         </CardContent>
       </Card>
+
+      {/* Re-Attempt Confirmation Modal */}
+      <Dialog open={isReAttemptModalOpen} onOpenChange={setIsReAttemptModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">Approve Re-Attempt</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to allow this student to re-attempt this assessment? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={handleCancelReAttempt}>
+              Cancel
+            </Button>
+            <Button onClick={handleApproveReAttempt} className="bg-primary hover:bg-primary-dark">
+              Approve Re-Attempt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

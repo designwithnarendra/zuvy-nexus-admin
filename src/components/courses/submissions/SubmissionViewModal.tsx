@@ -212,7 +212,7 @@ export const SubmissionViewModal = ({
                       ) : Array.isArray(answer.answer) ? (
                         answer.answer.join(', ')
                       ) : (
-                        answer.answer
+                        <span>{String(answer.answer)}</span>
                       )}
                     </div>
                   </li>
@@ -283,24 +283,24 @@ export const SubmissionViewModal = ({
             <div>
               <h3 className="font-medium mb-1">Responses:</h3>
               <ul className="space-y-2">
-                {feedbackSub.responses.map((response, index) => (
-                  <li key={response.questionId} className="bg-muted p-2 rounded-md">
+                {feedbackSub.answers.map((answer, index) => (
+                  <li key={answer.questionId} className="bg-muted p-2 rounded-md">
                     <div>
                       <span className="font-medium">Question {index + 1}:</span>
                     </div>
                     <div className="mt-1">
-                      {response.responseType === 'rating' ? (
+                      {typeof answer.answer === 'number' && answer.answer <= 5 ? (
                         <div className="flex items-center gap-1">
                           {Array(5).fill(0).map((_, i) => (
-                            <span 
-                              key={i} 
-                              className={`h-4 w-4 rounded-full ${i < parseInt(response.response) ? 'bg-primary' : 'bg-muted-foreground/20'}`}
+                            <span
+                              key={i}
+                              className={`h-4 w-4 rounded-full ${i < (answer.answer as number) ? 'bg-primary' : 'bg-muted-foreground/20'}`}
                             />
                           ))}
-                          <span className="ml-2">{response.response}/5</span>
+                          <span className="ml-2">{answer.answer}/5</span>
                         </div>
                       ) : (
-                        response.response
+                        <span>{String(answer.answer)}</span>
                       )}
                     </div>
                   </li>

@@ -1,4 +1,6 @@
-# Strategic Design Protocol
+# Compact Design Rules for Claude Code
+
+## Strategic Design Protocol
 
 **Question Everything**: Never accept first problem statements. Use "Five Whys" to find root causes. Demand evidence, not opinions.
 
@@ -10,7 +12,7 @@
 
 **Validate & Iterate**: Define success metrics. Test hypotheses with users. Connect design to business impact. Present drafts, seek criticism, admit gaps.
 
-# Visual Excellence Standards
+## Visual Excellence Standards
 
 **Hierarchy Mastery**: Three-layer focus (primary/secondary/tertiary) using size, color, contrast. Every element earns its visual weight.
 
@@ -24,7 +26,7 @@
 
 **Function-Beauty Balance**: Every choice serves both appeal and function. Build trust through consistency.
 
-# Task Planning Methodology
+## Task Planning Methodology
 
 **Clarify the Why**: Understand user problem and business objective. Define success metrics upfront.
 
@@ -37,7 +39,7 @@
 
 **Logical Sequencing**: Foundation first (components, data) then UI assembly. Identify blockers and formulate clarifying questions.
 
-# Execution Standards
+## Execution Standards
 
 **Follow the Plan**: Announce current task. Execute sequentially. One sub-task at a time. Mark completed tasks.
 
@@ -47,7 +49,7 @@
 
 **NextJS Execution**: Follow file-based routing conventions. Use proper imports and dynamic loading. Implement TypeScript strict mode compliance.
 
-# NextJS Code Generation Excellence
+## NextJS Code Generation Excellence
 
 **Visual Fidelity**: Pixel-perfect implementation with Tailwind CSS. Use `tailwindcss-animate` for subtle transitions. Fully responsive with mobile-first approach.
 

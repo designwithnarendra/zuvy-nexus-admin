@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus } from 'lucide-react';
 
 interface OpenEndedCreatorProps {
   onSave: () => void;
@@ -17,8 +19,11 @@ const OpenEndedCreator = ({ onSave }: OpenEndedCreatorProps) => {
     title: '',
     description: '',
     topic: '',
-    difficulty: ''
+    difficulty: '',
+    points: 10,
+    timeLimit: 60
   });
+  const [isCreateTopicOpen, setIsCreateTopicOpen] = useState(false);
 
   const topics = ['JavaScript Basics', 'React Fundamentals', 'Node.js', 'Algorithms', 'Data Structures'];
   const difficulties = ['Easy', 'Medium', 'Hard'];
@@ -139,14 +144,7 @@ const OpenEndedCreator = ({ onSave }: OpenEndedCreatorProps) => {
         </Button>
       </div>
 
-      <CreateTopicModal
-        isOpen={isCreateTopicOpen}
-        onClose={() => setIsCreateTopicOpen(false)}
-        onTopicCreated={(topic) => {
-          handleInputChange('topic', topic);
-          setIsCreateTopicOpen(false);
-        }}
-      />
+      {/* CreateTopicModal would be implemented here */}
     </div>
   );
 };

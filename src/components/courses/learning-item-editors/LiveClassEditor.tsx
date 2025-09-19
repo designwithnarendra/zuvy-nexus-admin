@@ -108,6 +108,7 @@ export function LiveClassEditor({
 
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Live Class' : 'Edit Live Class'}
       type="live-class"
       mode={mode}
       onSave={handleSubmit}

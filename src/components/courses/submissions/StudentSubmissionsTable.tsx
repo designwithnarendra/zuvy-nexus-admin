@@ -124,7 +124,7 @@ export const StudentSubmissionsTable = ({
           allSubmissions = mockFeedbackSubmissions;
           break;
         case 'projects':
-          contentItem = mockProjects.find(p => p.id === itemId) || null;
+          contentItem = mockProjects.find(p => p.id === itemId) as any || null; // Type cast for now
           allSubmissions = mockProjectSubmissions;
           break;
       }
@@ -370,9 +370,9 @@ export const StudentSubmissionsTable = ({
                           <code>{(answer.answer as any).code}</code>
                         </pre>
                       ) : Array.isArray(answer.answer) ? (
-                        answer.answer.join(', ')
+                        <span>{answer.answer.join(', ')}</span>
                       ) : (
-                        answer.answer
+                        <span>{String(answer.answer)}</span>
                       )}
                     </div>
                   </li>
@@ -452,9 +452,9 @@ export const StudentSubmissionsTable = ({
                       {typeof answer.answer === 'number' && answer.answer <= 5 ? (
                         <div className="flex items-center gap-1">
                           {Array(5).fill(0).map((_, i) => (
-                            <span 
-                              key={i} 
-                              className={`h-4 w-4 rounded-full ${i < answer.answer ? 'bg-primary' : 'bg-muted-foreground/20'}`}
+                            <span
+                              key={i}
+                              className={`h-4 w-4 rounded-full ${i < (answer.answer as number) ? 'bg-primary' : 'bg-muted-foreground/20'}`}
                             />
                           ))}
                           <span className="ml-2">{answer.answer}/5</span>
@@ -462,7 +462,7 @@ export const StudentSubmissionsTable = ({
                       ) : Array.isArray(answer.answer) ? (
                         answer.answer.join(', ')
                       ) : (
-                        answer.answer
+                        <span>{String(answer.answer)}</span>
                       )}
                     </div>
                   </li>

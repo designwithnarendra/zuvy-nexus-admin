@@ -110,7 +110,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
           submissions = mockFeedbackSubmissions;
           break;
         case 'projects':
-          contentItems = mockProjects;
+          contentItems = mockProjects as any; // Type cast for now - would be properly typed in real implementation
           submissions = mockProjectSubmissions;
           break;
         default:
@@ -146,7 +146,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4, 5, 6].map(i => (
           <Card key={i}>
             <CardContent className="p-4">

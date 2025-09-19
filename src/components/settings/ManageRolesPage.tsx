@@ -87,12 +87,11 @@ const ManageRolesPage = () => {
     
     const newRole: Role = {
       id: `role_${Date.now()}`,
-      name: newRoleName,
+      name: newRoleName as any, // Custom role name, not from UserRole enum
       description: `${newRoleName} role`,
       color: roleColors[roles.length % roleColors.length],
       permissions: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      isSystem: false // Custom role, not a system role
     };
     
     setRoles([...roles, newRole]);
@@ -108,10 +107,9 @@ const ManageRolesPage = () => {
     
     const newAction: Action = {
       id: `action_${Date.now()}`,
-      name: newActionName,
+      name: newActionName as any, // Custom action name, not from ActionType enum
       description: newActionDescription || `${newActionName} action`,
-      resourceType: 'general',
-      category: 'custom'
+      category: 'Operations' // Use one of the allowed categories
     };
     
     setActions([...actions, newAction]);
@@ -178,9 +176,9 @@ const ManageRolesPage = () => {
   const saveRoleEdit = () => {
     if (!editRoleName.trim() || !editingItem) return;
     
-    setRoles(prev => prev.map(role => 
-      role.id === editingItem.id 
-        ? { ...role, name: editRoleName, updatedAt: new Date().toISOString() }
+    setRoles(prev => prev.map(role =>
+      role.id === editingItem.id
+        ? { ...role, name: editRoleName as any } // Cast custom role name
         : role
     ));
     
@@ -195,7 +193,7 @@ const ManageRolesPage = () => {
     
     setActions(prev => prev.map(action =>
       action.id === editingItem.id
-        ? { ...action, name: editActionName, description: editActionDescription }
+        ? { ...action, name: editActionName as any, description: editActionDescription } // Cast custom action name
         : action
     ));
     

@@ -189,6 +189,7 @@ export function FeedbackFormEditor({ initialData, onSave, onCancel, mode }: Feed
 
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Feedback Form' : 'Edit Feedback Form'}
       type="feedback"
       mode={mode}
       onSave={handleSubmit}

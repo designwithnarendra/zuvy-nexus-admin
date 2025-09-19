@@ -99,6 +99,7 @@ export function ArticleEditor({
   
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Article' : 'Edit Article'}
       type="article"
       mode={mode}
       onSave={handleSubmit}

@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, MoreVertical, UserMinus, UserX, Mail, Edit } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import DataTable from '@/components/shared/DataTable';
 
 export interface Student {
@@ -33,6 +34,7 @@ export interface Student {
   batch: string | null;
   status: 'active' | 'dropout' | 'graduated';
   attendance: string;
+  profilePicture?: string;
 }
 
 interface BatchStatus {
@@ -53,6 +55,9 @@ interface MasterStudentTableProps {
   onSelectStudent?: (studentId: string, checked: boolean) => void;
   onSelectAll?: (checked: boolean) => void;
   showMultiSelect?: boolean;
+  onStudentClick?: (studentId: string) => void;
+  totalClasses?: number; // New prop for dynamic attendance column
+  hideBatchColumn?: boolean; // Hide batch column for batch detail pages
 }
 
 const MasterStudentTable = ({
@@ -66,7 +71,10 @@ const MasterStudentTable = ({
   selectedStudents = [],
   onSelectStudent,
   onSelectAll,
-  showMultiSelect = false
+  showMultiSelect = false,
+  onStudentClick,
+  totalClasses = 20, // Default to 20 classes
+  hideBatchColumn = false
 }: MasterStudentTableProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dropoutDialogOpen, setDropoutDialogOpen] = useState(false);
@@ -82,9 +90,19 @@ const MasterStudentTable = ({
   // Check if a student can be deleted (only if batch hasn't started)
   const canDeleteStudent = (student: Student): boolean => {
     if (!student.batch) return true; // Not assigned to a batch
-    
+
     const batch = batches.find(b => b.name === student.batch);
     return batch ? batch.status === 'Not Started' : true;
+  };
+
+  // Get student initials for avatar fallback
+  const getStudentInitials = (name: string): string => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   // Handle student action selection
@@ -156,29 +174,54 @@ const MasterStudentTable = ({
     const canDelete = canDeleteStudent(student);
     const isDropped = student.status === 'dropout';
     const isSelected = selectedStudents.includes(student.id);
-    
+
     const baseData = {
       ...student,
-      batch: (
-        <Select
-          value={student.batch || 'unassigned'}
-          onValueChange={(value) => handleBatchChange(student.id, value === 'unassigned' ? null : value)}
+      name: (
+        <div
+          className="flex items-center gap-3 cursor-pointer hover:underline"
+          onClick={(e) => {
+            e.stopPropagation();
+            onStudentClick?.(student.id);
+          }}
         >
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Select batch" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="unassigned">
-              <span className="text-muted-foreground">Unassigned</span>
-            </SelectItem>
-            {batches.map((batch) => (
-              <SelectItem key={batch.id} value={batch.name}>
-                {batch.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={student.profilePicture} alt={student.name} />
+            <AvatarFallback className="text-xs">
+              {getStudentInitials(student.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col min-w-0">
+            <span className="font-medium text-sm leading-tight">{student.name}</span>
+            <span className="text-xs text-muted-foreground truncate">{student.email}</span>
+          </div>
+        </div>
       ),
+      email: null, // Hide email column since it's now part of name
+      ...(hideBatchColumn ? {} : {
+        batch: (
+          <div onClick={(e) => e.stopPropagation()}>
+            <Select
+              value={student.batch || 'unassigned'}
+              onValueChange={(value) => handleBatchChange(student.id, value === 'unassigned' ? null : value)}
+            >
+              <SelectTrigger className="w-52">
+                <SelectValue placeholder="Select batch" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned" className="pl-3 [&>span:first-child]:hidden">
+                  <span className="text-muted-foreground">Unassigned</span>
+                </SelectItem>
+                {batches.map((batch) => (
+                  <SelectItem key={batch.id} value={batch.name} className="pl-3 [&>span:first-child]:hidden">
+                    {batch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )
+      }),
       progress: (
         <div className="flex items-center gap-2">
           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
@@ -203,43 +246,45 @@ const MasterStudentTable = ({
         </Badge>
       ),
       actions: (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Actions</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleStudentAction('edit', student)}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Student
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleStudentAction('contact', student)}>
-              <Mail className="h-4 w-4 mr-2" />
-              Contact Student
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {!isDropped && (
-              <DropdownMenuItem 
-                onClick={() => handleStudentAction('dropout', student)}
-                className="text-warning"
-              >
-                <UserMinus className="h-4 w-4 mr-2" />
-                Mark as Dropout
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">Actions</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleStudentAction('edit', student)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Student
               </DropdownMenuItem>
-            )}
-            {canDelete && (
-              <DropdownMenuItem 
-                onClick={() => handleStudentAction('delete', student)}
-                className="text-destructive hover:bg-red-500 hover:text-white"
-              >
-                <UserX className="h-4 w-4 mr-2" />
-                Delete Student
+              <DropdownMenuItem onClick={() => handleStudentAction('contact', student)}>
+                <Mail className="h-4 w-4 mr-2" />
+                Contact Student
               </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuSeparator />
+              {!isDropped && (
+                <DropdownMenuItem
+                  onClick={() => handleStudentAction('dropout', student)}
+                  className="text-warning"
+                >
+                  <UserMinus className="h-4 w-4 mr-2" />
+                  Mark as Dropout
+                </DropdownMenuItem>
+              )}
+              {canDelete && (
+                <DropdownMenuItem
+                  onClick={() => handleStudentAction('delete', student)}
+                  className="text-destructive hover:bg-red-500 hover:text-white"
+                >
+                  <UserX className="h-4 w-4 mr-2" />
+                  Delete Student
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       )
     };
 
@@ -247,11 +292,13 @@ const MasterStudentTable = ({
     if (showMultiSelect) {
       return {
         select: (
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={(checked) => onSelectStudent?.(student.id, !!checked)}
-            aria-label={`Select ${student.name}`}
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) => onSelectStudent?.(student.id, !!checked)}
+              aria-label={`Select ${student.name}`}
+            />
+          </div>
         ),
         ...baseData
       };
@@ -265,42 +312,37 @@ const MasterStudentTable = ({
   const someSelected = selectedStudents.length > 0 && selectedStudents.length < students.length;
 
   const baseColumns = [
-    { key: 'name', label: 'Student Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'batch', label: 'Batch' },
-    { key: 'enrolledDate', label: 'Enrolled Date' },
-    { key: 'progress', label: 'Progress' },
-    { key: 'attendance', label: 'Attendance (Out of 20 Classes)' },
-    { key: 'lastActive', label: 'Last Active' },
-    { key: 'status', label: 'Status' },
-    { key: 'actions', label: 'Actions', sortable: false }
+    { key: 'name', label: 'Student Name', className: 'min-w-[200px]' },
+    ...(hideBatchColumn ? [] : [{ key: 'batch', label: 'Batch', className: 'min-w-[250px]' }]),
+    { key: 'enrolledDate', label: 'Enrolled Date', className: 'min-w-[120px]' },
+    { key: 'progress', label: 'Progress', className: 'min-w-[100px]' },
+    { key: 'attendance', label: `Attendance (${totalClasses} Classes)`, className: 'min-w-[120px]' },
+    { key: 'lastActive', label: 'Last Active', className: 'min-w-[120px]' },
+    { key: 'status', label: 'Status', className: 'min-w-[100px]' },
+    { key: 'actions', label: 'Actions', sortable: false, className: 'w-[60px]' }
   ];
 
   // Add checkbox column if multi-select is enabled
   const studentColumns = showMultiSelect ? [
-    { 
-      key: 'select', 
-      label: (
-        <Checkbox
-          checked={allSelected}
-          indeterminate={someSelected || undefined}
-          onCheckedChange={(checked) => onSelectAll?.(!!checked)}
-          aria-label="Select all students"
-        />
-      ), 
-      sortable: false 
+    {
+      key: 'select',
+      label: 'Select',
+      sortable: false,
+      className: 'w-[50px]'
     },
     ...baseColumns
   ] : baseColumns;
 
   return (
     <>
-      <DataTable
-        data={students.map(formatStudentData)}
-        columns={studentColumns}
-        searchable={false}
-        filterable={false}
-      />
+      <div className="overflow-x-auto">
+        <DataTable
+          data={students.map(formatStudentData)}
+          columns={studentColumns}
+          searchable={false}
+          filterable={false}
+        />
+      </div>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
