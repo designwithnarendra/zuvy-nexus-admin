@@ -280,7 +280,6 @@ const QuestionBankPage = () => {
           searchable
           filterable
           itemsPerPage={20}
-          itemsPerPageOptions={[10, 20, 50, 100]}
         />
       </div>
 
@@ -372,12 +371,11 @@ const QuestionBankPage = () => {
                 mode="edit"
                 initialData={{
                   title: selectedQuestion.text,
-                  description: selectedQuestion.text,
+                  problemStatement: selectedQuestion.text,
+                  constraints: '',
                   difficulty: selectedQuestion.difficulty as 'Easy' | 'Medium' | 'Hard',
                   topic: selectedQuestion.topic,
-                  testCases: [],
-                  starterCode: '',
-                  solution: ''
+                  testCases: []
                 }}
                 onSave={() => setIsEditModalOpen(false)}
                 onCancel={() => setIsEditModalOpen(false)}

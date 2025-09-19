@@ -186,8 +186,7 @@ const AllCoursesPage = () => {
   
   const [newCourse, setNewCourse] = useState({
     title: '',
-    description: '',
-    duration: ''
+    description: ''
   });
 
   // Calculate pagination indexes
@@ -215,8 +214,7 @@ const AllCoursesPage = () => {
     // Reset form and close modal
     setNewCourse({
       title: '',
-      description: '',
-      duration: ''
+      description: ''
     });
     setIsCreateModalOpen(false);
   };
@@ -236,8 +234,7 @@ const AllCoursesPage = () => {
           </div>
           <Button
             onClick={handleCreateCourse}
-            className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4"
-            size="lg"
+            className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4 h-12"
           >
             <Plus className="h-5 w-5 mr-2" />
             Create New Course
@@ -275,7 +272,7 @@ const AllCoursesPage = () => {
       </div>
 
       {/* Courses Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredCourses
           .slice(indexOfFirstCourse, indexOfLastCourse)
           .map((course) => (
@@ -379,15 +376,6 @@ const AllCoursesPage = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="duration" className="font-semibold">Duration (weeks) *</Label>
-              <Input
-                id="duration"
-                value={newCourse.duration}
-                onChange={(e) => setNewCourse(prev => ({ ...prev, duration: e.target.value }))}
-                placeholder="e.g., 12"
-              />
-            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>

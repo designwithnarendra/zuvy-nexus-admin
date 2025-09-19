@@ -286,8 +286,8 @@ export const useRBACStore = (): RBACStore => {
     const userRole = roles.find(r => r.name === user.role);
     if (!userRole) return false;
     
-    // Super Admin can do everything
-    if (userRole.name === 'Super Admin') return true;
+    // Admin can do everything (or check for specific super admin role)
+    if (userRole.name === 'Admin') return true;
     
     const permission = permissions.find(
       p => p.roleId === userRole.id && p.actionId === actionId

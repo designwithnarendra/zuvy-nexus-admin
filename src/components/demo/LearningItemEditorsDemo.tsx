@@ -64,8 +64,30 @@ export function LearningItemEditorsDemo() {
       title: 'React Fundamentals Quiz',
       description: 'Test your knowledge of React fundamentals.',
       questions: [
-        { id: 'q1', type: 'mcq' as const, text: 'What is JSX?' },
-        { id: 'q2', type: 'open-ended' as const, text: 'Explain the concept of Virtual DOM.' },
+        {
+          id: 'q1',
+          type: 'mcq' as const,
+          text: 'What is JSX?',
+          options: [
+            { id: 'opt1', text: 'A JavaScript extension' },
+            { id: 'opt2', text: 'A CSS framework' },
+            { id: 'opt3', text: 'A database query language' },
+            { id: 'opt4', text: 'A server technology' }
+          ],
+          correctAnswerId: 'opt1'
+        },
+        {
+          id: 'q2',
+          type: 'mcq' as const,
+          text: 'What is the Virtual DOM?',
+          options: [
+            { id: 'opt5', text: 'A real DOM element' },
+            { id: 'opt6', text: 'A lightweight representation of the real DOM' },
+            { id: 'opt7', text: 'A CSS selector' },
+            { id: 'opt8', text: 'A database table' }
+          ],
+          correctAnswerId: 'opt6'
+        },
       ],
       timeLimit: 30,
       randomizeQuestions: true,
@@ -80,9 +102,24 @@ export function LearningItemEditorsDemo() {
       title: 'Implement a Counter Component',
       description: 'Create a counter component with increment and decrement buttons.',
       problemStatement: 'Create a React component that maintains a count state and has buttons to increase and decrease the count.',
+      constraints: 'Use React hooks. Component should handle negative numbers.',
+      difficulty: 'Easy' as const,
+      topic: 'React Components',
       testCases: [
-        { id: 'tc1', input: 'click increment', expectedOutput: 'count increases by 1', isHidden: false },
-        { id: 'tc2', input: 'click decrement', expectedOutput: 'count decreases by 1', isHidden: false },
+        {
+          id: 'tc1',
+          inputs: [{ id: 'input1', name: 'initialCount', value: '0', type: 'number' as const }],
+          expectedOutput: '1',
+          outputType: 'text' as const,
+          isHidden: false
+        },
+        {
+          id: 'tc2',
+          inputs: [{ id: 'input2', name: 'initialCount', value: '5', type: 'number' as const }],
+          expectedOutput: '4',
+          outputType: 'text' as const,
+          isHidden: false
+        },
       ],
       allowedLanguages: ['JavaScript', 'TypeScript'],
       starterCode: 'function Counter() {\n  // Your code here\n}',

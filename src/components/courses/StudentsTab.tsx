@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, UserPlus, FileSpreadsheet, Search, Trash2, UserMinus, UserCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Import our new components
 import MasterStudentTable, { Student } from './students/MasterStudentTable';
@@ -50,17 +51,21 @@ const generateMockStudents = (): Student[] => {
 };
 
 const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
+  const router = useRouter();
+
   // State for UI controls
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+  const [isEditStudentModalOpen, setIsEditStudentModalOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [batchFilter, setBatchFilter] = useState(initialBatchFilter || 'all');
   const [statusFilter, setStatusFilter] = useState('all');
-  
+
   // Multi-select state
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [bulkAssignBatch, setBulkAssignBatch] = useState('');;
-  
+
   // Mock data - in a real app this would come from an API
   const [students, setStudents] = useState<Student[]>(generateMockStudents());
   
@@ -113,12 +118,28 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
       status: 'active',
       attendance: '0 (0%)'
     };
-    
+
     setStudents([...students, newStudent]);
     setIsAddStudentModalOpen(false);
   };
 
-  const handleBulkUpload = async (data: { file?: File; url?: string; batchId?: string; fileType: 'csv' | 'excel' | 'sheets' }) => {
+  const handleEditStudentSubmit = async (studentId: string, updatedData: { name: string; email: string; batchId?: string }) => {
+    // In a real app, this would be an API call
+    setStudents(students.map(s =>
+      s.id === studentId
+        ? {
+            ...s,
+            name: updatedData.name,
+            email: updatedData.email,
+            batch: updatedData.batchId ? batches.find(b => b.id === updatedData.batchId)?.name || null : null
+          }
+        : s
+    ));
+    setIsEditStudentModalOpen(false);
+    setEditingStudent(null);
+  };
+
+  const handleBulkUpload = async (data: { file: File; fileType: 'csv' | 'excel' | 'sheets' }) => {
     console.log('Bulk upload:', data);
     setIsBulkUploadModalOpen(false);
   };
@@ -134,11 +155,19 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
   };
 
   const handleEditStudent = (studentId: string) => {
-    console.log('Edit student:', studentId);
+    const student = students.find(s => s.id === studentId);
+    if (student) {
+      setEditingStudent(student);
+      setIsEditStudentModalOpen(true);
+    }
   };
 
   const handleContactStudent = (studentId: string) => {
     console.log('Contact student:', studentId);
+  };
+
+  const handleStudentClick = (studentId: string) => {
+    router.push(`/courses/${courseId}/students/${studentId}`);
   };
 
   const handleBatchChange = (studentId: string, newBatch: string | null) => {
@@ -212,7 +241,63 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         </div>
       </div>
 
-      {/* Bulk Actions Bar - Show when students are selected */}
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search students..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-10"
+          />
+        </div>
+
+        <Select value={batchFilter} onValueChange={setBatchFilter}>
+          <SelectTrigger className="w-[200px] h-10">
+            <SelectValue placeholder="Filter by batch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Batches</SelectItem>
+            {batches.map(batch => (
+              <SelectItem key={batch.id} value={batch.name}>{batch.name}</SelectItem>
+            ))}
+            <SelectItem value="unassigned">Unassigned</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[150px] h-10">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="dropout">Dropout</SelectItem>
+            <SelectItem value="graduated">Graduated</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="flex gap-2 ml-auto">
+          <Button
+            variant="outline"
+            className="h-10"
+            onClick={() => setIsAddStudentModalOpen(true)}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Add Single Student
+          </Button>
+          <Button
+            className="bg-primary hover:bg-primary-dark shadow-4dp h-10"
+            onClick={() => setIsBulkUploadModalOpen(true)}
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Bulk Upload
+          </Button>
+        </div>
+      </div>
+
+      {/* Bulk Actions Bar - Show when students are selected - Moved below search */}
       {selectedStudents.length > 0 && (
         <div className="bg-muted/50 p-4 rounded-lg border">
           <div className="flex items-center justify-between">
@@ -256,63 +341,8 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         </div>
       )}
 
-      {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search students..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <Select value={batchFilter} onValueChange={setBatchFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filter by batch" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Batches</SelectItem>
-            {batches.map(batch => (
-              <SelectItem key={batch.id} value={batch.name}>{batch.name}</SelectItem>
-            ))}
-            <SelectItem value="unassigned">Unassigned</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="dropout">Dropout</SelectItem>
-            <SelectItem value="graduated">Graduated</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <div className="flex gap-2">
-          <Button 
-            variant="outline"
-            onClick={() => setIsAddStudentModalOpen(true)}
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add Single Student
-          </Button>
-          <Button 
-            className="bg-primary hover:bg-primary-dark shadow-4dp"
-            onClick={() => setIsBulkUploadModalOpen(true)}
-          >
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Bulk Upload
-          </Button>
-        </div>
-      </div>
-
       {/* Students Table */}
-      <MasterStudentTable 
+      <MasterStudentTable
         students={filteredStudents}
         batches={batches}
         onDeleteStudent={handleDeleteStudent}
@@ -324,6 +354,8 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         onSelectStudent={handleSelectStudent}
         onSelectAll={handleSelectAll}
         showMultiSelect={true}
+        onStudentClick={handleStudentClick}
+        totalClasses={20}
       />
 
       {/* Add Student Modal */}
@@ -332,10 +364,29 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
           <DialogHeader>
             <DialogTitle className="font-heading text-xl">Add New Student</DialogTitle>
           </DialogHeader>
-          <StudentAddForm 
+          <StudentAddForm
             batches={batches}
             onAddStudent={handleAddStudent}
             onCancel={() => setIsAddStudentModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Student Modal */}
+      <Dialog open={isEditStudentModalOpen} onOpenChange={setIsEditStudentModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">Edit Student</DialogTitle>
+          </DialogHeader>
+          <StudentAddForm
+            batches={batches}
+            onAddStudent={handleAddStudent}
+            onCancel={() => {
+              setIsEditStudentModalOpen(false);
+              setEditingStudent(null);
+            }}
+            editingStudent={editingStudent}
+            onEditStudent={handleEditStudentSubmit}
           />
         </DialogContent>
       </Dialog>

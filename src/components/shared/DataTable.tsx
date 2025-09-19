@@ -53,7 +53,7 @@ const DataTable = ({
       }
       return value;
     }).filter(Boolean);
-    return [...new Set(values)];
+    return Array.from(new Set(values));
   };
 
   const uniqueTypes = getUniqueValues('type');

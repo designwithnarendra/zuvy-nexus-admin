@@ -173,6 +173,7 @@ export function CodingProblemEditor({ initialData, onSave, onCancel, mode }: Cod
 
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Coding Problem' : 'Edit Coding Problem'}
       type="coding"
       mode={mode}
       onSave={handleSubmit}

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ExternalLink, Upload } from 'lucide-react';
+import { ArrowLeft, Upload } from 'lucide-react';
 import CourseViewTabs from '@/components/courses/CourseViewTabs';
 import PublishCourseDialog from '@/components/courses/PublishCourseDialog';
 
@@ -85,25 +85,17 @@ const SingleCoursePage = () => {
       <div className="mb-8">
         {/* Top Navigation Row */}
         <div className="flex items-center justify-between mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => router.push('/courses')}
-            className="hover:bg-muted"
+            className="hover:text-primary hover:bg-transparent"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Course Library
           </Button>
           
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Preview as Student
-            </Button>
-            
-            <Button 
+            <Button
               className="bg-primary hover:bg-primary-dark shadow-4dp"
               onClick={() => setIsPublishDialogOpen(true)}
             >

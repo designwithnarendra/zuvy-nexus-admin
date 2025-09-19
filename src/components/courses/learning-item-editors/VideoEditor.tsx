@@ -137,6 +137,7 @@ export function VideoEditor({
   
   return (
     <BaseEditor
+      title={mode === 'create' ? 'Create Video' : 'Edit Video'}
       type="video"
       mode={mode}
       onSave={handleSubmit}

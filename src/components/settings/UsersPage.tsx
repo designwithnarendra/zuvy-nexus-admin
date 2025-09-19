@@ -115,7 +115,7 @@ const UsersPage = () => {
     console.log(`Generated invite link for ${role}:`, inviteLink);
   };
 
-  const getRoleBadgeVariant = (role: UserRole) => {
+  const getRoleBadgeVariant = (role: UserRole | string) => {
     switch (role) {
       case 'Super Admin':
         return 'destructive';

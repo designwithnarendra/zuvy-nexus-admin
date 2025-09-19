@@ -17,10 +17,11 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
   const [formData, setFormData] = useState({
     title: 'Full Stack Web Development Bootcamp',
     description: 'Learn modern web development with React, Node.js, and MongoDB. Build real-world projects and deploy them to production.',
-    duration: 12,
     language: 'English',
     startDate: '2024-08-15',
-    imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop'
+    imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop',
+    collaboratorName: '',
+    collaboratorLogo: ''
   });
 
   const handleInputChange = (field: string, value: string | number) => {
@@ -43,14 +44,29 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
     setFormData(prev => ({ ...prev, imageUrl: '' }));
   };
 
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, collaboratorLogo: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setFormData(prev => ({ ...prev, collaboratorLogo: '' }));
+  };
+
   const handleSave = () => {
     console.log('Saving course data:', formData);
   };
 
   return (
-    <div className="w-full max-w-none space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       <h2 className="font-heading text-xl font-semibold">General Details</h2>
-      
+
       <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Course Image */}
@@ -120,30 +136,73 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="duration" className="font-semibold">Duration (weeks)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="startDate" className="font-semibold">Course Start Date</Label>
+              <div className="relative">
                 <Input
-                  id="duration"
-                  type="number"
-                  value={formData.duration}
-                  onChange={(e) => handleInputChange('duration', parseInt(e.target.value) || 0)}
-                  placeholder="Duration in weeks"
-                  min="1"
+                  id="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  className="cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="startDate" className="font-semibold">Course Start Date</Label>
-                <div className="relative">
+            {/* Collaborator Section */}
+            <div className="space-y-4">
+              <Label className="font-semibold">Collaborator Details</Label>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="collaboratorName" className="text-sm">Collaborator Name</Label>
                   <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleInputChange('startDate', e.target.value)}
-                    className="cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                    id="collaboratorName"
+                    value={formData.collaboratorName}
+                    onChange={(e) => handleInputChange('collaboratorName', e.target.value)}
+                    placeholder="Enter collaborator name"
                   />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm">Collaborator Logo</Label>
+                  <div className="flex items-center gap-4">
+                    {formData.collaboratorLogo && (
+                      <div className="w-16 h-16 rounded-lg border bg-muted overflow-hidden">
+                        <img
+                          src={formData.collaboratorLogo}
+                          alt="Collaborator logo"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <label className="cursor-pointer">
+                        <Button variant="outline" size="sm" className="pointer-events-none">
+                          <Upload className="h-4 w-4 mr-2" />
+                          {formData.collaboratorLogo ? 'Change Logo' : 'Upload Logo'}
+                        </Button>
+                        <input
+                          type="file"
+                          accept=".png,.svg,.jpg,.jpeg"
+                          onChange={handleLogoUpload}
+                          className="sr-only"
+                        />
+                      </label>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, SVG, or JPG format. Optional.
+                      </p>
+                    </div>
+                    {formData.collaboratorLogo && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleRemoveLogo}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

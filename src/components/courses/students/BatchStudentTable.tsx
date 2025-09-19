@@ -82,7 +82,7 @@ const BatchStudentTable = ({
 
   // Format student data for the table
   const formatStudentData = (student: Student) => {
-    const isDropped = student.status === 'Dropped';
+    const isDropped = student.status === 'dropout';
     
     return {
       ...student,
@@ -98,11 +98,11 @@ const BatchStudentTable = ({
         </div>
       ),
       status: (
-        <Badge 
+        <Badge
           variant={
-            student.status === 'Active' ? 'default' : 
-            student.status === 'At Risk' ? 'destructive' :
-            student.status === 'Completed' ? 'secondary' :
+            student.status === 'active' ? 'default' :
+            student.status === 'dropout' ? 'destructive' :
+            student.status === 'graduated' ? 'secondary' :
             'outline'
           }
         >
