@@ -18,7 +18,7 @@ const submissionTypes = [
   { id: 'assignments', label: 'Assignments', icon: FileText },
   { id: 'projects', label: 'Projects', icon: BookOpen },
   { id: 'quizzes', label: 'Quizzes', icon: CheckSquare },
-  { id: 'coding', label: 'Practice Problems', icon: Code },
+  { id: 'coding', label: 'Coding Problems', icon: Code },
   { id: 'feedback', label: 'Feedback Forms', icon: MessageSquare },
 ];
 
@@ -30,13 +30,13 @@ const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
   const [activeSubmissionType, setActiveSubmissionType] = useState('assessments');
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Course Submissions</h2>
       </div>
 
-      <Tabs 
-        value={activeSubmissionType} 
+      <Tabs
+        value={activeSubmissionType}
         onValueChange={setActiveSubmissionType}
         className="w-full"
       >

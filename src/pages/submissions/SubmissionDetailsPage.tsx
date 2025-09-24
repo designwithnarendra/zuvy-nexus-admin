@@ -191,7 +191,7 @@ const SubmissionDetailsPage = ({
   }
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
+    <div className="w-full px-6 py-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Button
@@ -204,61 +204,64 @@ const SubmissionDetailsPage = ({
         </Button>
       </div>
 
-      {/* Submission Item Info */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-2xl">
-            {item?.title || `${submissionType.charAt(0).toUpperCase() + submissionType.slice(1)} Submissions`}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-muted-foreground">Total Submissions:</span>
-              <p className="text-lg font-semibold">{filteredSubmissions.length}</p>
-            </div>
-            <div>
-              <span className="font-medium text-muted-foreground">Batch Filter:</span>
-              <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-                <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="All Batches" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Batches</SelectItem>
-                  {batches.map(batch => (
-                    <SelectItem key={batch.id} value={batch.id}>
-                      {batch.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <span className="font-medium text-muted-foreground">Submission Type:</span>
-              <p className="text-lg font-semibold capitalize">{submissionType}</p>
-            </div>
-            <div>
-              <span className="font-medium text-muted-foreground">Course ID:</span>
-              <p className="text-lg font-semibold">{courseId}</p>
-            </div>
+      {/* Title and Top Level Information */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-4">
+            {item?.title || `${submissionType.charAt(0).toUpperCase() + submissionType.slice(1)} Assessment`}
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-8">
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-muted-foreground mb-1">Batch</label>
+            <Select value={selectedBatch} onValueChange={setSelectedBatch}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="All Batches" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Batches</SelectItem>
+                {batches.map(batch => (
+                  <SelectItem key={batch.id} value={batch.id}>
+                    {batch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="flex items-center gap-6 text-sm">
+            <div className="text-center">
+              <div className="font-semibold">{filteredSubmissions.length}</div>
+              <div className="text-muted-foreground">Total Submissions</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold">{filteredSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded' || s.status === 'reviewed').length}</div>
+              <div className="text-muted-foreground">Submissions Received</div>
+            </div>
+            {submissionType === 'assessments' && (
+              <div className="text-center">
+                <div className="font-semibold">{filteredSubmissions.filter(s => (s as any).qualified).length}</div>
+                <div className="text-muted-foreground">Qualified Students</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Submissions Table */}
-      <h2 className="text-lg font-semibold mb-6">Student Submissions</h2>
-      <Card className="bg-white">
-        <CardContent className="p-0">
+      <div className="w-full">
+        <div className="overflow-x-auto border border-border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Student</TableHead>
                 <TableHead>Batch</TableHead>
                 <TableHead>Submission Date</TableHead>
-                <TableHead>Time Taken</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Qualified</TableHead>
-                <TableHead>Attempts</TableHead>
+                {submissionType === 'assessments' && <TableHead>Time Taken</TableHead>}
+                {submissionType === 'assessments' && <TableHead>Score</TableHead>}
+                {submissionType === 'assessments' && <TableHead>Qualified</TableHead>}
+                {submissionType === 'assessments' && <TableHead>Attempts</TableHead>}
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -281,62 +284,75 @@ const SubmissionDetailsPage = ({
                     <TableCell>
                       {new Date(submission.submissionDate).toLocaleString()}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        {(submission as any).timeTaken || '105m 0s'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className={`font-semibold ${
-                        ((submission as any).score || 75) >= 70 ? 'text-success' : 'text-destructive'
-                      }`}>
-                        {(submission as any).score || 75}%
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(submission.status)}
-                        <Badge 
-                          variant="outline" 
-                          className={getStatusColor(submission.status)}
-                        >
-                          {((submission as any).score || 75) >= 70 ? 'Yes' : 'No'}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium">{(submission as any).attempts || 1}</span>
-                    </TableCell>
+                    {submissionType === 'assessments' && (
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          {(submission as any).timeTaken || '105m 0s'}
+                        </div>
+                      </TableCell>
+                    )}
+                    {submissionType === 'assessments' && (
+                      <TableCell>
+                        <span className={`font-semibold ${
+                          ((submission as any).score || 75) >= 70 ? 'text-success' : 'text-destructive'
+                        }`}>
+                          {(submission as any).score || 75}%
+                        </span>
+                      </TableCell>
+                    )}
+                    {submissionType === 'assessments' && (
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(submission.status)}
+                          <Badge
+                            variant="outline"
+                            className={getStatusColor(submission.status)}
+                          >
+                            {((submission as any).score || 75) >= 70 ? 'Yes' : 'No'}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                    )}
+                    {submissionType === 'assessments' && (
+                      <TableCell>
+                        <span className="font-medium">{(submission as any).attempts || 1}</span>
+                      </TableCell>
+                    )}
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 hover:bg-primary hover:text-white"
+                          size="sm"
+                          onClick={() => router.push(`/submissions/${courseId}/${itemId}/${submission.studentId}?type=${submissionType}`)}
+                          className="hover:bg-primary hover:text-white"
                         >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 hover:bg-primary hover:text-white"
-                        >
-                          <Download className="h-4 w-4" />
+                          <Eye className="h-4 w-4 mr-1" />
+                          View Report
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleOpenReAttemptModal(submission.id)}
-                          disabled={approvedReAttempts.has(submission.id)}
-                          className={approvedReAttempts.has(submission.id)
-                            ? "text-muted-foreground cursor-not-allowed"
-                            : "text-primary hover:bg-primary hover:text-white"
-                          }
+                          className="hover:bg-primary hover:text-white"
                         >
-                          <RefreshCw className="h-4 w-4 mr-1" />
-                          {approvedReAttempts.has(submission.id) ? 'Re-Attempt Approved' : 'Approve Re-Attempt'}
+                          <Download className="h-4 w-4 mr-1" />
+                          Download Report
                         </Button>
+                        {submissionType === 'assessments' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenReAttemptModal(submission.id)}
+                            disabled={approvedReAttempts.has(submission.id)}
+                            className={approvedReAttempts.has(submission.id)
+                              ? "text-muted-foreground cursor-not-allowed"
+                              : "text-primary hover:bg-primary hover:text-white"
+                            }
+                          >
+                            <RefreshCw className="h-4 w-4 mr-1" />
+                            {approvedReAttempts.has(submission.id) ? 'Re-Attempt Approved' : 'Approve Re-Attempt'}
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -344,8 +360,8 @@ const SubmissionDetailsPage = ({
               })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Re-Attempt Confirmation Modal */}
       <Dialog open={isReAttemptModalOpen} onOpenChange={setIsReAttemptModalOpen}>

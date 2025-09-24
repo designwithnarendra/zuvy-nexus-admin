@@ -8,11 +8,34 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Plus, BookOpen, Video, FileText, Code, HelpCircle, MessageSquare, ClipboardCheck, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface ContentItem {
+// Import the actual editor components
+import { LiveClassEditor } from '@/components/courses/learning-item-editors/LiveClassEditor';
+import { VideoEditor } from '@/components/courses/learning-item-editors/VideoEditor';
+import { ArticleEditor } from '@/components/courses/learning-item-editors/ArticleEditor';
+import { AssignmentEditor } from '@/components/courses/learning-item-editors/AssignmentEditor';
+import { QuizEditor } from '@/components/courses/learning-item-editors/QuizEditor';
+import { FeedbackFormEditor } from '@/components/courses/learning-item-editors/FeedbackFormEditor';
+import { CodingProblemEditor } from '@/components/courses/learning-item-editors/CodingProblemEditor';
+
+// Import the updated types
+import {
+  ContentType,
+  LearningItem,
+  LiveClassData,
+  VideoData,
+  ArticleData,
+  AssignmentData,
+  CodingProblemData,
+  QuizData,
+  FeedbackFormData
+} from '@/components/courses/curriculum/types';
+
+// Use the LearningItem from types, but extend it for display purposes
+interface ContentDisplayItem {
   id: string;
-  type: 'live-class' | 'video' | 'article' | 'assignment' | 'coding-problem' | 'quiz' | 'feedback-form' | 'assessment';
+  type: ContentType;
   title: string;
-  duration: string;
+  duration?: string;
   status?: 'completed' | 'in-progress' | 'not-started';
 }
 
@@ -29,21 +52,21 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     id: moduleId,
     title: 'Module 2: DOM Manipulation & Events',
     contentItems: [
-      { id: '1', type: 'live-class' as const, title: 'DOM Fundamentals and Element Selection', duration: '90 min', status: 'completed' as const },
-      { id: '2', type: 'video' as const, title: 'Advanced DOM Manipulation Techniques', duration: '90 min', status: 'completed' as const },
-      { id: '3', type: 'video' as const, title: 'Visualizing the DOM tree', duration: '15 min', status: 'not-started' as const },
-      { id: '4', type: 'article' as const, title: 'Understanding Nodes in the DOM', duration: '5 mins read', status: 'not-started' as const },
-      { id: '5', type: 'assignment' as const, title: 'DOM Selection Practice', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
-      { id: '6', type: 'quiz' as const, title: 'DOM Fundamentals Quiz', duration: '5 questions', status: 'not-started' as const },
-      { id: '7', type: 'feedback-form' as const, title: 'Module 2 Feedback', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
-      { id: '8', type: 'coding-problem' as const, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const }
+      { id: '1', type: 'live-class' as ContentType, title: 'DOM Fundamentals and Element Selection', duration: '90 min', status: 'completed' as const },
+      { id: '2', type: 'video' as ContentType, title: 'Advanced DOM Manipulation Techniques', duration: '90 min', status: 'completed' as const },
+      { id: '3', type: 'video' as ContentType, title: 'Visualizing the DOM tree', duration: '15 min', status: 'not-started' as const },
+      { id: '4', type: 'article' as ContentType, title: 'Understanding Nodes in the DOM', duration: '5 mins read', status: 'not-started' as const },
+      { id: '5', type: 'assignment' as ContentType, title: 'DOM Selection Practice', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
+      { id: '6', type: 'quiz' as ContentType, title: 'DOM Fundamentals Quiz', duration: '5 questions', status: 'not-started' as const },
+      { id: '7', type: 'feedback-form' as ContentType, title: 'Module 2 Feedback', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
+      { id: '8', type: 'coding-problem' as ContentType, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const }
     ]
   };
 
-  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(moduleData.contentItems[1] || null);
+  const [selectedItem, setSelectedItem] = useState<ContentDisplayItem | null>(moduleData.contentItems[1] || null);
   const [showAddContent, setShowAddContent] = useState(false);
 
-  const getContentIcon = (type: ContentItem['type']) => {
+  const getContentIcon = (type: ContentType) => {
     switch (type) {
       case 'live-class': return <Video className="h-4 w-4" />;
       case 'video': return <Video className="h-4 w-4" />;
@@ -57,7 +80,21 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     }
   };
 
-  const getStatusColor = (status: ContentItem['status']) => {
+  const getContentTypeLabel = (type: ContentType) => {
+    switch (type) {
+      case 'live-class': return 'Live Class';
+      case 'video': return 'Video';
+      case 'article': return 'Article';
+      case 'assignment': return 'Assignment';
+      case 'coding-problem': return 'Coding Problem';
+      case 'quiz': return 'Quiz';
+      case 'feedback-form': return 'Feedback Form';
+      case 'assessment': return 'Assessment';
+      default: return 'Content';
+    }
+  };
+
+  const getStatusColor = (status: ContentDisplayItem['status']) => {
     switch (status) {
       case 'completed': return 'bg-success-light text-success-dark border-success';
       case 'in-progress': return 'bg-warning-light text-warning-dark border-warning';
@@ -83,6 +120,100 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     setShowAddContent(false);
   };
 
+  // Helper function to convert ContentDisplayItem to proper editor data
+  const getEditorData = (item: ContentDisplayItem) => {
+    const baseData = {
+      id: item.id,
+      title: item.title,
+      description: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'draft' as const
+    };
+
+    switch (item.type) {
+      case 'live-class':
+        return {
+          ...baseData,
+          type: 'live-class' as const,
+          startDate: new Date(),
+          startTime: '10:00',
+          duration: 90
+        } as LiveClassData;
+
+      case 'video':
+        return {
+          ...baseData,
+          type: 'video' as const,
+          sourceType: 'youtube' as const,
+          url: ''
+        } as VideoData;
+
+      case 'article':
+        return {
+          ...baseData,
+          type: 'article' as const,
+          contentType: 'rich-text' as const,
+          content: ''
+        } as ArticleData;
+
+      case 'assignment':
+        return {
+          ...baseData,
+          type: 'assignment' as const,
+          instructions: '',
+          instructionType: 'text' as const,
+          submissionTypes: ['file', 'text'] as ('file' | 'text')[]
+        } as AssignmentData;
+
+      case 'quiz':
+        return {
+          ...baseData,
+          type: 'quiz' as const,
+          questionIds: [],
+          topics: [],
+          randomizeQuestions: false,
+          allowMultipleAttempts: true
+        } as QuizData;
+
+      case 'feedback-form':
+        return {
+          ...baseData,
+          type: 'feedback-form' as const,
+          questions: []
+        } as FeedbackFormData;
+
+      case 'coding-problem':
+        return {
+          ...baseData,
+          type: 'coding-problem' as const,
+          difficulty: 'Medium' as const,
+          topics: [],
+          isFromContentBank: true
+        } as CodingProblemData;
+
+      default:
+        return baseData;
+    }
+  };
+
+  // Handle saving editor data
+  const handleEditorSave = (data: any) => {
+    console.log('Saving editor data:', data);
+    // Here we would save the data to the backend
+    // For now, just update the selected item title
+    if (selectedItem) {
+      const updatedItem = { ...selectedItem, title: data.title };
+      setSelectedItem(updatedItem);
+    }
+  };
+
+  // Handle editor cancel
+  const handleEditorCancel = () => {
+    // For now, just keep the current item selected
+    console.log('Editor cancelled');
+  };
+
   const renderContentEditor = () => {
     if (!selectedItem) {
       return (
@@ -96,134 +227,106 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       );
     }
 
-    // Mock content editor - would be replaced with actual editors
-    return (
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">{selectedItem.title}</h2>
-            <div className="flex items-center gap-2">
-              {getContentIcon(selectedItem.type)}
-              <span className="text-sm text-muted-foreground capitalize">
-                {selectedItem.type.replace('-', ' ')}
-              </span>
-              <Badge variant="outline" className={getStatusColor(selectedItem.status)}>
-                {selectedItem.status?.replace('-', ' ')}
-              </Badge>
+    // Get the proper data format for the editor
+    const editorData = getEditorData(selectedItem);
+
+    // Render the appropriate editor component based on content type
+    switch (selectedItem.type) {
+      case 'live-class':
+        return (
+          <div className="flex-1">
+            <LiveClassEditor
+              initialData={editorData as LiveClassData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'video':
+        return (
+          <div className="flex-1">
+            <VideoEditor
+              initialData={editorData as VideoData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'article':
+        return (
+          <div className="flex-1">
+            <ArticleEditor
+              initialData={editorData as ArticleData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'assignment':
+        return (
+          <div className="flex-1">
+            <AssignmentEditor
+              initialData={editorData as AssignmentData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'quiz':
+        return (
+          <div className="flex-1">
+            <QuizEditor
+              initialData={editorData as QuizData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'feedback-form':
+        return (
+          <div className="flex-1">
+            <FeedbackFormEditor
+              initialData={editorData as FeedbackFormData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      case 'coding-problem':
+        return (
+          <div className="flex-1">
+            <CodingProblemEditor
+              initialData={editorData as CodingProblemData}
+              mode="edit"
+              onSave={handleEditorSave}
+              onCancel={handleEditorCancel}
+            />
+          </div>
+        );
+
+      default:
+        return (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <HelpCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">Editor not available</h3>
+              <p className="text-muted-foreground">This content type doesn't have an editor yet</p>
             </div>
           </div>
-
-          {/* Mock editor content based on type */}
-          {selectedItem.type === 'live-class' && (
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Live Class Details</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Class Title</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded-md"
-                      defaultValue={selectedItem.title}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Date & Time</label>
-                      <input type="datetime-local" className="w-full p-2 border rounded-md" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Duration</label>
-                      <input
-                        type="text"
-                        className="w-full p-2 border rounded-md"
-                        defaultValue="90 min"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Your Attendance Duration</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded-md"
-                      defaultValue="90 min"
-                    />
-                  </div>
-                  <div className="bg-success-light p-4 rounded-md">
-                    <div className="flex items-center text-success-dark">
-                      <div className="w-2 h-2 bg-success rounded-full mr-2"></div>
-                      Class completed
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedItem.type === 'video' && (
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Video Content</h3>
-                <div className="space-y-4">
-                  <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
-                    <div className="text-white text-center">
-                      <Video className="h-12 w-12 mx-auto mb-2" />
-                      <p>Class Recording</p>
-                      <p className="text-sm">90 min</p>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Recording available for the live class</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Deep dive into DOM manipulation methods and best practices
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {(selectedItem.type === 'article' || selectedItem.type === 'assignment' || selectedItem.type === 'quiz') && (
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  {selectedItem.type === 'article' ? 'Article' :
-                   selectedItem.type === 'assignment' ? 'Assignment' : 'Quiz'} Details
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Title</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded-md"
-                      defaultValue={selectedItem.title}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
-                    <textarea
-                      className="w-full p-2 border rounded-md h-24"
-                      placeholder="Enter description..."
-                    />
-                  </div>
-                  {selectedItem.type === 'quiz' && (
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Number of Questions</label>
-                      <input type="number" className="w-full p-2 border rounded-md" defaultValue="5" />
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant="outline">Cancel</Button>
-            <Button className="bg-primary hover:bg-primary-dark">Save Changes</Button>
-          </div>
-        </div>
-      </div>
-    );
+        );
+    }
   };
 
   return (
@@ -280,8 +383,14 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                       <h4 className="font-medium text-sm leading-tight mb-1">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-muted-foreground">
-                        {item.duration}
+                      <p className="text-sm text-muted-foreground mb-1" style={{ fontSize: '0.875rem' }}>
+                        {getContentTypeLabel(item.type)}
+                        {item.duration && (
+                          <>
+                            <span className="mx-1">•</span>
+                            {item.duration}
+                          </>
+                        )}
                       </p>
                     </div>
                   </div>

@@ -27,15 +27,16 @@ interface ModuleCardProps {
   onDropItem?: (moduleId: string, item: any) => void;
   onReorderLearningItems?: (moduleId: string, items: LearningItem[]) => void;
   onEditModule?: (moduleId: string) => void;
+  onNavigateToModule?: (moduleId: string, type: 'module' | 'project') => void;
   isDragging?: boolean;
 }
 
-const ModuleCard = ({ 
-  item, 
-  index, 
-  onToggle, 
-  onDelete, 
-  onDeleteLearningItem, 
+const ModuleCard = ({
+  item,
+  index,
+  onToggle,
+  onDelete,
+  onDeleteLearningItem,
   onToggleAddContent,
   getContentIndex,
   onAddItem,
@@ -43,6 +44,7 @@ const ModuleCard = ({
   onDropItem,
   onReorderLearningItems,
   onEditModule,
+  onNavigateToModule,
   isDragging = false
 }: ModuleCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -100,6 +102,13 @@ const ModuleCard = ({
   const handleEditLearningItem = (learningItem: LearningItem) => {
     if (onEditItem) {
       onEditItem(learningItem.id, learningItem.type);
+    }
+  };
+
+  // Handle card click for navigation
+  const handleCardClick = () => {
+    if (onNavigateToModule) {
+      onNavigateToModule(item.id, item.type);
     }
   };
 
@@ -253,20 +262,26 @@ const ModuleCard = ({
   };
 
   return (
-    <Card className={cn("shadow-4dp transition-all duration-200", isDragging && "shadow-lg ring-2 ring-primary/20")}>
+    <Card
+      className={cn("shadow-4dp transition-all duration-200 cursor-pointer hover:shadow-lg", isDragging && "shadow-lg ring-2 ring-primary/20")}
+      onClick={handleCardClick}
+    >
       <Collapsible open={item.isExpanded} onOpenChange={() => onToggle(item.id)}>
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div 
+            <div
               className={cn(
                 "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-muted/50",
                 isDragging && "text-primary bg-primary/10"
               )}
               title="Drag to reorder"
+              onClick={(e) => e.stopPropagation()}
             >
               <GripVertical className="h-5 w-5" />
             </div>
-            <CollapsibleTrigger className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
+
+            {/* Main content area - clickable for navigation */}
+            <div className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
               <div className="text-left flex items-center gap-3">
                 <div className="p-2 rounded-md bg-primary-light text-primary">
                   <FolderOpen className="h-5 w-5" />
@@ -285,23 +300,20 @@ const ModuleCard = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Only allow editing for Module 1: Introduction to Web Development
-                    if (item.title === 'Introduction to Web Development' && onEditModule) {
+                    if (onEditModule) {
                       onEditModule(item.id);
-                    } else {
-                      // Show a disabled state or tooltip for other modules
-                      console.log('Editing not available for this module');
                     }
                   }}
-                  disabled={item.title !== 'Introduction to Web Development'}
-                  className={item.title !== 'Introduction to Web Development' ? 'opacity-50 cursor-not-allowed' : ''}
-                  title={item.title === 'Introduction to Web Development' ? 'Edit module' : 'Editing not available for this module'}
+                  title={`Edit ${item.type} details`}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -320,33 +332,45 @@ const ModuleCard = ({
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Delete Module</DialogTitle>
+                      <DialogTitle>Delete {item.type === 'module' ? 'Module' : 'Project'}</DialogTitle>
                       <DialogDescription>
-                        Are you sure you want to delete "{item.title}"? This action cannot be undone and will remove all learning items within this module.
+                        Are you sure you want to delete "{item.title}"? This action cannot be undone and will remove all learning items within this {item.type}.
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                         Cancel
                       </Button>
-                      <Button 
-                        variant="destructive" 
+                      <Button
+                        variant="destructive"
                         onClick={() => {
                           onDelete(item.id);
                           setDeleteDialogOpen(false);
                         }}
                       >
-                        Delete Module
+                        Delete {item.type === 'module' ? 'Module' : 'Project'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <ChevronDown className={cn(
-                  "h-5 w-5 transition-transform",
-                  item.isExpanded && "rotate-180"
-                )} />
+
+                {/* Expand/Collapse button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle(item.id);
+                  }}
+                  title={item.isExpanded ? 'Collapse' : 'Expand'}
+                >
+                  <ChevronDown className={cn(
+                    "h-5 w-5 transition-transform",
+                    item.isExpanded && "rotate-180"
+                  )} />
+                </Button>
               </div>
-            </CollapsibleTrigger>
+            </div>
           </div>
         </CardHeader>
         

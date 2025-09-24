@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  FileText, 
-  CheckSquare, 
-  Code, 
-  MessageSquare, 
+import {
+  FileText,
+  CheckSquare,
+  Code,
+  MessageSquare,
   ClipboardCheck,
   BookOpen,
   Clock
@@ -25,12 +25,12 @@ import {
   FeedbackForm,
   Project
 } from '@/types';
-import { 
-  mockArticles, 
-  mockVideos, 
-  mockQuizzes, 
-  mockAssignments, 
-  mockCodingProblems, 
+import {
+  mockArticles,
+  mockVideos,
+  mockQuizzes,
+  mockAssignments,
+  mockCodingProblems,
   mockAssessments,
   mockFeedbackForms,
   mockProjects,
@@ -39,7 +39,7 @@ import {
   mockCodingSubmissions,
   mockAssessmentSubmissions,
   mockFeedbackSubmissions,
-  mockProjectSubmissions
+  mockProjectSubmissions,
 } from '@/types/mock-data';
 
 interface ContentItemGridProps {
@@ -82,11 +82,11 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
   useEffect(() => {
     // Simulate API call to fetch content items based on submission type
     setIsLoading(true);
-    
+
     setTimeout(() => {
       let contentItems: LearningItem[] = [];
       let submissions: any[] = [];
-      
+
       // Get content items based on submission type
       switch (submissionType) {
         case 'assignments':
@@ -121,13 +121,13 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
       // Calculate submission counts for each item
       const counts: Record<string, number> = {};
       const pending: Record<string, number> = {};
-      
+
       submissions.forEach(sub => {
         if (!counts[sub.itemId]) {
           counts[sub.itemId] = 0;
         }
         counts[sub.itemId]++;
-        
+
         // Count pending (submitted but not graded/reviewed)
         if (sub.status === 'submitted') {
           if (!pending[sub.itemId]) {
@@ -136,7 +136,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
           pending[sub.itemId]++;
         }
       });
-      
+
       setSubmissionCounts(counts);
       setPendingCounts(pending);
       setItems(contentItems);
@@ -146,69 +146,81 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <Card key={i}>
-            <CardContent className="p-4">
-              <Skeleton className="h-6 w-3/4 mb-3" />
-              <div className="flex justify-between">
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-4 w-1/4" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="w-full">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <Skeleton className="h-6 w-3/4 mb-3" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <Card className="border-dashed border-muted">
-        <CardContent className="p-6 text-center text-muted-foreground">
-          No {submissionType} available for this course.
-        </CardContent>
-      </Card>
+      <div className="w-full">
+        <div className="max-w-7xl mx-auto">
+          <Card className="border-dashed border-muted">
+            <CardContent className="p-6 text-center text-muted-foreground">
+              No {submissionType} available for this course.
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {items.map(item => {
-        const Icon = getIconByType(item.type);
-        const submissionCount = submissionCounts[item.id] || 0;
-        const pendingCount = pendingCounts[item.id] || 0;
-        
-        return (
-          <Card 
-            key={item.id} 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push(`/submissions/${courseId}/${item.id}?type=${submissionType}`)}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="bg-muted p-2 rounded-md">
-                    <Icon className="h-4 w-4" />
+    <div className="w-full">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map(item => {
+            const Icon = getIconByType(item.type);
+            const submissionCount = submissionCounts[item.id] || 0;
+            const pendingCount = pendingCounts[item.id] || 0;
+
+            return (
+              <Card
+                key={item.id}
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => router.push(`/submissions/${courseId}/${item.id}?type=${submissionType}`)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-muted p-2 rounded-md">
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <h3 className="font-medium text-base">{item.title}</h3>
+                    </div>
                   </div>
-                  <h3 className="font-medium text-base">{item.title}</h3>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between mt-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Badge variant="outline">{submissionCount} submissions</Badge>
-                </div>
-                {pendingCount > 0 && (
-                  <Badge variant="secondary" className="bg-warning-light text-warning-dark">
-                    {pendingCount} pending
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+
+                  <div className="flex items-center justify-between mt-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Badge variant="outline">{submissionCount} submissions</Badge>
+                    </div>
+                    {pendingCount > 0 && (
+                      <Badge variant="secondary" className="bg-warning-light text-warning-dark">
+                        {pendingCount} pending
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }; 

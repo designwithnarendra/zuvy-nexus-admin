@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
@@ -74,12 +75,13 @@ interface StudentSubmissionsTableProps {
   onBack: () => void;
 }
 
-export const StudentSubmissionsTable = ({ 
-  courseId, 
-  itemId, 
-  submissionType, 
-  onBack 
+export const StudentSubmissionsTable = ({
+  courseId,
+  itemId,
+  submissionType,
+  onBack
 }: StudentSubmissionsTableProps) => {
+  const router = useRouter();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [batches, setBatches] = useState<any[]>([]);
@@ -569,13 +571,13 @@ export const StudentSubmissionsTable = ({
   const columns = getColumns();
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to {submissionType.charAt(0).toUpperCase() + submissionType.slice(0, -1)} Submissions
         </Button>
-        
+
         <div className="flex items-center gap-4">
           <div className="text-sm text-muted-foreground">
             {filteredSubmissions.length} submissions
@@ -595,17 +597,20 @@ export const StudentSubmissionsTable = ({
           </Select>
         </div>
       </div>
-      
+
       <div>
-        <h1 className="text-2xl font-bold mb-2">{item.title}</h1>
-        <p className="text-muted-foreground mb-6">Student Submissions</p>
-        
+        <h1 className="text-2xl font-bold mb-6">{item.title}</h1>
+
         {filteredSubmissions.length === 0 ? (
-          <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
-            No submissions found for this item.
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center p-8 text-muted-foreground border border-dashed rounded-lg">
+              No submissions found for this item.
+            </div>
           </div>
         ) : (
-          <Table>
+          <div className="max-w-7xl mx-auto">
+            <div className="overflow-x-auto">
+              <Table>
             <TableHeader>
               <TableRow>
                 {columns.map((column) => (
@@ -743,21 +748,21 @@ export const StudentSubmissionsTable = ({
                                 </Button>
                               )}
                               
-                              <Button 
-                                variant="ghost" 
+                              <Button
+                                variant="ghost"
                                 size="sm"
-                                onClick={() => handleViewSubmission(submission)}
+                                onClick={() => router.push(`/submissions/${courseId}/${itemId}/${submission.studentId}?type=${submissionType}`)}
                               >
                                 <Eye className="h-4 w-4 mr-1" />
-                                View
+                                View Report
                               </Button>
-                              
-                              <Button 
-                                variant="ghost" 
+
+                              <Button
+                                variant="ghost"
                                 size="sm"
                               >
                                 <Download className="h-4 w-4 mr-1" />
-                                Download
+                                Download Report
                               </Button>
                             </div>
                           </TableCell>
@@ -770,7 +775,9 @@ export const StudentSubmissionsTable = ({
                 ))}
               </TableBody>
             </Table>
-          )}
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Submission View Dialog */}

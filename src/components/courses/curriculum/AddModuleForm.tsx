@@ -57,42 +57,22 @@ const AddModuleForm = ({ newModuleData, onDataChange, onSubmit, onCancel }: AddM
           />
         </div>
         <div className="space-y-2">
-          <Label>Duration</Label>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-1">
-              <Input
-                type="number"
-                value={newModuleData.months}
-                onChange={(e) => onDataChange({ ...newModuleData, months: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                className="w-16"
-                min="0"
-              />
-              <span className="text-sm">months</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Input
-                type="number"
-                value={newModuleData.weeks}
-                onChange={(e) => onDataChange({ ...newModuleData, weeks: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                className="w-16"
-                min="0"
-              />
-              <span className="text-sm">weeks</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Input
-                type="number"
-                value={newModuleData.days}
-                onChange={(e) => onDataChange({ ...newModuleData, days: parseInt(e.target.value) || 0 })}
-                placeholder="0"
-                className="w-16"
-                min="0"
-              />
-              <span className="text-sm">days</span>
-            </div>
+          <Label>Duration (weeks)</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={newModuleData.duration || ''}
+              onChange={(e) => onDataChange({ ...newModuleData, duration: parseInt(e.target.value) || 0 })}
+              placeholder="0"
+              className="w-20"
+              min="0"
+              max="52"
+            />
+            <span className="text-sm text-muted-foreground">weeks</span>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Duration will be used to calculate total course duration
+          </p>
         </div>
         <div className="flex gap-2">
           <Button onClick={onSubmit} disabled={!newModuleData.title.trim()}>
