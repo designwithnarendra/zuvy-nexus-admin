@@ -26,20 +26,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/courses/[courseId]/page.js"
     ],
-    "/courses/[courseId]/students/[studentId]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/courses/[courseId]/students/[studentId]/page.js"
-    ],
-    "/courses/[courseId]/batches/[batchId]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/courses/[courseId]/batches/[batchId]/page.js"
-    ],
     "/submissions/[courseId]/[itemId]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/submissions/[courseId]/[itemId]/page.js"
+    ],
+    "/submissions/[courseId]/[itemId]/[studentId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/submissions/[courseId]/[itemId]/[studentId]/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",

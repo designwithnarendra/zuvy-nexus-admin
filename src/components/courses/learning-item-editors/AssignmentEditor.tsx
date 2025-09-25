@@ -1,24 +1,27 @@
 'use client'
 
-import React, { useState } from 'react';
-import { BaseEditor } from './BaseEditor';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Upload } from 'lucide-react';
+import { CalendarIcon, Upload, FileText, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useUnsavedChanges } from '../curriculum/useUnsavedChanges';
+import { UnsavedChangesModal } from '../curriculum/UnsavedChangesModal';
 
 interface AssignmentData {
   title: string;
   instructions: string;
-  allowedSubmissionTypes: ('file' | 'text')[];
+  instructionType: 'text' | 'pdf';
+  instructionFileUrl?: string;
   dueDate?: Date;
-  fileUrl?: string;
+  allowLateSubmission?: boolean;
+  submissionTypes: ('file' | 'text' | 'url')[];
 }
 
 interface AssignmentEditorProps {
@@ -33,179 +36,239 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
     initialData || {
       title: '',
       instructions: '',
-      allowedSubmissionTypes: ['file'],
+      instructionType: 'text',
       dueDate: undefined,
-      fileUrl: undefined
+      allowLateSubmission: false,
+      submissionTypes: ['file', 'text']
     }
   );
-  
-  const [file, setFile] = useState<File | null>(null);
+
+  const unsavedChanges = useUnsavedChanges();
 
   const handleChange = (field: keyof AssignmentData, value: any) => {
     setData(prev => ({ ...prev, [field]: value }));
+    unsavedChanges.markAsUnsaved();
   };
 
-  const handleSubmissionTypeChange = (type: 'file' | 'text', checked: boolean) => {
-    if (checked) {
-      setData(prev => ({
-        ...prev,
-        allowedSubmissionTypes: [...prev.allowedSubmissionTypes, type]
-      }));
+  // Watch for data changes to mark as unsaved
+  useEffect(() => {
+    const hasChanges = JSON.stringify(data) !== JSON.stringify(initialData);
+    if (hasChanges) {
+      unsavedChanges.markAsUnsaved();
+    }
+  }, [data, initialData, unsavedChanges]);
+
+  // Handle PDF file upload with validation
+  const handlePDFUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        alert('Please select a PDF file only');
+        return;
+      }
+
+      // Check file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+
+      // Create object URL for the file
+      const fileUrl = URL.createObjectURL(file);
+      handleChange('instructionFileUrl', fileUrl);
+
+      console.log('PDF instructions uploaded:', file.name, file.size, file.type);
+    }
+  };
+
+  // Trigger PDF file upload
+  const triggerPDFUpload = () => {
+    document.getElementById('instruction-pdf-upload')?.click();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      onSave(data);
+      unsavedChanges.markAsSaved();
+    } catch (error) {
+      console.error('Error saving assignment:', error);
+    }
+  };
+
+  // Handle cancel with unsaved changes check
+  const handleCancel = () => {
+    if (unsavedChanges.hasUnsavedChanges) {
+      unsavedChanges.attemptAction(onCancel);
     } else {
-      setData(prev => ({
-        ...prev,
-        allowedSubmissionTypes: prev.allowedSubmissionTypes.filter(t => t !== type)
-      }));
+      onCancel();
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      
-      // In a real implementation, we would upload the file to a server
-      // and get back a URL to store in the data
-      // For now, we'll just simulate this with a fake URL
-      handleChange('fileUrl', URL.createObjectURL(selectedFile));
-    }
-  };
-
-  const handleSubmit = () => {
-    onSave(data);
-  };
-
-  const customFooterContent = (
-    <>
-      <Button variant="outline" onClick={onCancel}>Cancel</Button>
-      <Button onClick={handleSubmit}>
-        {mode === 'create' ? 'Add Assignment' : 'Save Changes'}
-      </Button>
-    </>
-  );
 
   return (
-    <BaseEditor
-      title={mode === 'create' ? 'Create Assignment' : 'Edit Assignment'}
-      type="assignment"
-      mode={mode}
-      onSave={handleSubmit}
-      onCancel={onCancel}
-      footerContent={customFooterContent}
-    >
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="title" className="font-semibold">Title</Label>
-          <Input
-            id="title"
-            value={data.title}
-            onChange={(e) => handleChange('title', e.target.value)}
-            placeholder="Enter assignment title"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="instructions" className="font-semibold">Instructions</Label>
-          <Textarea
-            id="instructions"
-            value={data.instructions}
-            onChange={(e) => handleChange('instructions', e.target.value)}
-            placeholder="Enter detailed instructions for the assignment"
-            rows={6}
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label className="font-semibold">Upload Instructions (PDF)</Label>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="border rounded-md p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                <input
-                  type="file"
-                  id="fileUpload"
-                  className="hidden"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                />
-                <label htmlFor="fileUpload" className="cursor-pointer flex flex-col items-center gap-2">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                  <span className="text-sm font-medium">
-                    {file ? file.name : 'Click to upload PDF'}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'PDF up to 10MB'}
-                  </span>
-                </label>
-              </div>
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="space-y-6">
+            {/* Title - Underlined style as per design specs */}
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={data.title}
+                onChange={(e) => handleChange('title', e.target.value)}
+                placeholder="Assignment Title"
+                className="text-xl font-semibold bg-transparent border-none outline-none border-b-2 border-border focus:border-primary transition-colors w-full pb-1"
+                style={{ fontSize: '1.25rem' }} // h5 size as per specs
+              />
             </div>
-            
-            {data.fileUrl && (
-              <div className="flex-1">
-                <div className="border rounded-md p-4">
-                  <p className="text-sm font-medium mb-2">Current File</p>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={data.fileUrl} target="_blank" rel="noopener noreferrer">
-                      View PDF
-                    </a>
-                  </Button>
+
+            {/* Instructions - Text or PDF Option */}
+            <div className="space-y-4">
+              <Label>Instructions</Label>
+              <RadioGroup
+                value={data.instructionType}
+                onValueChange={(value) => handleChange('instructionType', value as 'text' | 'pdf')}
+                className="flex gap-6"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="text" id="text-instructions" />
+                  <Label htmlFor="text-instructions" className="cursor-pointer">Text Instructions</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="pdf" id="pdf-instructions" />
+                  <Label htmlFor="pdf-instructions" className="cursor-pointer">Upload PDF</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Text Instructions */}
+            {data.instructionType === 'text' && (
+              <div className="space-y-2">
+                <Label htmlFor="instructions">Assignment Instructions</Label>
+                <Textarea
+                  id="instructions"
+                  value={data.instructions}
+                  onChange={(e) => handleChange('instructions', e.target.value)}
+                  placeholder="Enter detailed instructions for the assignment..."
+                  className="min-h-[200px]"
+                />
               </div>
             )}
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label className="font-semibold">Allowed Submission Types</Label>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="file-submission" 
-                checked={data.allowedSubmissionTypes.includes('file')}
-                onCheckedChange={(checked) => handleSubmissionTypeChange('file', checked === true)}
-              />
-              <Label htmlFor="file-submission" className="font-normal font-semibold">
-                File Upload
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="text-submission" 
-                checked={data.allowedSubmissionTypes.includes('text')}
-                onCheckedChange={(checked) => handleSubmissionTypeChange('text', checked === true)}
-              />
-              <Label htmlFor="text-submission" className="font-normal font-semibold">
-                Text Response
-              </Label>
-            </div>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="dueDate" className="font-semibold">Due Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !data.dueDate && "text-muted-foreground"
+
+            {/* PDF Instructions Upload */}
+            {data.instructionType === 'pdf' && (
+              <div className="space-y-2">
+                <Label>Upload PDF Instructions</Label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePDFUpload}
+                  className="hidden"
+                  id="instruction-pdf-upload"
+                />
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 font-medium">Drag and drop or click to upload PDF instructions</p>
+                    <p className="text-xs text-gray-500">Supported format: PDF files only (Max 10MB)</p>
+                    <Button variant="outline" onClick={triggerPDFUpload} className="mt-3">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Choose PDF File
+                    </Button>
+                  </div>
+                </div>
+                {data.instructionFileUrl && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-red-600 rounded flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-green-800 font-medium">✓ PDF instructions uploaded</p>
+                        <p className="text-xs text-green-600">Ready for preview</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(data.instructionFileUrl, '_blank')}
+                      >
+                        Preview PDF
+                      </Button>
+                    </div>
+                  </div>
                 )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {data.dueDate ? format(data.dueDate, "PPP") : "Select a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={data.dueDate}
-                onSelect={(date) => handleChange('dueDate', date)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+              </div>
+            )}
+
+            {/* Due Date (Optional) */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="dueDate">Due Date</Label>
+                <span className="text-sm text-muted-foreground">(Optional - leave empty if no due date)</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal max-w-xs",
+                        !data.dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {data.dueDate ? format(data.dueDate, "PPP") : "No due date set"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={data.dueDate}
+                      onSelect={(date) => handleChange('dueDate', date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                {data.dueDate && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleChange('dueDate', undefined)}
+                  >
+                    Clear Date
+                  </Button>
+                )}
+              </div>
+
+              {!data.dueDate && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Students will see "No due date" for this assignment</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </BaseEditor>
+
+      {/* Footer with CTA buttons */}
+      <div className="flex justify-between items-center p-6 border-t bg-background sticky bottom-0">
+        <Button variant="outline" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit}>
+          {mode === 'create' ? 'Add Assignment' : 'Edit Assignment'}
+        </Button>
+      </div>
+
+      {/* Unsaved Changes Modal */}
+      <UnsavedChangesModal
+        isOpen={unsavedChanges.showWarningModal}
+        onClose={unsavedChanges.closeModal}
+        onDiscard={unsavedChanges.discardChanges}
+        onSave={() => unsavedChanges.saveAndContinue(handleSubmit)}
+      />
+    </div>
   );
 } 

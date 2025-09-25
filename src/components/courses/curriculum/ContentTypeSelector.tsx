@@ -259,7 +259,7 @@ const ContentTypeSelector = ({ onClose, onSelect }: ContentTypeSelectorProps) =>
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-2">
           {contentTypes.map((contentType) => {
             const IconComponent = contentType.icon;
             return (
