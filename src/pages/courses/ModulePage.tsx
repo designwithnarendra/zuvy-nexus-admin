@@ -65,6 +65,8 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
   const [selectedItem, setSelectedItem] = useState<ContentDisplayItem | null>(moduleData.contentItems[1] || null);
   const [showAddContent, setShowAddContent] = useState(false);
+  const [contentItems, setContentItems] = useState<ContentDisplayItem[]>(moduleData.contentItems);
+  const [newContentItems, setNewContentItems] = useState<Set<string>>(new Set()); // Track new items
 
   const getContentIcon = (type: ContentType) => {
     switch (type) {
@@ -116,8 +118,44 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
   const handleAddContentType = (type: string) => {
     console.log('Adding content type:', type);
-    // Here we would create a new content item and set it as selected
+    
+    // Create new content item with "Untitled {content type}" name
+    const contentTypeLabel = getContentTypeLabel(type as ContentType);
+    const newItemId = `new-${Date.now()}`;
+    const newItem: ContentDisplayItem = {
+      id: newItemId,
+      type: type as ContentType,
+      title: `Untitled ${contentTypeLabel}`,
+      status: 'not-started'
+    };
+    
+    // Add to the end of content items
+    const updatedItems = [...contentItems, newItem];
+    setContentItems(updatedItems);
+    
+    // Track this as a new item
+    setNewContentItems(prev => new Set(prev).add(newItemId));
+    
+    // Set as selected and in focus
+    setSelectedItem(newItem);
+    
+    // Close the add content menu
     setShowAddContent(false);
+  };
+
+  const handleRemoveNewItem = (itemId: string) => {
+    // Remove from content items
+    setContentItems(prev => prev.filter(item => item.id !== itemId));
+    // Remove from new items tracking
+    setNewContentItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(itemId);
+      return newSet;
+    });
+    // If this was the selected item, clear selection
+    if (selectedItem?.id === itemId) {
+      setSelectedItem(null);
+    }
   };
 
   // Helper function to convert ContentDisplayItem to proper editor data
@@ -205,12 +243,24 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     if (selectedItem) {
       const updatedItem = { ...selectedItem, title: data.title };
       setSelectedItem(updatedItem);
+      
+      // If this was a new item, remove it from new items tracking since it's now saved
+      if (newContentItems.has(selectedItem.id)) {
+        setNewContentItems(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(selectedItem.id);
+          return newSet;
+        });
+      }
     }
   };
 
-  // Handle editor cancel
+  // Handle editor cancel with unsaved changes check
   const handleEditorCancel = () => {
-    // For now, just keep the current item selected
+    if (selectedItem && newContentItems.has(selectedItem.id)) {
+      // For new items, remove entirely when cancelling
+      handleRemoveNewItem(selectedItem.id);
+    }
     console.log('Editor cancelled');
   };
 
@@ -364,7 +414,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
             </div>
           ) : (
             <div className="p-2">
-              {moduleData.contentItems.map((item) => (
+              {contentItems.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedItem(item)}
@@ -411,16 +461,16 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           {/* Add Content Menu */}
           {showAddContent && (
             <div className="p-2 border-t bg-muted/50">
-              <div className="space-y-1">
+              <div className="grid grid-cols-2 gap-2">
                 {contentTypes.map((contentType) => (
                   <Button
                     key={contentType.type}
                     variant="ghost"
                     onClick={() => handleAddContentType(contentType.type)}
-                    className="w-full justify-start text-left h-auto py-2"
+                    className="h-auto py-2 px-3 justify-start text-left"
                   >
                     <div className="mr-2">{contentType.icon}</div>
-                    {contentType.label}
+                    <span className="text-sm">{contentType.label}</span>
                   </Button>
                 ))}
               </div>

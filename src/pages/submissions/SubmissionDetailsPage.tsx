@@ -46,6 +46,13 @@ import {
   mockProjects
 } from '@/types/mock-data';
 
+// Import modal components
+import { AssignmentModalView } from '@/components/courses/submissions/modals/AssignmentModalView';
+import { ProjectModalView } from '@/components/courses/submissions/modals/ProjectModalView';
+import { QuizModalView } from '@/components/courses/submissions/modals/QuizModalView';
+import { CodingModalView } from '@/components/courses/submissions/modals/CodingModalView';
+import { FeedbackModalView } from '@/components/courses/submissions/modals/FeedbackModalView';
+
 interface SubmissionDetailsPageProps {
   courseId: string;
   itemId: string;
@@ -67,6 +74,11 @@ const SubmissionDetailsPage = ({
   const [isReAttemptModalOpen, setIsReAttemptModalOpen] = useState(false);
   const [selectedSubmissionForReAttempt, setSelectedSubmissionForReAttempt] = useState<string | null>(null);
   const [approvedReAttempts, setApprovedReAttempts] = useState<Set<string>>(new Set());
+  
+  // Modal states
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
 
   // Fetch submissions and students
   useEffect(() => {
@@ -114,7 +126,22 @@ const SubmissionDetailsPage = ({
   }, [itemId, submissionType]);
 
   const handleBack = () => {
-    router.push(`/courses/${courseId}?tab=submissions`);
+    router.push(`/courses/${courseId}?tab=submissions&submissionType=${submissionType}`);
+  };
+
+  const handleViewReport = (submission: Submission) => {
+    const student = students.find(s => s.id === submission.studentId);
+    if (!student) return;
+    
+    if (submissionType === 'assessments') {
+      // Keep existing navigation for assessments
+      router.push(`/submissions/${courseId}/${itemId}/${submission.studentId}?type=${submissionType}`);
+    } else {
+      // Open modal for other types
+      setSelectedSubmission(submission);
+      setSelectedStudent(student);
+      setIsSubmissionModalOpen(true);
+    }
   };
 
   const handleOpenReAttemptModal = (submissionId: string) => {
@@ -124,7 +151,9 @@ const SubmissionDetailsPage = ({
 
   const handleApproveReAttempt = () => {
     if (selectedSubmissionForReAttempt) {
-      setApprovedReAttempts(new Set([...approvedReAttempts, selectedSubmissionForReAttempt]));
+      const newApprovedSet = new Set(approvedReAttempts);
+      newApprovedSet.add(selectedSubmissionForReAttempt);
+      setApprovedReAttempts(newApprovedSet);
       setIsReAttemptModalOpen(false);
       setSelectedSubmissionForReAttempt(null);
     }
@@ -204,15 +233,16 @@ const SubmissionDetailsPage = ({
         </Button>
       </div>
 
-      {/* Title and Top Level Information */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-4">
-            {item?.title || `${submissionType.charAt(0).toUpperCase() + submissionType.slice(1)} Assessment`}
-          </h1>
-        </div>
+      {/* Title */}
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold">
+          {item?.title || `${submissionType.charAt(0).toUpperCase() + submissionType.slice(1)} Assessment`}
+        </h1>
+      </div>
 
-        <div className="flex items-center gap-8">
+      {/* Batch Filter and Metrics - Left Aligned */}
+      <div className="mb-8">
+        <div className="flex items-start gap-8">
           <div className="flex flex-col">
             <label className="text-sm font-medium text-muted-foreground mb-1">Batch</label>
             <Select value={selectedBatch} onValueChange={setSelectedBatch}>
@@ -231,16 +261,16 @@ const SubmissionDetailsPage = ({
           </div>
 
           <div className="flex items-center gap-6 text-sm">
-            <div className="text-center">
+            <div className="text-left">
               <div className="font-semibold">{filteredSubmissions.length}</div>
               <div className="text-muted-foreground">Total Submissions</div>
             </div>
-            <div className="text-center">
+            <div className="text-left">
               <div className="font-semibold">{filteredSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded' || s.status === 'reviewed').length}</div>
               <div className="text-muted-foreground">Submissions Received</div>
             </div>
             {submissionType === 'assessments' && (
-              <div className="text-center">
+              <div className="text-left">
                 <div className="font-semibold">{filteredSubmissions.filter(s => (s as any).qualified).length}</div>
                 <div className="text-muted-foreground">Qualified Students</div>
               </div>
@@ -324,7 +354,7 @@ const SubmissionDetailsPage = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => router.push(`/submissions/${courseId}/${itemId}/${submission.studentId}?type=${submissionType}`)}
+                          onClick={() => handleViewReport(submission)}
                           className="hover:bg-primary hover:text-white"
                         >
                           <Eye className="h-4 w-4 mr-1" />
@@ -382,6 +412,61 @@ const SubmissionDetailsPage = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Submission View Modals */}
+      {selectedSubmission && selectedStudent && (
+        <>
+          {submissionType === 'assignments' && (
+            <AssignmentModalView
+              open={isSubmissionModalOpen}
+              onOpenChange={setIsSubmissionModalOpen}
+              submission={selectedSubmission as any}
+              student={selectedStudent}
+              assignment={item as any}
+            />
+          )}
+          
+          {submissionType === 'projects' && (
+            <ProjectModalView
+              open={isSubmissionModalOpen}
+              onOpenChange={setIsSubmissionModalOpen}
+              submission={selectedSubmission as any}
+              student={selectedStudent}
+              project={item as any}
+            />
+          )}
+          
+          {submissionType === 'quizzes' && (
+            <QuizModalView
+              open={isSubmissionModalOpen}
+              onOpenChange={setIsSubmissionModalOpen}
+              submission={selectedSubmission as any}
+              student={selectedStudent}
+              quiz={item as any}
+            />
+          )}
+          
+          {submissionType === 'coding' && (
+            <CodingModalView
+              open={isSubmissionModalOpen}
+              onOpenChange={setIsSubmissionModalOpen}
+              submission={selectedSubmission as any}
+              student={selectedStudent}
+              problem={item as any}
+            />
+          )}
+          
+          {submissionType === 'feedback' && (
+            <FeedbackModalView
+              open={isSubmissionModalOpen}
+              onOpenChange={setIsSubmissionModalOpen}
+              submission={selectedSubmission as any}
+              student={selectedStudent}
+              feedbackForm={item as any}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };

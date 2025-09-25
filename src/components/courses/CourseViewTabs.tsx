@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Info, BookOpen, Users, Settings, FileText, UserCheck } from 'lucide-react';
 import GeneralDetailsTab from './GeneralDetailsTab';
@@ -16,9 +17,25 @@ interface CourseViewTabsProps {
 }
 
 const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('general');
   const [batchFilter, setBatchFilter] = useState<string | null>(null);
+  const [initialSubmissionType, setInitialSubmissionType] = useState<string | null>(null);
   const studentsTabRef = useRef<HTMLDivElement>(null);
+
+  // Check URL parameters on mount
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    const submissionType = searchParams.get('submissionType');
+    
+    if (tab) {
+      setActiveTab(tab);
+    }
+    
+    if (submissionType) {
+      setInitialSubmissionType(submissionType);
+    }
+  }, [searchParams]);
 
   // Listen for navigation events from BatchesTab
   useEffect(() => {
@@ -110,7 +127,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
         </TabsContent>
         
         <TabsContent value="submissions" className="mt-0">
-          <SubmissionsTab courseId={courseId} />
+          <SubmissionsTab courseId={courseId} initialSubmissionType={initialSubmissionType} />
         </TabsContent>
         
         <TabsContent value="settings" className="mt-0">

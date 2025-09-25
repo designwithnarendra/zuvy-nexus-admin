@@ -147,8 +147,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
   if (isLoading) {
     return (
       <div className="w-full">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <Card key={i}>
                 <CardContent className="p-4">
@@ -161,7 +160,6 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
               </Card>
             ))}
           </div>
-        </div>
       </div>
     );
   }
@@ -169,21 +167,18 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
   if (items.length === 0) {
     return (
       <div className="w-full">
-        <div className="max-w-7xl mx-auto">
-          <Card className="border-dashed border-muted">
+        <Card className="border-dashed border-muted">
             <CardContent className="p-6 text-center text-muted-foreground">
               No {submissionType} available for this course.
             </CardContent>
           </Card>
-        </div>
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map(item => {
             const Icon = getIconByType(item.type);
             const submissionCount = submissionCounts[item.id] || 0;
@@ -219,7 +214,6 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
               </Card>
             );
           })}
-        </div>
       </div>
     </div>
   );

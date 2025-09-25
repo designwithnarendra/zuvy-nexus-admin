@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   FileText, 
@@ -24,10 +24,20 @@ const submissionTypes = [
 
 interface SubmissionsTabProps {
   courseId: string;
+  initialSubmissionType?: string | null;
 }
 
-const SubmissionsTab = ({ courseId }: SubmissionsTabProps) => {
-  const [activeSubmissionType, setActiveSubmissionType] = useState('assessments');
+const SubmissionsTab = ({ courseId, initialSubmissionType }: SubmissionsTabProps) => {
+  const [activeSubmissionType, setActiveSubmissionType] = useState(
+    initialSubmissionType || 'assessments'
+  );
+
+  // Update active tab when initialSubmissionType changes
+  useEffect(() => {
+    if (initialSubmissionType) {
+      setActiveSubmissionType(initialSubmissionType);
+    }
+  }, [initialSubmissionType]);
 
   return (
     <div className="w-full space-y-6">
