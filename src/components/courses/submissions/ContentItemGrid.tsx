@@ -41,6 +41,7 @@ import {
   mockFeedbackSubmissions,
   mockProjectSubmissions,
 } from '@/types/mock-data';
+import { EmptySubmissionState } from './EmptySubmissionState';
 
 interface ContentItemGridProps {
   courseId: string;
@@ -87,35 +88,41 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
       let contentItems: LearningItem[] = [];
       let submissions: any[] = [];
 
-      // Get content items based on submission type
-      switch (submissionType) {
-        case 'assignments':
-          contentItems = mockAssignments;
-          submissions = mockAssignmentSubmissions;
-          break;
-        case 'quizzes':
-          contentItems = mockQuizzes;
-          submissions = mockQuizSubmissions;
-          break;
-        case 'coding':
-          contentItems = mockCodingProblems;
-          submissions = mockCodingSubmissions;
-          break;
-        case 'assessments':
-          contentItems = mockAssessments;
-          submissions = mockAssessmentSubmissions;
-          break;
-        case 'feedback':
-          contentItems = mockFeedbackForms;
-          submissions = mockFeedbackSubmissions;
-          break;
-        case 'projects':
-          contentItems = mockProjects as any; // Type cast for now - would be properly typed in real implementation
-          submissions = mockProjectSubmissions;
-          break;
-        default:
-          contentItems = [];
-          submissions = [];
+      // For courseId '2' (Python for Data Science), show empty states
+      if (courseId === '2') {
+        contentItems = [];
+        submissions = [];
+      } else {
+        // Get content items based on submission type
+        switch (submissionType) {
+          case 'assignments':
+            contentItems = mockAssignments;
+            submissions = mockAssignmentSubmissions;
+            break;
+          case 'quizzes':
+            contentItems = mockQuizzes;
+            submissions = mockQuizSubmissions;
+            break;
+          case 'coding':
+            contentItems = mockCodingProblems;
+            submissions = mockCodingSubmissions;
+            break;
+          case 'assessments':
+            contentItems = mockAssessments;
+            submissions = mockAssessmentSubmissions;
+            break;
+          case 'feedback':
+            contentItems = mockFeedbackForms;
+            submissions = mockFeedbackSubmissions;
+            break;
+          case 'projects':
+            contentItems = mockProjects as any; // Type cast for now - would be properly typed in real implementation
+            submissions = mockProjectSubmissions;
+            break;
+          default:
+            contentItems = [];
+            submissions = [];
+        }
       }
 
       // Calculate submission counts for each item
@@ -165,15 +172,7 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
   }
 
   if (items.length === 0) {
-    return (
-      <div className="w-full">
-        <Card className="border-dashed border-muted">
-            <CardContent className="p-6 text-center text-muted-foreground">
-              No {submissionType} available for this course.
-            </CardContent>
-          </Card>
-      </div>
-    );
+    return <EmptySubmissionState submissionType={submissionType} />;
   }
 
   return (
