@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, BookOpen, Video, FileText, Code, HelpCircle, MessageSquare, ClipboardCheck, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Plus, BookOpen, Video, FileText, Code, HelpCircle, MessageSquare, ClipboardCheck, GraduationCap, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DeleteContentModal } from '@/components/courses/curriculum/DeleteContentModal';
 
 // Import the actual editor components
 import { LiveClassEditor } from '@/components/courses/learning-item-editors/LiveClassEditor';
@@ -37,6 +38,9 @@ interface ContentDisplayItem {
   title: string;
   duration?: string;
   status?: 'completed' | 'in-progress' | 'not-started';
+  classStatus?: 'upcoming' | 'ongoing' | 'completed'; // For live classes
+  recordingUrl?: string; // For completed live classes
+  recordingPlatform?: 'youtube' | 'upload'; // For completed live classes
 }
 
 interface ModulePageProps {
@@ -52,21 +56,36 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     id: moduleId,
     title: 'Module 2: DOM Manipulation & Events',
     contentItems: [
-      { id: '1', type: 'live-class' as ContentType, title: 'DOM Fundamentals and Element Selection', duration: '90 min', status: 'completed' as const },
-      { id: '2', type: 'video' as ContentType, title: 'Advanced DOM Manipulation Techniques', duration: '90 min', status: 'completed' as const },
-      { id: '3', type: 'video' as ContentType, title: 'Visualizing the DOM tree', duration: '15 min', status: 'not-started' as const },
-      { id: '4', type: 'article' as ContentType, title: 'Understanding Nodes in the DOM', duration: '5 mins read', status: 'not-started' as const },
-      { id: '5', type: 'assignment' as ContentType, title: 'DOM Selection Practice', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
-      { id: '6', type: 'quiz' as ContentType, title: 'DOM Fundamentals Quiz', duration: '5 questions', status: 'not-started' as const },
-      { id: '7', type: 'feedback-form' as ContentType, title: 'Module 2 Feedback', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
-      { id: '8', type: 'coding-problem' as ContentType, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const }
+      { id: '1', type: 'live-class' as ContentType, title: 'DOM Fundamentals and Element Selection', duration: '90 min', status: 'completed' as const, classStatus: 'upcoming' as const },
+      { id: '2', type: 'live-class' as ContentType, title: 'Interactive DOM Events Workshop', duration: '120 min', status: 'in-progress' as const, classStatus: 'ongoing' as const },
+      {
+        id: '3',
+        type: 'live-class' as ContentType,
+        title: 'Advanced Event Handling',
+        duration: '90 min',
+        status: 'not-started' as const,
+        classStatus: 'completed' as const,
+        recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        recordingPlatform: 'youtube' as const
+      },
+      { id: '4', type: 'video' as ContentType, title: 'Advanced DOM Manipulation Techniques', duration: '90 min', status: 'completed' as const },
+      { id: '5', type: 'video' as ContentType, title: 'Visualizing the DOM tree', duration: '15 min', status: 'not-started' as const },
+      { id: '6', type: 'article' as ContentType, title: 'Understanding Nodes in the DOM', duration: '5 mins read', status: 'not-started' as const },
+      { id: '7', type: 'assignment' as ContentType, title: 'DOM Selection Practice', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
+      { id: '8', type: 'quiz' as ContentType, title: 'DOM Fundamentals Quiz', duration: '5 questions', status: 'not-started' as const },
+      { id: '9', type: 'feedback-form' as ContentType, title: 'Module 2 Feedback', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
+      { id: '10', type: 'coding-problem' as ContentType, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const }
     ]
   };
 
-  const [selectedItem, setSelectedItem] = useState<ContentDisplayItem | null>(moduleData.contentItems[1] || null);
+  const [selectedItem, setSelectedItem] = useState<ContentDisplayItem | null>(moduleData.contentItems[2] || null);
   const [showAddContent, setShowAddContent] = useState(false);
   const [contentItems, setContentItems] = useState<ContentDisplayItem[]>(moduleData.contentItems);
   const [newContentItems, setNewContentItems] = useState<Set<string>>(new Set()); // Track new items
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<ContentDisplayItem | null>(null);
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+  const contentListRef = useRef<HTMLDivElement>(null);
 
   const getContentIcon = (type: ContentType) => {
     switch (type) {
@@ -118,7 +137,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
   const handleAddContentType = (type: string) => {
     console.log('Adding content type:', type);
-    
+
     // Create new content item with "Untitled {content type}" name
     const contentTypeLabel = getContentTypeLabel(type as ContentType);
     const newItemId = `new-${Date.now()}`;
@@ -128,19 +147,26 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       title: `Untitled ${contentTypeLabel}`,
       status: 'not-started'
     };
-    
+
     // Add to the end of content items
     const updatedItems = [...contentItems, newItem];
     setContentItems(updatedItems);
-    
+
     // Track this as a new item
     setNewContentItems(prev => new Set(prev).add(newItemId));
-    
+
     // Set as selected and in focus
     setSelectedItem(newItem);
-    
+
     // Close the add content menu
     setShowAddContent(false);
+
+    // Scroll to show the new items
+    setTimeout(() => {
+      if (contentListRef.current) {
+        contentListRef.current.scrollTop = contentListRef.current.scrollHeight;
+      }
+    }, 100);
   };
 
   const handleRemoveNewItem = (itemId: string) => {
@@ -155,6 +181,20 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     // If this was the selected item, clear selection
     if (selectedItem?.id === itemId) {
       setSelectedItem(null);
+    }
+  };
+
+  // Handle delete content item
+  const handleDeleteClick = (item: ContentDisplayItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setItemToDelete(item);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      handleRemoveNewItem(itemToDelete.id);
+      setItemToDelete(null);
     }
   };
 
@@ -176,7 +216,12 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           type: 'live-class' as const,
           startDate: new Date(),
           startTime: '10:00',
-          duration: 90
+          duration: 90,
+          classStatus: item.classStatus,
+          mode: 'new' as const,
+          meetingPlatform: 'zoom' as const,
+          recordingUrl: item.recordingUrl,
+          recordingPlatform: item.recordingPlatform
         } as LiveClassData;
 
       case 'video':
@@ -267,7 +312,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   const renderContentEditor = () => {
     if (!selectedItem) {
       return (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center h-[100vh]">
           <div className="text-center">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Start by choosing a content item</h3>
@@ -284,8 +329,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     switch (selectedItem.type) {
       case 'live-class':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <LiveClassEditor
+              key={selectedItem.id}
               initialData={editorData as LiveClassData}
               mode="edit"
               onSave={handleEditorSave}
@@ -296,8 +342,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'video':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <VideoEditor
+              key={selectedItem.id}
               initialData={editorData as VideoData}
               mode="edit"
               onSave={handleEditorSave}
@@ -308,8 +355,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'article':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <ArticleEditor
+              key={selectedItem.id}
               initialData={editorData as ArticleData}
               mode="edit"
               onSave={handleEditorSave}
@@ -320,8 +368,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'assignment':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <AssignmentEditor
+              key={selectedItem.id}
               initialData={editorData as AssignmentData}
               mode="edit"
               onSave={handleEditorSave}
@@ -332,8 +381,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'quiz':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <QuizEditor
+              key={selectedItem.id}
               initialData={editorData as QuizData}
               mode="edit"
               onSave={handleEditorSave}
@@ -344,8 +394,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'feedback-form':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <FeedbackFormEditor
+              key={selectedItem.id}
               initialData={editorData as FeedbackFormData}
               mode="edit"
               onSave={handleEditorSave}
@@ -356,8 +407,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       case 'coding-problem':
         return (
-          <div className="flex-1">
+          <div className="flex-1 h-[100vh]">
             <CodingProblemEditor
+              key={selectedItem.id}
               initialData={editorData as CodingProblemData}
               mode="edit"
               onSave={handleEditorSave}
@@ -368,7 +420,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       default:
         return (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center h-[100vh]">
             <div className="text-center">
               <HelpCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">Editor not available</h3>
@@ -380,11 +432,11 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-[100vh] overflow-hidden bg-background">
       {/* Left Sidebar - 25% width */}
-      <div className="w-1/4 border-r bg-card flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b">
+      <div className="w-1/4 border-r bg-card flex flex-col h-full">
+        {/* Header - Fixed */}
+        <div className="p-4 border-b shrink-0">
           <Button
             variant="ghost"
             onClick={() => router.push(`/courses/${courseId}`)}
@@ -394,23 +446,46 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
             Back to Course
           </Button>
 
-          <div>
+          <div className="mb-3">
             <h2 className="font-semibold text-lg mb-1">Module Content</h2>
             <h3 className="text-sm text-muted-foreground">{moduleData.title}</h3>
           </div>
+
+          {/* Add Content Button - Fixed at Top */}
+          <Button
+            onClick={() => setShowAddContent(!showAddContent)}
+            variant="outline"
+            className="w-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Content
+          </Button>
+
+          {/* Add Content Menu - Appears below button */}
+          {showAddContent && (
+            <div className="mt-2 p-2 border rounded-lg bg-muted/50">
+              <div className="grid grid-cols-2 gap-2">
+                {contentTypes.map((contentType) => (
+                  <Button
+                    key={contentType.type}
+                    variant="ghost"
+                    onClick={() => handleAddContentType(contentType.type)}
+                    className="h-auto py-2 px-3 justify-start text-left"
+                  >
+                    <div className="mr-2">{contentType.icon}</div>
+                    <span className="text-sm">{contentType.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Content Items List */}
-        <div className="flex-1 overflow-y-auto">
-          {moduleData.contentItems.length === 0 ? (
+        {/* Content Items List - Scrollable */}
+        <div className="flex-1 overflow-y-auto" ref={contentListRef}>
+          {contentItems.length === 0 ? (
             <div className="p-4">
-              <Button
-                onClick={() => setShowAddContent(!showAddContent)}
-                className="w-full bg-primary hover:bg-primary-dark"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Content
-              </Button>
+              <p className="text-sm text-muted-foreground text-center">No content items yet. Click "Add Content" above to get started.</p>
             </div>
           ) : (
             <div className="p-2">
@@ -418,8 +493,10 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                 <div
                   key={item.id}
                   onClick={() => setSelectedItem(item)}
+                  onMouseEnter={() => setHoveredItemId(item.id)}
+                  onMouseLeave={() => setHoveredItemId(null)}
                   className={cn(
-                    "p-3 mb-2 rounded-lg cursor-pointer border transition-colors",
+                    "p-3 mb-2 rounded-lg cursor-pointer border transition-colors relative group",
                     selectedItem?.id === item.id
                       ? "bg-primary/10 border-primary"
                       : "hover:bg-muted border-transparent"
@@ -443,37 +520,20 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                         )}
                       </p>
                     </div>
+                    {/* Delete Button - Shows on Hover */}
+                    {hoveredItemId === item.id && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => handleDeleteClick(item, e)}
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
-
-              <Button
-                onClick={() => setShowAddContent(!showAddContent)}
-                variant="outline"
-                className="w-full mt-2"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Content
-              </Button>
-            </div>
-          )}
-
-          {/* Add Content Menu */}
-          {showAddContent && (
-            <div className="p-2 border-t bg-muted/50">
-              <div className="grid grid-cols-2 gap-2">
-                {contentTypes.map((contentType) => (
-                  <Button
-                    key={contentType.type}
-                    variant="ghost"
-                    onClick={() => handleAddContentType(contentType.type)}
-                    className="h-auto py-2 px-3 justify-start text-left"
-                  >
-                    <div className="mr-2">{contentType.icon}</div>
-                    <span className="text-sm">{contentType.label}</span>
-                  </Button>
-                ))}
-              </div>
             </div>
           )}
         </div>
@@ -481,6 +541,15 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
       {/* Right Content Area - 75% width */}
       {renderContentEditor()}
+
+      {/* Delete Content Modal */}
+      <DeleteContentModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        contentTitle={itemToDelete?.title || ''}
+        contentType={itemToDelete ? getContentTypeLabel(itemToDelete.type) : ''}
+      />
     </div>
   );
 };

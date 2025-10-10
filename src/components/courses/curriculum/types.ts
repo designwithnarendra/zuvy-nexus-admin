@@ -14,13 +14,26 @@ export interface BaseLearningItem {
 }
 
 // Live Class specific data
+export type LiveClassStatus = 'upcoming' | 'ongoing' | 'completed';
+export type MeetingPlatform = 'zoom' | 'google-meet';
+export type LiveClassMode = 'new' | 'existing';
+
 export interface LiveClassData extends BaseLearningItem {
   type: 'live-class';
+  mode?: LiveClassMode; // Whether this is a new class or selected from existing
   startDate: Date;
   startTime: string;
   duration: number; // duration in minutes
-  zoomMeetingUrl?: string;
-  hostName: string;
+  meetingPlatform?: MeetingPlatform; // Zoom or Google Meet
+  meetingUrl?: string;
+  meetingId?: string;
+  meetingPassword?: string;
+  hostName?: string;
+  classStatus?: LiveClassStatus; // upcoming, ongoing, or completed
+  existingClassId?: string; // Reference to existing class if mode is 'existing'
+  batchName?: string; // For displaying existing classes
+  recordingUrl?: string; // URL of the class recording (for completed classes)
+  recordingPlatform?: 'youtube' | 'upload'; // Platform where recording is hosted
 }
 
 // Video specific data
