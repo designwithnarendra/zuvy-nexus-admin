@@ -13,6 +13,10 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: false,
   },
+  output: 'export',
+  images: { unoptimized: true },
+  basePath: '/zuvy-nexus-admin>',
+  assetPrefix: '/zuvy-nexus-admin/',
 }
 
 module.exports = nextConfig
