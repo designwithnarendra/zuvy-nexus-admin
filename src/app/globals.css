@@ -1,6 +1,6 @@
 
-/* Import Google Fonts for Neural Nexus Design System */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600;700;800&family=Fira+Code:wght@300;400;500;600;700&display=swap');
+/* Import Fontshare Fonts for Zuvy Design System */
+@import url('https://api.fontshare.com/v2/css?f[]=sentient@300,400,401,500,700,701,1&f[]=rajdhani@300,400,500,600,700,1&f[]=jet-brains-mono@300,400,401,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,80 +10,80 @@
 @layer base {
   :root {
     /* Base Colors - Light Mode */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 48 30% 95%;
+    --foreground: 0 0% 17%;
 
     /* Card and Surface Colors - Light Mode */
-    --card: 224 30% 97%;
-    --card-light: 224 25% 98.5%;
-    --card-elevated: 224 40% 95.5%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-light: 0 0% 100%;
+    --card-elevated: 0 0% 99%;
+    --card-foreground: 0 0% 17%;
 
-    /* Primary Brand Colors - Light Mode */
-    --primary: 224 71% 56%;
-    --primary-light: 224 71% 95%;
-    --primary-dark: 224 71% 36%;
-    --primary-foreground: 210 20% 98%;
+    /* Primary Brand Colors - Light Mode - Forest Green */
+    --primary: 122 36% 27%;
+    --primary-light: 130 38% 94%;
+    --primary-dark: 122 42% 19%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary Brand Colors - Light Mode */
-    --secondary: 25 85% 55%;
-    --secondary-light: 25 85% 95%;
-    --secondary-dark: 25 85% 35%;
-    --secondary-foreground: 210 20% 98%;
+    /* Secondary Brand Colors - Light Mode - Bright Teal */
+    --secondary: 146 88% 50%;
+    --secondary-light: 150 100% 94%;
+    --secondary-dark: 146 84% 39%;
+    --secondary-foreground: 0 0% 10%;
 
-    /* Accent Colors - Light Mode */
-    --accent: 198 80% 50%;
-    --accent-light: 198 80% 95%;
-    --accent-dark: 198 80% 30%;
-    --accent-foreground: 210 20% 98%;
+    /* Accent Colors - Light Mode - Amber Gold */
+    --accent: 38 92% 50%;
+    --accent-light: 45 93% 89%;
+    --accent-dark: 32 95% 44%;
+    --accent-foreground: 0 0% 10%;
 
     /* Muted Colors - Light Mode */
-    --muted: 210 40% 96%;
-    --muted-light: 210 40% 98%;
-    --muted-dark: 210 40% 90%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 54%;
+    --muted-light: 48 23% 90%;
+    --muted-dark: 0 0% 37%;
+    --muted-foreground: 0 0% 54%;
 
     /* Semantic Colors - Light Mode */
-    --success: 160 84.1% 39.4%;
-    --success-light: 160 84.1% 95%;
-    --success-dark: 160 84.1% 19.4%;
-    --success-foreground: 210 20% 98%;
+    --success: 88 45% 48%;
+    --success-light: 88 45% 94%;
+    --success-dark: 88 49% 36%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 45.4 93.4% 47.5%;
-    --warning-light: 45.4 93.4% 95%;
-    --warning-dark: 45.4 93.4% 27.5%;
-    --warning-foreground: 222.2 84% 4.9%;
+    --warning: 38 92% 50%;
+    --warning-light: 45 93% 89%;
+    --warning-dark: 32 95% 44%;
+    --warning-foreground: 0 0% 10%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-light: 0 84.2% 95%;
-    --destructive-dark: 0 84.2% 40.2%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 63% 51%;
+    --destructive-light: 0 100% 96%;
+    --destructive-dark: 0 74% 42%;
+    --destructive-foreground: 0 0% 100%;
 
-    --info: 198 80% 50%;
-    --info-light: 198 80% 95%;
-    --info-dark: 198 80% 30%;
-    --info-foreground: 210 20% 98%;
+    --info: 207 79% 46%;
+    --info-light: 210 100% 95%;
+    --info-dark: 213 86% 34%;
+    --info-foreground: 0 0% 100%;
 
     /* Border and Input Colors - Light Mode */
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 224 71% 56%;
+    --border: 48 23% 90%;
+    --input: 48 23% 90%;
+    --ring: 122 36% 27%;
 
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 17%;
 
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 224 30% 97%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 224 71% 56%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-accent: 224 25% 98.5%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 224 71% 56%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 17%;
+    --sidebar-primary: 122 36% 27%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 99%;
+    --sidebar-accent-foreground: 0 0% 17%;
+    --sidebar-border: 48 23% 90%;
+    --sidebar-ring: 122 36% 27%;
   }
 
   .dark {
@@ -173,66 +173,104 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Typography System */
+  /* Typography System - Zuvy Design */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-heading font-bold;
+    line-height: 1.3;
   }
 
   h1 {
-    @apply text-6xl leading-tight;
+    font-size: 5.5rem; /* 88px */
   }
 
   h2 {
-    @apply text-4xl leading-tight;
+    font-size: 4rem; /* 64px */
   }
 
   h3 {
-    @apply text-3xl leading-tight;
+    font-size: 3rem; /* 48px */
   }
 
   h4 {
-    @apply text-2xl leading-tight;
+    font-size: 2.25rem; /* 36px */
   }
 
   h5 {
-    @apply text-xl leading-tight;
+    font-size: 1.75rem; /* 28px */
   }
 
   h6 {
-    @apply text-lg leading-tight;
+    font-size: 1.3125rem; /* 21px */
+  }
+
+  /* Body Text */
+  body {
+    font-size: 1rem; /* body1 - 16px */
+    line-height: 1.5;
   }
 
   p, span, div {
-    @apply leading-relaxed;
+    line-height: 1.5;
   }
 
+  /* Body2 - smaller text, tables */
+  .text-body2 {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.5;
+  }
+
+  /* Caption - image captions, tags */
+  .text-caption {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.5;
+  }
+
+  /* Code snippets */
   code {
     @apply font-mono;
+    font-size: 1rem; /* 16px */
+  }
+
+  /* Button text - body1 semibold */
+  button {
+    font-weight: 600;
   }
 
   /* Mobile Typography */
   @media (max-width: 768px) {
     h1 {
-      @apply text-5xl;
+      font-size: 4.75rem; /* 76px */
     }
     h2 {
-      @apply text-4xl;
+      font-size: 3.5rem; /* 56px */
     }
     h3 {
-      @apply text-3xl;
+      font-size: 2.75rem; /* 44px */
     }
     h4 {
-      @apply text-2xl;
+      font-size: 2rem; /* 32px */
     }
     h5 {
-      @apply text-xl;
+      font-size: 1.5rem; /* 24px */
     }
     h6 {
-      @apply text-lg;
+      font-size: 1.125rem; /* 18px */
     }
-    
+
     body {
-      font-size: 16px;
+      font-size: 0.875rem; /* 14px */
+    }
+
+    .text-body2 {
+      font-size: 0.75rem; /* 12px */
+    }
+
+    .text-caption {
+      font-size: 0.75rem; /* 12px */
+    }
+
+    code {
+      font-size: 0.875rem; /* 14px */
     }
   }
 }

@@ -227,7 +227,7 @@ const DataTable = ({
               </TableRow>
             ) : (
               paginatedData.map((item, index) => (
-                <TableRow key={item.id || index}>
+                <TableRow key={item.id || index} className="hover:bg-primary-light">
                   {columns.map((column) => (
                     <TableCell key={column.key}>
                       {item[column.key]}
