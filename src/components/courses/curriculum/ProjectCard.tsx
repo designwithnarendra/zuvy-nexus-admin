@@ -42,7 +42,7 @@ const ProjectCard = ({
           </div>
           <div className="flex-1">
             <div className="flex items-start justify-between mb-2">
-              <h4 className="font-heading font-semibold text-lg">
+              <h4 className="font-body font-semibold text-lg">
                 {getContentIndex(index)}: {item.title}
               </h4>
               <div className="flex items-center gap-2">

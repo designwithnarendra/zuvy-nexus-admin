@@ -88,8 +88,8 @@ const BatchStudentTable = ({
       ...student,
       progress: (
         <div className="flex items-center gap-2">
-          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-            <div 
+          <div className="w-16 h-2 bg-primary-light rounded-full overflow-hidden">
+            <div
               className="h-full bg-primary transition-all"
               style={{ width: `${student.progress}%` }}
             />
@@ -102,7 +102,7 @@ const BatchStudentTable = ({
           variant={
             student.status === 'active' ? 'default' :
             student.status === 'dropout' ? 'destructive' :
-            student.status === 'graduated' ? 'secondary' :
+            student.status === 'graduated' ? 'accent' :
             'outline'
           }
         >

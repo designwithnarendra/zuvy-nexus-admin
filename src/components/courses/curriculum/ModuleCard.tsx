@@ -287,7 +287,7 @@ const ModuleCard = ({
                   <FolderOpen className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-semibold text-lg">
+                  <h3 className="font-body font-semibold text-lg">
                     {getContentIndex(index)}: {item.title}
                   </h3>
                   <p className="text-muted-foreground text-sm">

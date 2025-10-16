@@ -34,7 +34,7 @@ const CourseCard = ({
       case 'draft':
         return 'bg-warning-light text-warning-dark border-warning';
       case 'archived':
-        return 'bg-muted text-muted-foreground border-border';
+        return 'bg-destructive-light text-destructive-dark border-destructive';
       default:
         return 'bg-muted text-muted-foreground border-border';
     }
@@ -63,7 +63,7 @@ const CourseCard = ({
       
       <CardContent className="p-6 flex-1">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="font-heading font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors flex-1">
+          <h3 className="font-body font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors flex-1">
             {title}
           </h3>
           <Badge 

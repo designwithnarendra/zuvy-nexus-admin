@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Layers, Database, Settings, LogOut } from 'lucide-react';
@@ -41,11 +42,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex h-16 items-center justify-between w-full px-6">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-heading font-bold text-lg">Z</span>
-              </div>
-              <span className="font-heading font-semibold text-xl">Zuvy Admin</span>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/zuvy-logo-horizontal.png"
+                alt="Zuvy"
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
             
             <nav className="flex items-center space-x-1">
