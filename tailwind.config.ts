@@ -24,6 +24,33 @@ export default {
 				'body': ['Sentient', 'sans-serif'],
 				'mono': ['JetBrains Mono', 'monospace'],
 			},
+			fontSize: {
+				// Brand typography scale - Zuvy Design System
+				// Headings - Rajdhani font with line-height 1.3
+				'h1': ['5.5rem', { lineHeight: '1.3', fontWeight: '700' }],      // 88px
+				'h2': ['4rem', { lineHeight: '1.3', fontWeight: '700' }],        // 64px
+				'h3': ['3rem', { lineHeight: '1.3', fontWeight: '700' }],        // 48px
+				'h4': ['2.25rem', { lineHeight: '1.3', fontWeight: '700' }],     // 36px
+				'h5': ['1.75rem', { lineHeight: '1.3', fontWeight: '700' }],     // 28px
+				'h6': ['1.3125rem', { lineHeight: '1.3', fontWeight: '700' }],   // 21px
+
+				// Mobile heading variants
+				'h1-mobile': ['4.75rem', { lineHeight: '1.3', fontWeight: '700' }],   // 76px
+				'h2-mobile': ['3.5rem', { lineHeight: '1.3', fontWeight: '700' }],    // 56px
+				'h3-mobile': ['2.75rem', { lineHeight: '1.3', fontWeight: '700' }],   // 44px
+				'h4-mobile': ['2rem', { lineHeight: '1.3', fontWeight: '700' }],      // 32px
+				'h5-mobile': ['1.5rem', { lineHeight: '1.3', fontWeight: '700' }],    // 24px
+				'h6-mobile': ['1.125rem', { lineHeight: '1.3', fontWeight: '700' }],  // 18px
+
+				// Body text - Sentient font with line-height 1.5
+				'body1': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],         // 16px
+				'body2': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],     // 14px
+				'caption': ['0.75rem', { lineHeight: '1.5', fontWeight: '400' }],    // 12px
+
+				// Mobile body variants
+				'body1-mobile': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],  // 14px
+				'body2-mobile': ['0.75rem', { lineHeight: '1.5', fontWeight: '400' }],   // 12px
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

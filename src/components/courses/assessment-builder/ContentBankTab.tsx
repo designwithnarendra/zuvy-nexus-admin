@@ -123,7 +123,7 @@ const ContentBankTab = ({ onQuestionSelect }: ContentBankTabProps) => {
         {filteredQuestions.map((question) => (
           <div
             key={question.id}
-            className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+            className="p-4 border rounded-lg hover:bg-primary-light cursor-pointer transition-colors"
             onClick={() => onQuestionSelect(question)}
           >
             <div className="flex items-start justify-between mb-2">

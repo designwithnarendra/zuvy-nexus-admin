@@ -23,7 +23,8 @@ export const SubmissionViewClient = ({ courseId, itemId, studentId, type }: Subm
     id: studentId,
     name: 'John Doe',
     email: 'john.doe@example.com',
-    avatarUrl: '/placeholder-avatar.jpg'
+    dateAdded: new Date().toISOString(),
+    status: 'active' as const
   };
 
   const mockSubmission = {
@@ -176,7 +177,7 @@ export const SubmissionViewClient = ({ courseId, itemId, studentId, type }: Subm
             qualified: true,
             hasReAttemptRequest: false,
             answers: [
-              { questionId: '1', questionType: 'Coding', answer: { code: 'function test() {}' } },
+              { questionId: '1', questionType: 'Coding', answer: { code: 'function test() {}', language: 'javascript' } },
               { questionId: '2', questionType: 'MCQ', answer: 'Hash Table' },
               { questionId: '3', questionType: 'Open Ended', answer: 'System design approach...' }
             ]

@@ -163,7 +163,7 @@ const PermissionsMatrix = ({
                 </TableRow>
                 {/* Actions in this category */}
                 {categoryActions.map((action) => (
-                  <TableRow key={action.id} className="hover:bg-muted/50">
+                  <TableRow key={action.id} className="hover:bg-primary-light">
                     <TableCell className="font-medium max-w-xs pl-8">
                       <div>
                         <div className="font-medium">{action.name}</div>

@@ -132,7 +132,7 @@ export const FeedbackSubmissionView = ({
                     <div
                       key={option}
                       className={`flex items-center gap-3 p-3 rounded-lg border ${
-                        isSelected ? 'bg-primary/10 border-primary' : 'bg-muted/50 border-border'
+                        isSelected ? 'bg-primary/10 border-primary' : 'bg-card border-border'
                       }`}
                     >
                       <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
@@ -166,7 +166,7 @@ export const FeedbackSubmissionView = ({
                     <div
                       key={option}
                       className={`flex items-center gap-3 p-3 rounded-lg border ${
-                        isSelected ? 'bg-primary/10 border-primary' : 'bg-muted/50 border-border'
+                        isSelected ? 'bg-primary/10 border-primary' : 'bg-card border-border'
                       }`}
                     >
                       {isSelected ? (
@@ -258,7 +258,6 @@ export const FeedbackSubmissionView = ({
       <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={student.avatarUrl} alt={student.name} />
               <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
             </Avatar>
             <div>

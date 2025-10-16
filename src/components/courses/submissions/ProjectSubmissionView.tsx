@@ -57,7 +57,6 @@ export const ProjectSubmissionView = ({
       <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={student.avatarUrl} alt={student.name} />
               <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
             </Avatar>
             <div>
@@ -74,7 +73,7 @@ export const ProjectSubmissionView = ({
             {submission.content && (
               <div>
                 <h3 className="text-lg font-semibold mb-3">Project Description</h3>
-                <Card className="bg-muted/50">
+                <Card className="bg-card">
                   <CardContent className="p-4">
                     <div className="whitespace-pre-wrap text-sm">
                       {submission.content}
@@ -151,7 +150,7 @@ export const ProjectSubmissionView = ({
 
               {/* If no files or links provided */}
               {!submission.fileUrl && !submission.url && (
-                <Card className="bg-muted/50">
+                <Card className="bg-card">
                   <CardContent className="p-4 text-center text-muted-foreground">
                     No files or links provided with this submission
                   </CardContent>

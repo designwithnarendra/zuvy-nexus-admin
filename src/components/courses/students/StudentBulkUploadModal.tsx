@@ -338,7 +338,7 @@ Bob Johnson,bob.johnson@example.com,`;
           )}
 
           {!showProgress && (
-            <Alert variant="default" className="bg-muted/50">
+            <Alert variant="default" className="bg-card">
               <Info className="h-4 w-4" />
               <AlertTitle>Required Format</AlertTitle>
               <AlertDescription className="text-xs">

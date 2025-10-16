@@ -225,10 +225,10 @@ const AllCoursesPage = () => {
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <h1 className="font-heading font-bold text-3xl text-foreground mb-2">
+            <h1 className="font-heading text-h5 md:text-h5 text-foreground mb-2">
               Course Studio
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-body1">
               Create, manage, and monitor your educational courses
             </p>
           </div>
@@ -331,8 +331,8 @@ const AllCoursesPage = () => {
           <div className="mx-auto h-24 w-24 rounded-full bg-muted flex items-center justify-center mb-4">
             <Search className="h-12 w-12 text-muted-foreground" />
           </div>
-          <h3 className="font-heading font-medium text-lg mb-2">No courses found</h3>
-          <p className="text-muted-foreground mb-6">
+          <h3 className="font-heading text-body1 font-semibold mb-2">No courses found</h3>
+          <p className="text-muted-foreground text-body1 mb-6">
             {searchQuery 
               ? `No courses match your search for "${searchQuery}"`
               : "Get started by creating your first course"
@@ -351,7 +351,7 @@ const AllCoursesPage = () => {
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="font-heading text-xl">Create New Course</DialogTitle>
+            <DialogTitle className="font-heading text-body1 font-semibold">Create New Course</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">

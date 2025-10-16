@@ -299,7 +299,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
 
       {/* Bulk Actions Bar - Show when students are selected - Moved below search */}
       {selectedStudents.length > 0 && (
-        <div className="bg-muted/50 p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="text-sm font-medium">

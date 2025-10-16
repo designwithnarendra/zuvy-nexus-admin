@@ -187,7 +187,7 @@ const DashboardPage = () => {
     <div className="container mx-auto px-6 py-8 max-w-7xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-heading font-bold text-3xl mb-2">Dashboard</h1>
+        <h1 className="font-heading text-h5 mb-2">Dashboard</h1>
         <p className="text-muted-foreground">
           Welcome back! Here's what's happening with your courses.
         </p>
@@ -231,12 +231,12 @@ const DashboardPage = () => {
           {/* High Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl flex items-center justify-between">
+              <CardTitle className="font-heading text-body1 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-success" />
                   High Performing Courses
                 </div>
-                <span className="text-sm font-normal text-muted-foreground">
+                <span className="text-body2 font-normal text-muted-foreground">
                   Completion Rate &gt; 80%
                 </span>
               </CardTitle>
@@ -246,15 +246,15 @@ const DashboardPage = () => {
                 {highPerformingCourses.map((course, index) => (
                   <div 
                     key={course.id} 
-                    className="flex items-center gap-4 p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-4 p-3 border rounded-lg cursor-pointer hover:bg-primary-light transition-colors"
                     onClick={() => handleCourseClick(course.id)}
                   >
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-body2">
                       {index + 1}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-sm">{course.title}</h3>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                      <h3 className="font-medium text-body2">{course.title}</h3>
+                      <div className="flex items-center gap-4 text-caption text-muted-foreground mt-1">
                         <span>{course.students} students</span>
                         <span>•</span>
                         <span>{course.completionRate}% completion</span>
@@ -269,12 +269,12 @@ const DashboardPage = () => {
           {/* Low Performing Courses */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl flex items-center justify-between">
+              <CardTitle className="font-heading text-body1 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <TrendingDown className="h-5 w-5 text-destructive" />
                   Low Performing Courses
                 </div>
-                <span className="text-sm font-normal text-muted-foreground">
+                <span className="text-body2 font-normal text-muted-foreground">
                   Completion Rate &lt; 80%
                 </span>
               </CardTitle>
@@ -287,19 +287,19 @@ const DashboardPage = () => {
                     className="flex items-center gap-4 p-3 border rounded-lg bg-destructive-light/10 cursor-pointer hover:bg-destructive-light/20 transition-colors"
                     onClick={() => handleCourseClick(course.id)}
                   >
-                    <div className="w-8 h-8 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center font-bold text-body2">
                       <AlertTriangle className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-sm">{course.title}</h3>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                      <h3 className="font-medium text-body2">{course.title}</h3>
+                      <div className="flex items-center gap-4 text-caption text-muted-foreground mt-1">
                         <span>{course.students} students</span>
                         <span>•</span>
                         <span>{course.completionRate}% completion</span>
                       </div>
                       <div className="flex gap-1 mt-2">
                         {course.issues.slice(0, 2).map((issue, i) => (
-                          <Badge key={i} variant="outline" className="text-xs bg-destructive-light text-destructive-dark">
+                          <Badge key={i} variant="outline" className="text-caption bg-destructive-light text-destructive-dark">
                             {issue}
                           </Badge>
                         ))}
@@ -317,7 +317,7 @@ const DashboardPage = () => {
           {/* Quick Actions */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl">Quick Actions</CardTitle>
+              <CardTitle className="font-heading text-body1 font-semibold">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full justify-start bg-primary hover:bg-primary-dark" asChild>
@@ -342,7 +342,7 @@ const DashboardPage = () => {
           {/* Recent Activity */}
           <Card className="shadow-4dp">
             <CardHeader>
-              <CardTitle className="font-heading text-xl">Recent Activity</CardTitle>
+              <CardTitle className="font-heading text-body1 font-semibold">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -352,10 +352,10 @@ const DashboardPage = () => {
                       {getActivityIcon(activity.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{activity.action}</p>
-                      <p className="text-xs text-muted-foreground">{activity.course} - {activity.batch}</p>
+                      <p className="text-body2 font-medium">{activity.action}</p>
+                      <p className="text-caption text-muted-foreground">{activity.course} - {activity.batch}</p>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    <span className="text-caption text-muted-foreground whitespace-nowrap">
                       {activity.time}
                     </span>
                   </div>
@@ -377,7 +377,7 @@ const DashboardPage = () => {
       <Dialog open={isActivityModalOpen} onOpenChange={setIsActivityModalOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-xl">All Recent Activity</DialogTitle>
+            <DialogTitle className="font-heading text-body1 font-semibold">All Recent Activity</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {allActivities.map((activity) => (
@@ -386,10 +386,10 @@ const DashboardPage = () => {
                   {getActivityIcon(activity.type)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{activity.action}</p>
-                  <p className="text-xs text-muted-foreground">{activity.course} - {activity.batch}</p>
+                  <p className="text-body2 font-medium">{activity.action}</p>
+                  <p className="text-caption text-muted-foreground">{activity.course} - {activity.batch}</p>
                 </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                <span className="text-caption text-muted-foreground whitespace-nowrap">
                   {activity.time}
                 </span>
               </div>

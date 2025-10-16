@@ -63,7 +63,7 @@ const LearningItemCard = ({
       
       <div 
         className={cn(
-          "flex items-center gap-3 p-3 rounded-lg border bg-card-light hover:bg-muted/50 transition-all duration-200 group cursor-grab active:cursor-grabbing",
+          "flex items-center gap-3 p-3 rounded-lg border bg-card-light hover:bg-primary-light transition-all duration-200 group cursor-grab active:cursor-grabbing",
           isDragging && "opacity-40 scale-95 shadow-lg ring-2 ring-primary/20"
         )}
         draggable={!!onDragStart}
@@ -79,7 +79,7 @@ const LearningItemCard = ({
       >
         <div 
           className={cn(
-            "cursor-grab text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-md hover:bg-muted/50",
+            "cursor-grab text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-md hover:bg-primary-light",
             isDragging && "text-primary bg-primary/10 opacity-100"
           )}
           title="Drag to reorder within module"
@@ -92,8 +92,8 @@ const LearningItemCard = ({
           </div>
           <div className="flex-1 flex items-center justify-between">
             <h4 className="font-medium text-lg">{learningItem.title}</h4>
-            {learningItem.duration && (
-              <p className="text-sm text-muted-foreground ml-4">{learningItem.duration}</p>
+            {learningItem.type === 'live-class' && learningItem.duration && (
+              <p className="text-sm text-muted-foreground ml-4">{learningItem.duration} min</p>
             )}
           </div>
         </div>

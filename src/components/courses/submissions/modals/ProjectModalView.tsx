@@ -86,7 +86,7 @@ export const ProjectModalView = ({
             {/* Text Content */}
             {submission.content && (
               <div>
-                <div className="bg-muted/50 p-4 rounded-md">
+                <div className="bg-card p-4 rounded-md">
                   <div className="whitespace-pre-wrap text-sm">
                     {submission.content}
                   </div>

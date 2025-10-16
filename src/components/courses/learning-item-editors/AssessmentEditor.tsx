@@ -278,7 +278,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                       ) : (
                         <div className="divide-y">
                           {filteredQuestions.map(question => (
-                            <div key={question.id} className="p-3 hover:bg-muted/50">
+                            <div key={question.id} className="p-3 hover:bg-primary-light">
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="flex items-center gap-2 mb-1">
@@ -334,7 +334,7 @@ export function AssessmentEditor({ initialData, onSave, onCancel, mode }: Assess
                     ) : (
                       <div className="divide-y">
                         {data.selectedQuestions.map(question => (
-                          <div key={question.id} className="p-3 hover:bg-muted/50">
+                          <div key={question.id} className="p-3 hover:bg-primary-light">
                             <div className="flex justify-between items-start">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">

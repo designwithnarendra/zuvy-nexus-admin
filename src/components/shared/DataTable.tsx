@@ -207,7 +207,7 @@ const DataTable = ({
               {columns.map((column) => (
                 <TableHead 
                   key={column.key}
-                  className={column.sortable !== false ? "cursor-pointer hover:bg-muted/50" : ""}
+                  className={column.sortable !== false ? "cursor-pointer hover:bg-primary-light" : ""}
                   onClick={() => column.sortable !== false && handleSort(column.key)}
                 >
                   <div className="flex items-center gap-2">

@@ -11,13 +11,13 @@ import { useUnsavedChanges } from '../curriculum/useUnsavedChanges';
 import { UnsavedChangesModal } from '../curriculum/UnsavedChangesModal';
 
 // Define the article content types
-type ArticleContentType = 'rich-text' | 'external-link' | 'file-upload';
+type ArticleContentType = 'rich-text' | 'external-link' | 'upload';
 
 // Define the article data structure
 export interface ArticleData {
   id?: string;
   title: string;
-  content: string;
+  content?: string;
   contentType: ArticleContentType;
   estimatedReadTime?: number;
   externalLink?: string;
@@ -76,7 +76,7 @@ export function ArticleEditor({
   
   // Calculate estimated read time based on content length
   const calculateReadTime = () => {
-    const wordCount = articleData.content.trim().split(/\s+/).length;
+    const wordCount = (articleData.content || '').trim().split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200); // Assuming 200 words per minute
     handleInputChange('estimatedReadTime', readTime);
   };
@@ -169,8 +169,8 @@ export function ArticleEditor({
                 <Label htmlFor="external-link" className="cursor-pointer">External Link</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="file-upload" id="file-upload" />
-                <Label htmlFor="file-upload" className="cursor-pointer">Upload PDF</Label>
+                <RadioGroupItem value="upload" id="upload" />
+                <Label htmlFor="upload" className="cursor-pointer">Upload PDF</Label>
               </div>
             </RadioGroup>
           </div>
@@ -215,14 +215,14 @@ export function ArticleEditor({
                     </Button>
                   </div>
                   <Textarea
-                    value={articleData.content}
+                    value={articleData.content || ''}
                     onChange={(e) => handleInputChange('content', e.target.value)}
                     placeholder="Write your article content here... You can use the formatting tools above to style your text."
                     className="min-h-[300px] border-0 resize-none focus-visible:ring-0"
                   />
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Estimated read time: {articleData.estimatedReadTime || Math.ceil((articleData.content.trim().split(/\s+/).length || 1) / 200)} minute(s)
+                  Estimated read time: {articleData.estimatedReadTime || Math.ceil(((articleData.content || '').trim().split(/\s+/).length || 1) / 200)} minute(s)
                 </div>
               </div>
             </div>
@@ -272,7 +272,7 @@ export function ArticleEditor({
           )}
 
           {/* PDF Upload */}
-          {articleData.contentType === 'file-upload' && (
+          {articleData.contentType === 'upload' && (
             <div className="space-y-2">
               <Label>Upload PDF Article</Label>
               <input

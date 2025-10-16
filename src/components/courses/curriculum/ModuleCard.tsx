@@ -271,7 +271,7 @@ const ModuleCard = ({
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-muted/50",
+                "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-primary-light",
                 isDragging && "text-primary bg-primary/10"
               )}
               title="Drag to reorder"
@@ -281,7 +281,7 @@ const ModuleCard = ({
             </div>
 
             {/* Main content area - clickable for navigation */}
-            <div className="flex-1 flex items-center justify-between hover:bg-muted/50 p-2 rounded-md transition-colors">
+            <div className="flex-1 flex items-center justify-between hover:bg-primary-light p-2 rounded-md transition-colors">
               <div className="text-left flex items-center gap-3">
                 <div className="p-2 rounded-md bg-primary-light text-primary">
                   <FolderOpen className="h-5 w-5" />
@@ -371,7 +371,6 @@ const ModuleCard = ({
                 </Button>
               </div>
             </div>
-          </div>
         </CardHeader>
         
         <CollapsibleContent>

@@ -89,13 +89,16 @@ export function LearningItemEditorsDemo() {
           correctAnswerId: 'opt6'
         },
       ],
+      selectedQuestions: [],
       timeLimit: 30,
       randomizeQuestions: true,
     },
     assignment: {
       title: 'Build a Todo App',
       instructions: 'Create a simple todo application using React.',
+      instructionType: 'text' as const,
       allowedSubmissionTypes: ['file', 'text'] as ('file' | 'text')[],
+      submissionTypes: ['file', 'text'] as ('file' | 'text' | 'url')[],
       dueDate: new Date('2023-12-20'),
     },
     coding: {

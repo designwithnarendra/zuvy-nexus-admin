@@ -115,7 +115,6 @@ export const QuizSubmissionView = ({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={student.avatarUrl} alt={student.name} />
                 <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
               </Avatar>
               <div>
@@ -179,7 +178,7 @@ export const QuizSubmissionView = ({
                         } else if (isStudentChoice && !isCorrectOption) {
                           className += " bg-destructive-light border-destructive text-destructive-dark";
                         } else {
-                          className += " bg-muted/50 border-border";
+                          className += " bg-card border-border";
                         }
 
                         return (

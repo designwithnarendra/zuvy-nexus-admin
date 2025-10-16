@@ -17,7 +17,7 @@ type VideoSourceType = 'upload' | 'youtube';
 export interface VideoData {
   id?: string;
   title: string;
-  description: string;
+  description?: string;
   sourceType: VideoSourceType;
   url?: string;
   fileUrl?: string;

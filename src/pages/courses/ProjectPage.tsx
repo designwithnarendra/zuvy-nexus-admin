@@ -122,7 +122,7 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
           </Button>
 
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold">Project Details</h1>
+            <h1 className="text-h6 font-bold">Project Details</h1>
             <Badge variant="outline" className={getDifficultyColor(projectData.difficulty)}>
               {projectData.difficulty}
             </Badge>
@@ -217,7 +217,7 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
               >
                 <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-medium mb-2">Upload Project Resources</h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-body2 text-muted-foreground mb-4">
                   Drag and drop files here, or click to browse
                 </p>
                 <input
@@ -230,7 +230,7 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
                 <Button variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
                   Choose Files
                 </Button>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-caption text-muted-foreground mt-2">
                   Any file type is supported
                 </p>
               </div>
@@ -248,8 +248,8 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
                         <div className="flex items-center gap-3">
                           <FileText className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <p className="font-medium text-sm">{resource.name}</p>
-                            <p className="text-xs text-muted-foreground">{resource.size}</p>
+                            <p className="font-medium text-body2">{resource.name}</p>
+                            <p className="text-caption text-muted-foreground">{resource.size}</p>
                           </div>
                         </div>
                         <Button

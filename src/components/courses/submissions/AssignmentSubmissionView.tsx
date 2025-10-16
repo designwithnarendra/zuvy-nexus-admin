@@ -57,7 +57,6 @@ export const AssignmentSubmissionView = ({
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={student.avatarUrl} alt={student.name} />
             <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
           </Avatar>
           <div>
@@ -74,7 +73,7 @@ export const AssignmentSubmissionView = ({
           {submission.content && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Submission</h3>
-              <Card className="bg-muted/50">
+              <Card className="bg-card">
                 <CardContent className="p-4">
                   <div className="whitespace-pre-wrap text-sm">
                     {submission.content}

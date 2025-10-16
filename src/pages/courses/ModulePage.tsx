@@ -315,7 +315,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
         <div className="flex-1 flex items-center justify-center h-[100vh]">
           <div className="text-center">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Start by choosing a content item</h3>
+            <h3 className="text-body1 font-medium mb-2">Start by choosing a content item</h3>
             <p className="text-muted-foreground">Select a content item from the sidebar to start editing</p>
           </div>
         </div>
@@ -423,7 +423,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           <div className="flex-1 flex items-center justify-center h-[100vh]">
             <div className="text-center">
               <HelpCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Editor not available</h3>
+              <h3 className="text-body1 font-medium mb-2">Editor not available</h3>
               <p className="text-muted-foreground">This content type doesn't have an editor yet</p>
             </div>
           </div>
@@ -447,8 +447,8 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           </Button>
 
           <div className="mb-3">
-            <h2 className="font-semibold text-lg mb-1">Module Content</h2>
-            <h3 className="text-sm text-muted-foreground">{moduleData.title}</h3>
+            <h2 className="font-semibold text-body1 mb-1">Module Content</h2>
+            <h3 className="text-body2 text-muted-foreground">{moduleData.title}</h3>
           </div>
 
           {/* Add Content Button - Fixed at Top */}
@@ -463,7 +463,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
           {/* Add Content Menu - Appears below button */}
           {showAddContent && (
-            <div className="mt-2 p-2 border rounded-lg bg-muted/50">
+            <div className="mt-2 p-2 border rounded-lg bg-card">
               <div className="grid grid-cols-2 gap-2">
                 {contentTypes.map((contentType) => (
                   <Button
@@ -473,7 +473,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                     className="h-auto py-2 px-3 justify-start text-left"
                   >
                     <div className="mr-2">{contentType.icon}</div>
-                    <span className="text-sm">{contentType.label}</span>
+                    <span className="text-body2">{contentType.label}</span>
                   </Button>
                 ))}
               </div>
@@ -485,7 +485,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
         <div className="flex-1 overflow-y-auto" ref={contentListRef}>
           {contentItems.length === 0 ? (
             <div className="p-4">
-              <p className="text-sm text-muted-foreground text-center">No content items yet. Click "Add Content" above to get started.</p>
+              <p className="text-body2 text-muted-foreground text-center">No content items yet. Click "Add Content" above to get started.</p>
             </div>
           ) : (
             <div className="p-2">
@@ -499,7 +499,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                     "p-3 mb-2 rounded-lg cursor-pointer border transition-colors relative group",
                     selectedItem?.id === item.id
                       ? "bg-primary/10 border-primary"
-                      : "hover:bg-muted border-transparent"
+                      : "hover:bg-primary-light border-transparent"
                   )}
                 >
                   <div className="flex items-start gap-2">
@@ -507,10 +507,10 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                       {getContentIcon(item.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm leading-tight mb-1">
+                      <h4 className="font-medium text-body2 leading-tight mb-1">
                         {item.title}
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-1" style={{ fontSize: '0.875rem' }}>
+                      <p className="text-body2 text-muted-foreground mb-1" style={{ fontSize: '0.875rem' }}>
                         {getContentTypeLabel(item.type)}
                         {item.duration && (
                           <>

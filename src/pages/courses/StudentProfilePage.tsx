@@ -228,7 +228,7 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
               </Avatar>
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h1 className="text-2xl font-bold">{student.name}</h1>
+                  <h1 className="text-h6 font-bold">{student.name}</h1>
                   <Badge variant="outline" className={getStatusColor(student.status)}>
                     {student.status}
                   </Badge>
@@ -238,7 +238,7 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
                   <span>{student.email}</span>
                 </div>
                 {student.batch && (
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-body2 text-muted-foreground mt-1">
                     Batch: {student.batch}
                   </p>
                 )}
@@ -247,9 +247,9 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
 
             {/* Right: Attendance */}
             <div className="text-right">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-body2 text-muted-foreground">
                 <p>Overall Attendance</p>
-                <p className="text-xl font-semibold text-foreground">
+                <p className="text-h6 font-semibold text-foreground">
                   {student.overallAttendance}
                 </p>
               </div>
@@ -260,7 +260,7 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
         {/* Attendance Table */}
         <div className="bg-white rounded-lg">
           <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold">Class Attendance</h2>
+            <h2 className="text-body1 font-semibold">Class Attendance</h2>
           </div>
           <div className="p-6">
 
@@ -276,7 +276,7 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="border-b bg-muted/50">
+                    <tr className="border-b bg-primary-light">
                       <th className="text-left py-3 px-4 font-medium">Live Class Name</th>
                       <th className="text-left py-3 px-4 font-medium">Date</th>
                       <th className="text-left py-3 px-4 font-medium">Time</th>
@@ -286,7 +286,7 @@ const StudentProfilePage = ({ courseId, studentId }: StudentProfilePageProps) =>
                   </thead>
                   <tbody>
                     {attendanceRecords.map((record) => (
-                      <tr key={record.id} className="border-b hover:bg-muted/50">
+                      <tr key={record.id} className="border-b hover:bg-primary-light">
                         <td className="py-3 px-4">
                           <span className="font-medium">{record.className}</span>
                         </td>

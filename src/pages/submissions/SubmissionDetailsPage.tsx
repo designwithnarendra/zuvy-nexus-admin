@@ -235,7 +235,7 @@ const SubmissionDetailsPage = ({
 
       {/* Title */}
       <div className="mb-4">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-h5">
           {item?.title || `${submissionType.charAt(0).toUpperCase() + submissionType.slice(1)} Assessment`}
         </h1>
       </div>
@@ -244,7 +244,7 @@ const SubmissionDetailsPage = ({
       <div className="mb-8">
         <div className="flex items-start gap-8">
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-muted-foreground mb-1">Batch</label>
+            <label className="text-body2 font-medium text-muted-foreground mb-1">Batch</label>
             <Select value={selectedBatch} onValueChange={setSelectedBatch}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="All Batches" />
@@ -260,7 +260,7 @@ const SubmissionDetailsPage = ({
             </Select>
           </div>
 
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-6 text-body2">
             <div className="text-left">
               <div className="font-semibold">{filteredSubmissions.length}</div>
               <div className="text-muted-foreground">Total Submissions</div>
@@ -305,7 +305,7 @@ const SubmissionDetailsPage = ({
                     <TableCell>
                       <div>
                         <div className="font-medium">{student?.name || 'Unknown Student'}</div>
-                        <div className="text-sm text-muted-foreground">{student?.email}</div>
+                        <div className="text-body2 text-muted-foreground">{student?.email}</div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -397,7 +397,7 @@ const SubmissionDetailsPage = ({
       <Dialog open={isReAttemptModalOpen} onOpenChange={setIsReAttemptModalOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-heading text-xl">Approve Re-Attempt</DialogTitle>
+            <DialogTitle className="font-heading text-body1 font-semibold">Approve Re-Attempt</DialogTitle>
             <DialogDescription>
               Are you sure you want to allow this student to re-attempt this assessment? This action cannot be undone.
             </DialogDescription>

@@ -216,7 +216,7 @@ const QuestionBankPage = () => {
                 expectedOutput: '',
                 isHidden: false
               }]
-            }}
+            } as any}
             onSave={(data) => {
               handleCreateQuestion();
             }}
@@ -233,7 +233,7 @@ const QuestionBankPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-heading font-bold text-3xl mb-2">Question Bank ({questions.length})</h1>
+          <h1 className="font-heading text-h5 mb-2">Question Bank ({questions.length})</h1>
           <p className="text-muted-foreground">
             Centralized repository for all assessment questions
           </p>
@@ -287,7 +287,7 @@ const QuestionBankPage = () => {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-xl">
+            <DialogTitle className="font-heading text-body1 font-semibold">
               Create {createType === 'Open Ended' ? 'Open Ended Question' : createType === 'MCQ' ? 'Multiple Choice Question' : 'Coding Problem'}
             </DialogTitle>
           </DialogHeader>
@@ -336,17 +336,17 @@ const QuestionBankPage = () => {
                 <Badge className={getDifficultyColor(selectedQuestion.difficulty)} variant="outline">
                   {selectedQuestion.difficulty}
                 </Badge>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-body2 text-muted-foreground">
                   Topic: {selectedQuestion.topic}
                 </span>
               </div>
               
               <div>
                 <h3 className="font-semibold mb-2">Question:</h3>
-                <p className="text-base">{selectedQuestion.text}</p>
+                <p className="text-body1">{selectedQuestion.text}</p>
               </div>
               
-              <div className="flex justify-between text-sm text-muted-foreground pt-4 border-t">
+              <div className="flex justify-between text-body2 text-muted-foreground pt-4 border-t">
                 <span>Usage Count: {selectedQuestion.usageCount}</span>
                 <span>Created: {new Date(selectedQuestion.createdDate).toLocaleDateString()}</span>
               </div>
@@ -376,7 +376,7 @@ const QuestionBankPage = () => {
                   difficulty: selectedQuestion.difficulty as 'Easy' | 'Medium' | 'Hard',
                   topic: selectedQuestion.topic,
                   testCases: []
-                }}
+                } as any}
                 onSave={() => setIsEditModalOpen(false)}
                 onCancel={() => setIsEditModalOpen(false)}
               />
@@ -385,7 +385,7 @@ const QuestionBankPage = () => {
               <div className="space-y-4 p-4">
                 <div className="text-center text-muted-foreground">
                   MCQ Editor would be displayed here
-                  <p className="text-sm mt-2">Question: {selectedQuestion.text}</p>
+                  <p className="text-body2 mt-2">Question: {selectedQuestion.text}</p>
                 </div>
               </div>
             )}
@@ -393,7 +393,7 @@ const QuestionBankPage = () => {
               <div className="space-y-4 p-4">
                 <div className="text-center text-muted-foreground">
                   Open Ended Editor would be displayed here
-                  <p className="text-sm mt-2">Question: {selectedQuestion.text}</p>
+                  <p className="text-body2 mt-2">Question: {selectedQuestion.text}</p>
                 </div>
               </div>
             )}

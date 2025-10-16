@@ -55,7 +55,7 @@ const SingleCoursePage = () => {
     return (
       <div className="w-full px-6 py-8">
         <div className="text-center">
-          <h1 className="font-heading font-bold text-2xl mb-4">Course Not Found</h1>
+          <h1 className="font-heading text-h6 mb-4">Course Not Found</h1>
           <p className="text-muted-foreground mb-6">The course you're looking for doesn't exist.</p>
           <Button onClick={() => router.push('/courses')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -107,7 +107,7 @@ const SingleCoursePage = () => {
 
         {/* Course Title and Status */}
         <div className="flex items-center gap-3 mb-2">
-          <h1 className="font-heading font-bold text-3xl text-foreground">
+          <h1 className="font-heading text-h5 text-foreground">
             {course.title}
           </h1>
           <Badge 

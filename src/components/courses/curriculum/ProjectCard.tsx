@@ -30,7 +30,7 @@ const ProjectCard = ({
         <div className="flex items-start gap-4">
           <div 
             className={cn(
-              "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-muted/50",
+              "cursor-grab text-muted-foreground hover:text-primary transition-colors duration-200 p-1 rounded-md hover:bg-primary-light",
               isDragging && "text-primary bg-primary/10"
             )}
             title="Drag to reorder"

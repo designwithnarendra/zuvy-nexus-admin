@@ -142,7 +142,7 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
         {/* Batch Info Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-6">
-            <h1 className="text-2xl font-bold">{batch.name}</h1>
+            <h1 className="text-h6 font-bold">{batch.name}</h1>
             <Badge
               variant="outline"
               className={`capitalize ${getStatusColor(batch.status)}`}
@@ -155,7 +155,7 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-muted-foreground">Instructor</p>
+                <p className="text-body2 text-muted-foreground">Instructor</p>
                 <p className="font-medium">{batch.instructorEmail}</p>
               </div>
             </div>
@@ -163,7 +163,7 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm text-muted-foreground">Enrollment</p>
+                <p className="text-body2 text-muted-foreground">Enrollment</p>
                 <p className="font-medium">
                   {batch.studentCount}/{batch.capEnrollment} students
                 </p>
@@ -174,7 +174,7 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Duration</p>
+                  <p className="text-body2 text-muted-foreground">Duration</p>
                   <p className="font-medium">
                     {new Date(batch.startDate).toLocaleDateString()} - {batch.endDate && new Date(batch.endDate).toLocaleDateString()}
                   </p>
@@ -186,7 +186,7 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
 
         {/* Students Section */}
         <div>
-          <h2 className="text-lg font-semibold mb-6">Students in this Batch</h2>
+          <h2 className="text-body1 font-semibold mb-6">Students in this Batch</h2>
             {students.length === 0 ? (
               <div className="text-center py-8">
                 <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
