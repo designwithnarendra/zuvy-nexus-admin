@@ -287,9 +287,9 @@ const ModuleCard = ({
                   <FolderOpen className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-body font-semibold text-lg">
+                  <div className="font-body font-semibold text-lg">
                     {getContentIndex(index)}: {item.title}
-                  </h3>
+                  </div>
                   <p className="text-muted-foreground text-sm">
                     {item.description}
                     {item.isExpanded && item.items && item.items.length > 0 && (

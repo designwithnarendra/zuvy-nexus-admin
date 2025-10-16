@@ -42,9 +42,9 @@ const ProjectCard = ({
           </div>
           <div className="flex-1">
             <div className="flex items-start justify-between mb-2">
-              <h4 className="font-body font-semibold text-lg">
+              <div className="font-body font-semibold text-lg">
                 {getContentIndex(index)}: {item.title}
-              </h4>
+              </div>
               <div className="flex items-center gap-2">
                 <Button 
                   variant="ghost" 

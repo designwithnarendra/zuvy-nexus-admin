@@ -46,8 +46,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <Image
                 src="/zuvy-logo-horizontal.png"
                 alt="Zuvy"
-                width={120}
-                height={40}
+                width={0}
+                height={0}
+                sizes="100vw"
                 className="h-10 w-auto"
                 priority
               />
