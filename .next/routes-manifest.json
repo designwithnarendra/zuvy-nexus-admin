@@ -2,8 +2,16 @@
   "version": 3,
   "pages404": true,
   "caseSensitive": false,
-  "basePath": "",
+  "basePath": "/zuvy-nexus-admin",
   "redirects": [
+    {
+      "source": "/zuvy-nexus-admin/",
+      "destination": "/zuvy-nexus-admin",
+      "basePath": false,
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^/zuvy-nexus-admin/$"
+    },
     {
       "source": "/:path+/",
       "destination": "/:path+",
@@ -14,7 +22,13 @@
   ],
   "headers": [],
   "rewrites": {
-    "beforeFiles": [],
+    "beforeFiles": [
+      {
+        "source": "/zuvy-nexus-admin//_next/:path+",
+        "destination": "/zuvy-nexus-admin/_next/:path+",
+        "regex": "^/zuvy-nexus-admin//_next(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))(?:/)?$"
+      }
+    ],
     "afterFiles": [],
     "fallback": []
   },

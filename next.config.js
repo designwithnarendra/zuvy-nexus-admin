@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     domains: ['placeholder.svg'],
+    unoptimized: true,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -13,9 +14,7 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: false,
   },
-  output: 'export',
-  images: { unoptimized: true },
-  basePath: '/zuvy-nexus-admin>',
+  basePath: '/zuvy-nexus-admin',
   assetPrefix: '/zuvy-nexus-admin/',
 }
 

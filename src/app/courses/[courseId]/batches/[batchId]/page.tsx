@@ -7,6 +7,10 @@ interface BatchPageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function CourseBatchPage({ params }: BatchPageProps) {
   const { courseId, batchId } = await params;
   return <BatchDetailsPage courseId={courseId} batchId={batchId} />;

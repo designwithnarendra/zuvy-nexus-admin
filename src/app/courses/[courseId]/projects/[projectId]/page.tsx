@@ -7,6 +7,10 @@ interface ProjectPageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function CourseProjectPage({ params }: ProjectPageProps) {
   const { courseId, projectId } = await params;
   return <ProjectPage courseId={courseId} projectId={projectId} />;

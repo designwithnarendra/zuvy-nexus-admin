@@ -10,12 +10,16 @@ interface SubmissionPageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function SubmissionPage({ params, searchParams }: SubmissionPageProps) {
   const { courseId, itemId } = await params;
   const { type } = await searchParams;
-  
+
   return (
-    <SubmissionDetailsPage 
+    <SubmissionDetailsPage
       courseId={courseId}
       itemId={itemId}
       submissionType={type || 'assessments'}

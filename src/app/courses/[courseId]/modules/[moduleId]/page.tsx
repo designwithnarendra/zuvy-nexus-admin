@@ -7,6 +7,10 @@ interface ModulePageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function CourseModulePage({ params }: ModulePageProps) {
   const { courseId, moduleId } = await params;
   return <ModulePage courseId={courseId} moduleId={moduleId} />;

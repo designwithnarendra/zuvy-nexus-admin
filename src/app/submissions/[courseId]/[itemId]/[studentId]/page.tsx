@@ -12,6 +12,10 @@ interface SubmissionViewPageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function SubmissionViewPage({ params, searchParams }: SubmissionViewPageProps) {
   const { courseId, itemId, studentId } = await params;
   const { type } = await searchParams;
