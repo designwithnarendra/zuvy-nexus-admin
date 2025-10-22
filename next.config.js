@@ -14,8 +14,7 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: false,
   },
-  basePath: '/zuvy-nexus-admin',
-  assetPrefix: '/zuvy-nexus-admin/',
+  trailingSlash: true,
 }
 
 module.exports = nextConfig

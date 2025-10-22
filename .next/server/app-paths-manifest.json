@@ -1,18 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
   "/courses/page": "app/courses/page.js",
   "/content-bank/page": "app/content-bank/page.js",
-  "/page": "app/page.js",
-  "/demo/focus-panel/page": "app/demo/focus-panel/page.js",
-  "/demo/editors/page": "app/demo/editors/page.js",
   "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
-  "/courses/[courseId]/modules/[moduleId]/page": "app/courses/[courseId]/modules/[moduleId]/page.js",
-  "/courses/[courseId]/batches/[batchId]/page": "app/courses/[courseId]/batches/[batchId]/page.js",
-  "/courses/[courseId]/projects/[projectId]/page": "app/courses/[courseId]/projects/[projectId]/page.js",
-  "/courses/[courseId]/students/[studentId]/page": "app/courses/[courseId]/students/[studentId]/page.js",
-  "/submissions/[courseId]/[itemId]/[studentId]/page": "app/submissions/[courseId]/[itemId]/[studentId]/page.js",
-  "/submissions/[courseId]/[itemId]/page": "app/submissions/[courseId]/[itemId]/page.js",
   "/settings/page": "app/settings/page.js",
-  "/settings/manage-roles/page": "app/settings/manage-roles/page.js",
   "/settings/users/page": "app/settings/users/page.js"
 }
