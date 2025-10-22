@@ -1,4 +1,4 @@
-import SubmissionDetailsPage from "@/pages/submissions/SubmissionDetailsPage";
+import SubmissionDetailsPage from "@/page-components/submissions/SubmissionDetailsPage";
 
 interface SubmissionPageProps {
   params: Promise<{

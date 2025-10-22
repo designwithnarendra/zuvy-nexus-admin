@@ -1,4 +1,4 @@
-import BatchDetailsPage from "@/pages/courses/BatchDetailsPage";
+import BatchDetailsPage from "@/page-components/courses/BatchDetailsPage";
 
 interface BatchPageProps {
   params: Promise<{

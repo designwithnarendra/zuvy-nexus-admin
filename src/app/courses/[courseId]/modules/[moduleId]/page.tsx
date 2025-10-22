@@ -1,4 +1,4 @@
-import ModulePage from "@/pages/courses/ModulePage";
+import ModulePage from "@/page-components/courses/ModulePage";
 
 interface ModulePageProps {
   params: Promise<{

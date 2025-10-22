@@ -1,4 +1,4 @@
-import ProjectPage from "@/pages/courses/ProjectPage";
+import ProjectPage from "@/page-components/courses/ProjectPage";
 
 interface ProjectPageProps {
   params: Promise<{

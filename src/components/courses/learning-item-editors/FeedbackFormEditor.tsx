@@ -16,35 +16,7 @@ import {
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useUnsavedChanges } from '../curriculum/useUnsavedChanges';
 import { UnsavedChangesModal } from '../curriculum/UnsavedChangesModal';
-
-type QuestionType =
-  | 'short-text'
-  | 'long-text'
-  | 'rating'
-  | 'date'
-  | 'time'
-  | 'multiple-choice'
-  | 'single-choice';
-
-interface FeedbackQuestion {
-  id: string;
-  type: QuestionType;
-  text: string;
-  required: boolean;
-  options?: string[]; // For multiple/single choice questions
-  ratingScale?: {
-    scale: '1-5' | '1-7' | '1-10';
-    lowLabel: string;
-    midLabel: string;
-    highLabel: string;
-  };
-}
-
-export interface FeedbackFormData {
-  id?: string;
-  title: string;
-  questions: FeedbackQuestion[];
-}
+import type { FeedbackFormData, FeedbackQuestion } from '../curriculum/types';
 
 interface FeedbackFormEditorProps {
   initialData?: FeedbackFormData;
@@ -53,23 +25,30 @@ interface FeedbackFormEditorProps {
   mode: 'create' | 'edit';
 }
 
-const DEFAULT_FEEDBACK_FORM_DATA: FeedbackFormData = {
+const createDefaultFeedbackFormData = (): FeedbackFormData => ({
+  id: `feedback-${Date.now()}`,
+  type: 'feedback-form',
   title: '',
+  description: '',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  status: 'draft',
   questions: [
     {
       id: 'question-1',
-      type: 'short-text',
-      text: '',
+      questionType: 'short-text',
+      questionText: '',
       required: true,
       ratingScale: {
-        scale: '1-10',
-        lowLabel: '',
+        min: 1,
+        max: 10,
+        minLabel: '',
         midLabel: '',
-        highLabel: ''
+        maxLabel: ''
       }
     }
   ]
-};
+});
 
 /**
  * FeedbackFormEditor
@@ -78,12 +57,14 @@ const DEFAULT_FEEDBACK_FORM_DATA: FeedbackFormData = {
  * Supports various question types including rating, multiple choice, and text inputs.
  */
 export function FeedbackFormEditor({
-  initialData = DEFAULT_FEEDBACK_FORM_DATA,
+  initialData,
   onSave,
   onCancel,
   mode
 }: FeedbackFormEditorProps) {
-  const [feedbackFormData, setFeedbackFormData] = useState<FeedbackFormData>(initialData);
+  const [feedbackFormData, setFeedbackFormData] = useState<FeedbackFormData>(
+    initialData || createDefaultFeedbackFormData()
+  );
 
   const unsavedChanges = useUnsavedChanges();
 
@@ -101,7 +82,7 @@ export function FeedbackFormEditor({
     }
   }, [feedbackFormData, initialData, unsavedChanges]);
 
-  const questionTypes: { value: QuestionType; label: string }[] = [
+  const questionTypes: { value: FeedbackQuestion['questionType']; label: string }[] = [
     { value: 'short-text', label: 'Short Text' },
     { value: 'long-text', label: 'Long Text' },
     { value: 'rating', label: 'Rating' },
@@ -114,36 +95,37 @@ export function FeedbackFormEditor({
   const addQuestion = () => {
     const newQuestion: FeedbackQuestion = {
       id: `question-${Date.now()}`,
-      type: 'short-text',
-      text: '',
+      questionType: 'short-text',
+      questionText: '',
       required: true,
       options: [],
       ratingScale: {
-        scale: '1-10',
-        lowLabel: '',
+        min: 1,
+        max: 10,
+        minLabel: '',
         midLabel: '',
-        highLabel: ''
+        maxLabel: ''
       }
     };
 
-    const updatedQuestions = [...feedbackFormData.questions, newQuestion];
+    const updatedQuestions = [...(feedbackFormData.questions || []), newQuestion];
     handleInputChange('questions', updatedQuestions);
   };
 
   const updateQuestion = (id: string, field: keyof FeedbackQuestion, value: any) => {
-    const updatedQuestions = feedbackFormData.questions.map(q =>
+    const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === id ? { ...q, [field]: value } : q
     );
     handleInputChange('questions', updatedQuestions);
   };
 
   const removeQuestion = (id: string) => {
-    const updatedQuestions = feedbackFormData.questions.filter(q => q.id !== id);
+    const updatedQuestions = (feedbackFormData.questions || []).filter(q => q.id !== id);
     handleInputChange('questions', updatedQuestions);
   };
 
   const addOption = (questionId: string) => {
-    const updatedQuestions = feedbackFormData.questions.map(q =>
+    const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === questionId
         ? { ...q, options: [...(q.options || []), `Option ${(q.options?.length || 0) + 1}`] }
         : q
@@ -152,7 +134,7 @@ export function FeedbackFormEditor({
   };
 
   const updateOption = (questionId: string, optionIndex: number, value: string) => {
-    const updatedQuestions = feedbackFormData.questions.map(q =>
+    const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === questionId
         ? {
             ...q,
@@ -164,7 +146,7 @@ export function FeedbackFormEditor({
   };
 
   const removeOption = (questionId: string, optionIndex: number) => {
-    const updatedQuestions = feedbackFormData.questions.map(q =>
+    const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === questionId
         ? {
             ...q,
@@ -214,7 +196,7 @@ export function FeedbackFormEditor({
             {/* Questions */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Questions ({feedbackFormData.questions.length})</h3>
+                <h3 className="text-lg font-medium">Questions ({feedbackFormData.questions?.length || 0})</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -226,7 +208,7 @@ export function FeedbackFormEditor({
               </div>
 
               <div className="space-y-6">
-                {feedbackFormData.questions.map((question, index) => (
+                {(feedbackFormData.questions || []).map((question, index) => (
                   <div key={question.id} className="border rounded-lg p-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -252,8 +234,8 @@ export function FeedbackFormEditor({
                           <div className="space-y-2">
                             <Label className="font-semibold">Question Type</Label>
                             <Select
-                              value={question.type}
-                              onValueChange={(value) => updateQuestion(question.id, 'type', value)}
+                              value={question.questionType}
+                              onValueChange={(value) => updateQuestion(question.id, 'questionType', value)}
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select question type" />
@@ -283,15 +265,15 @@ export function FeedbackFormEditor({
                         <div className="space-y-2">
                           <Label className="font-semibold">Question Text</Label>
                           <Textarea
-                            value={question.text}
-                            onChange={(e) => updateQuestion(question.id, 'text', e.target.value)}
+                            value={question.questionText}
+                            onChange={(e) => updateQuestion(question.id, 'questionText', e.target.value)}
                             placeholder="Enter question text"
                             rows={3}
                           />
                         </div>
 
                         {/* Multiple/Single Choice Options */}
-                        {(question.type === 'multiple-choice' || question.type === 'single-choice') && (
+                        {(question.questionType === 'multiple-choice' || question.questionType === 'single-choice') && (
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
                               <Label className="font-semibold">Answer Options</Label>
@@ -310,7 +292,7 @@ export function FeedbackFormEditor({
                                 {question.options.map((option, optionIndex) => (
                                   <div key={optionIndex} className="flex items-center gap-3">
                                     <div className="w-6 flex justify-center">
-                                      {question.type === 'multiple-choice' ? (
+                                      {question.questionType === 'multiple-choice' ? (
                                         <div className="h-4 w-4 border-2 border-gray-300 rounded" />
                                       ) : (
                                         <div className="h-4 w-4 border-2 border-gray-300 rounded-full" />
@@ -342,7 +324,7 @@ export function FeedbackFormEditor({
                         )}
 
                         {/* Rating Scale Configuration */}
-                        {question.type === 'rating' && (
+                        {question.questionType === 'rating' && (
                           <div className="space-y-4">
                             <div className="space-y-2">
                               <Label className="font-semibold">Rating Scale (1 to 10 default)</Label>
@@ -355,14 +337,14 @@ export function FeedbackFormEditor({
                               <div className="space-y-2">
                                 <Label className="font-semibold">Label for 1 (Lowest)</Label>
                                 <Input
-                                  value={question.ratingScale?.lowLabel || ''}
+                                  value={question.ratingScale?.minLabel || ''}
                                   onChange={(e) =>
                                     updateQuestion(question.id, 'ratingScale', {
-                                      ...question.ratingScale,
-                                      scale: '1-10',
-                                      lowLabel: e.target.value,
+                                      min: 1,
+                                      max: 10,
+                                      minLabel: e.target.value,
                                       midLabel: question.ratingScale?.midLabel || '',
-                                      highLabel: question.ratingScale?.highLabel || ''
+                                      maxLabel: question.ratingScale?.maxLabel || ''
                                     })
                                   }
                                   placeholder="e.g., Poor, Never, Strongly Disagree"
@@ -375,11 +357,11 @@ export function FeedbackFormEditor({
                                   value={question.ratingScale?.midLabel || ''}
                                   onChange={(e) =>
                                     updateQuestion(question.id, 'ratingScale', {
-                                      ...question.ratingScale,
-                                      scale: '1-10',
-                                      lowLabel: question.ratingScale?.lowLabel || '',
+                                      min: 1,
+                                      max: 10,
+                                      minLabel: question.ratingScale?.minLabel || '',
                                       midLabel: e.target.value,
-                                      highLabel: question.ratingScale?.highLabel || ''
+                                      maxLabel: question.ratingScale?.maxLabel || ''
                                     })
                                   }
                                   placeholder="e.g., Average, Sometimes, Neutral"
@@ -389,14 +371,14 @@ export function FeedbackFormEditor({
                               <div className="space-y-2">
                                 <Label className="font-semibold">Label for 10 (Highest)</Label>
                                 <Input
-                                  value={question.ratingScale?.highLabel || ''}
+                                  value={question.ratingScale?.maxLabel || ''}
                                   onChange={(e) =>
                                     updateQuestion(question.id, 'ratingScale', {
-                                      ...question.ratingScale,
-                                      scale: '1-10',
-                                      lowLabel: question.ratingScale?.lowLabel || '',
+                                      min: 1,
+                                      max: 10,
+                                      minLabel: question.ratingScale?.minLabel || '',
                                       midLabel: question.ratingScale?.midLabel || '',
-                                      highLabel: e.target.value
+                                      maxLabel: e.target.value
                                     })
                                   }
                                   placeholder="e.g., Excellent, Always, Strongly Agree"

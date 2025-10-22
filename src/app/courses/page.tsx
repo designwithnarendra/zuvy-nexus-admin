@@ -1,4 +1,4 @@
-import AllCoursesPage from "@/pages/courses/AllCoursesPage";
+import AllCoursesPage from "@/page-components/courses/AllCoursesPage";
 
 export default function CoursesPage() {
   return <AllCoursesPage />;

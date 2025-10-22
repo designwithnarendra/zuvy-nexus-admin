@@ -128,16 +128,39 @@ export function LearningItemEditorsDemo() {
       starterCode: 'function Counter() {\n  // Your code here\n}',
     },
     feedback: {
+      id: 'feedback-demo',
+      type: 'feedback-form' as const,
       title: 'Course Feedback Form',
+      description: 'Please provide your feedback on the course',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'draft' as const,
       questions: [
-        { id: 'fq1', type: 'rating' as const, text: 'How would you rate this course?', required: true },
-        { id: 'fq2', type: 'long-text' as const, text: 'What did you like most about this course?', required: false },
-        { 
-          id: 'fq3', 
-          type: 'multiple-choice' as const, 
-          text: 'Which topics would you like to learn more about?', 
-          required: false, 
-          options: ['React', 'TypeScript', 'Next.js'] 
+        {
+          id: 'fq1',
+          questionType: 'rating' as const,
+          questionText: 'How would you rate this course?',
+          required: true,
+          ratingScale: {
+            min: 1,
+            max: 10,
+            minLabel: 'Poor',
+            midLabel: 'Average',
+            maxLabel: 'Excellent'
+          }
+        },
+        {
+          id: 'fq2',
+          questionType: 'long-text' as const,
+          questionText: 'What did you like most about this course?',
+          required: false
+        },
+        {
+          id: 'fq3',
+          questionType: 'multiple-choice' as const,
+          questionText: 'Which topics would you like to learn more about?',
+          required: false,
+          options: ['React', 'TypeScript', 'Next.js']
         },
       ],
     },

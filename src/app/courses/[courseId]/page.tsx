@@ -1,4 +1,4 @@
-import SingleCoursePage from "@/pages/courses/SingleCoursePage";
+import SingleCoursePage from "@/page-components/courses/SingleCoursePage";
 
 interface CoursePageProps {
   params: Promise<{

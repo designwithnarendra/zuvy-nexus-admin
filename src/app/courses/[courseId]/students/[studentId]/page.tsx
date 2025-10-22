@@ -1,4 +1,4 @@
-import StudentProfilePage from "@/pages/courses/StudentProfilePage";
+import StudentProfilePage from "@/page-components/courses/StudentProfilePage";
 
 interface StudentPageProps {
   params: Promise<{
