@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Zuvy Nexus Admin
 
-## Project info
+A comprehensive educational content management platform designed for educators and administrators to create, manage, and deliver structured learning experiences.
 
-**URL**: https://lovable.dev/projects/47d01325-f458-42f3-805c-059834283eef
+## Overview
 
-## How can I edit this code?
+Zuvy Nexus Admin empowers educators to build complete courses with modular curriculum, manage student enrollments, create diverse assessments, and track learner progress—all through an intuitive, modern interface.
 
-There are several ways of editing your application.
+## Key Features
 
-**Use Lovable**
+- **Course Studio** - Create and organize courses with drag-and-drop curriculum builder
+- **Content Bank** - Centralized question library with MCQ, coding problems, and open-ended questions
+- **Multiple Learning Formats** - Videos, articles, quizzes, assignments, coding challenges, projects, live classes, and feedback forms
+- **Student Management** - Enrollment tracking, batch organization, and performance monitoring
+- **Assessment Tools** - Auto-graded quizzes, manual grading interface, and submission tracking
+- **Roles & Permissions** - Granular access control for different user types
+- **AI-Powered Content** - AI question generation and bulk content operations
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/47d01325-f458-42f3-805c-059834283eef) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Framework:** Next.js 15.1.3 (App Router)
+- **Language:** TypeScript 5.5.3
+- **UI:** React 18.3.1 + Tailwind CSS 3.4.11
+- **Components:** shadcn/ui (Radix UI)
+- **State Management:** TanStack React Query 5.56.2
+- **Forms:** React Hook Form + Zod validation
+- **Drag & Drop:** DND Kit
 
-**Use your preferred IDE**
+## Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js (v18 or higher recommended)
+- npm or yarn
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone the repository
+git clone <repository-url>
+cd zuvy-nexus-admin
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Run development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:3000`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Build for Production
 
-**Use GitHub Codespaces**
+```bash
+# Create production build
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview production build
+npm run preview
+```
 
-## What technologies are used for this project?
+## Documentation
 
-This project is built with:
+For detailed platform and design documentation, see the [`design-overview/`](design-overview/) folder:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **[Platform Overview](design-overview/platform-overview.md)** - Complete feature documentation and user flows
+- **[Style Guide](design-overview/style-guide.md)** - Design system, colors, typography, and component patterns
 
-## How can I deploy this project?
+## Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/47d01325-f458-42f3-805c-059834283eef) and click on Share -> Publish.
+```
+zuvy-nexus-admin/
+├── src/
+│   ├── app/                 # Next.js routes (App Router)
+│   ├── components/
+│   │   ├── ui/             # shadcn base components
+│   │   ├── courses/        # Course management
+│   │   ├── settings/       # User & role management
+│   │   └── shared/         # Reusable components
+│   ├── lib/                # Utilities and helpers
+│   └── page-components/    # Page-level containers
+├── public/                 # Static assets
+└── design-overview/        # Platform & design docs
+```
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Built with modern web technologies for scalable educational content delivery.
