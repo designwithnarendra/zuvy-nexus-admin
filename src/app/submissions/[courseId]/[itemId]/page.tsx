@@ -1,22 +1,14 @@
+'use client'
+
+import { useParams, useSearchParams } from 'next/navigation';
 import SubmissionDetailsPage from "@/page-components/submissions/SubmissionDetailsPage";
 
-interface SubmissionPageProps {
-  params: Promise<{
-    courseId: string;
-    itemId: string;
-  }>;
-  searchParams: Promise<{
-    type?: string;
-  }>;
-}
-
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function SubmissionPage({ params, searchParams }: SubmissionPageProps) {
-  const { courseId, itemId } = await params;
-  const { type } = await searchParams;
+export default function SubmissionPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const courseId = params?.courseId as string;
+  const itemId = params?.itemId as string;
+  const type = searchParams?.get('type');
 
   return (
     <SubmissionDetailsPage

@@ -1,17 +1,12 @@
+'use client'
+
+import { useParams } from 'next/navigation';
 import ProjectPage from "@/page-components/courses/ProjectPage";
 
-interface ProjectPageProps {
-  params: Promise<{
-    courseId: string;
-    projectId: string;
-  }>;
-}
+export default function CourseProjectPage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
+  const projectId = params?.projectId as string;
 
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function CourseProjectPage({ params }: ProjectPageProps) {
-  const { courseId, projectId } = await params;
   return <ProjectPage courseId={courseId} projectId={projectId} />;
 }

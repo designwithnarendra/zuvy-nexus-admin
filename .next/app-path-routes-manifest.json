@@ -1,0 +1,18 @@
+{
+  "/courses/[courseId]/batches/[batchId]/page": "/courses/[courseId]/batches/[batchId]",
+  "/courses/[courseId]/modules/[moduleId]/page": "/courses/[courseId]/modules/[moduleId]",
+  "/courses/[courseId]/projects/[projectId]/page": "/courses/[courseId]/projects/[projectId]",
+  "/courses/[courseId]/page": "/courses/[courseId]",
+  "/content-bank/page": "/content-bank",
+  "/_not-found/page": "/_not-found",
+  "/demo/editors/page": "/demo/editors",
+  "/courses/page": "/courses",
+  "/courses/[courseId]/students/[studentId]/page": "/courses/[courseId]/students/[studentId]",
+  "/submissions/[courseId]/[itemId]/page": "/submissions/[courseId]/[itemId]",
+  "/page": "/",
+  "/demo/focus-panel/page": "/demo/focus-panel",
+  "/submissions/[courseId]/[itemId]/[studentId]/page": "/submissions/[courseId]/[itemId]/[studentId]",
+  "/settings/users/page": "/settings/users",
+  "/settings/page": "/settings",
+  "/settings/manage-roles/page": "/settings/manage-roles"
+}

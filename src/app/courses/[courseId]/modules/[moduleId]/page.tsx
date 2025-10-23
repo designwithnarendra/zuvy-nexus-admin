@@ -1,17 +1,12 @@
+'use client'
+
+import { useParams } from 'next/navigation';
 import ModulePage from "@/page-components/courses/ModulePage";
 
-interface ModulePageProps {
-  params: Promise<{
-    courseId: string;
-    moduleId: string;
-  }>;
-}
+export default function CourseModulePage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
+  const moduleId = params?.moduleId as string;
 
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function CourseModulePage({ params }: ModulePageProps) {
-  const { courseId, moduleId } = await params;
   return <ModulePage courseId={courseId} moduleId={moduleId} />;
 }

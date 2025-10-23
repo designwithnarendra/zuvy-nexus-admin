@@ -1,17 +1,12 @@
+'use client'
+
+import { useParams } from 'next/navigation';
 import StudentProfilePage from "@/page-components/courses/StudentProfilePage";
 
-interface StudentPageProps {
-  params: Promise<{
-    courseId: string;
-    studentId: string;
-  }>;
-}
+export default function CourseStudentPage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
+  const studentId = params?.studentId as string;
 
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function CourseStudentPage({ params }: StudentPageProps) {
-  const { courseId, studentId } = await params;
   return <StudentProfilePage courseId={courseId} studentId={studentId} />;
 }

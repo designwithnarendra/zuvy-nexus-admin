@@ -1,17 +1,12 @@
+'use client'
+
+import { useParams } from 'next/navigation';
 import BatchDetailsPage from "@/page-components/courses/BatchDetailsPage";
 
-interface BatchPageProps {
-  params: Promise<{
-    courseId: string;
-    batchId: string;
-  }>;
-}
+export default function CourseBatchPage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
+  const batchId = params?.batchId as string;
 
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function CourseBatchPage({ params }: BatchPageProps) {
-  const { courseId, batchId } = await params;
   return <BatchDetailsPage courseId={courseId} batchId={batchId} />;
 }

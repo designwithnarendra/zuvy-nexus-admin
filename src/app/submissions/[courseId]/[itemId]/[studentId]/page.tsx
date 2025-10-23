@@ -1,24 +1,15 @@
-import { notFound } from 'next/navigation';
+'use client'
+
+import { useParams, useSearchParams, notFound } from 'next/navigation';
 import { SubmissionViewClient } from './client';
 
-interface SubmissionViewPageProps {
-  params: Promise<{
-    courseId: string;
-    itemId: string;
-    studentId: string;
-  }>;
-  searchParams: Promise<{
-    type?: string;
-  }>;
-}
-
-export async function generateStaticParams() {
-  return [];
-}
-
-export default async function SubmissionViewPage({ params, searchParams }: SubmissionViewPageProps) {
-  const { courseId, itemId, studentId } = await params;
-  const { type } = await searchParams;
+export default function SubmissionViewPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const courseId = params?.courseId as string;
+  const itemId = params?.itemId as string;
+  const studentId = params?.studentId as string;
+  const type = searchParams?.get('type');
 
   if (!type) {
     notFound();
