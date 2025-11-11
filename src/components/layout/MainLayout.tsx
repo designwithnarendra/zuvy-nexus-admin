@@ -3,10 +3,12 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LayoutDashboard, Layers, Database, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useUser } from '@/contexts/UserContext';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -14,27 +16,47 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const pathname = usePathname();
-  
-  const navigationItems = [
+  const router = useRouter();
+  const { currentUser, logout, isInstructor } = useUser();
+
+  // Don't show layout on role selector page
+  if (pathname === '/role-selector') {
+    return <>{children}</>;
+  }
+
+  const allNavigationItems = [
     {
       name: 'Course Studio',
       href: '/courses',
       icon: Layers,
-      active: pathname.startsWith('/courses')
+      active: pathname.startsWith('/courses'),
+      roles: ['Admin', 'Instructor'] // Available to both
     },
     {
       name: 'Content Bank',
       href: '/content-bank',
       icon: Database,
-      active: pathname.startsWith('/content-bank')
+      active: pathname.startsWith('/content-bank'),
+      roles: ['Admin', 'Instructor'] // Available to both
     },
     {
       name: 'Roles and Permissions',
       href: '/settings',
       icon: Settings,
-      active: pathname.startsWith('/settings')
+      active: pathname.startsWith('/settings'),
+      roles: ['Admin'] // Admin only
     }
   ];
+
+  // Filter navigation based on current user role
+  const navigationItems = currentUser
+    ? allNavigationItems.filter(item => item.roles.includes(currentUser.role))
+    : allNavigationItems;
+
+  const handleLogout = () => {
+    logout();
+    router.push('/role-selector');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,15 +97,23 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             </nav>
           </div>
           
-          <Button
-            variant="ghost"
-            size="icon"
-            className="ml-auto text-red-500 hover:text-white hover:bg-red-500"
-            title="Logout"
-            aria-label="Logout"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <div className="ml-auto flex items-center gap-3">
+            {currentUser && (
+              <Badge className="bg-info/10 text-info border-info/20 px-3 py-1 text-sm font-medium">
+                {currentUser.role}
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-500 hover:text-white hover:bg-red-500"
+              title="Logout"
+              aria-label="Logout"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 

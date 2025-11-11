@@ -16,6 +16,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
+    "/role-selector/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/role-selector/page.js"
+    ],
     "/courses/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -26,25 +31,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/courses/[courseId]/page.js"
     ],
+    "/courses/[courseId]/modules/[moduleId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/courses/[courseId]/modules/[moduleId]/page.js"
+    ],
     "/content-bank/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/content-bank/page.js"
-    ],
-    "/settings/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/settings/layout.js"
-    ],
-    "/settings/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/settings/page.js"
-    ],
-    "/settings/users/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/settings/users/page.js"
     ]
   }
 }

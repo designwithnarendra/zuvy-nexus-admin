@@ -52,6 +52,7 @@ export interface BaseLearningItem {
   position: number; // For ordering within module
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+  createdBy?: string; // Email of the user who created this item (Admin or Instructor)
 }
 
 // Learning item types
@@ -214,6 +215,7 @@ export interface Batch {
   id: string;
   name: string;
   courseId: string;
+  instructorEmail?: string; // Email of assigned instructor
   status: 'not_started' | 'ongoing' | 'completed';
   startDate?: string; // ISO date string
   endDate?: string; // ISO date string
@@ -324,6 +326,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  roleId: string; // Maps to Role.id
   dateAdded: string; // ISO date string
   status: 'active' | 'inactive' | 'pending';
   avatar?: string;

@@ -192,8 +192,8 @@ export const ContentItemGrid = ({ courseId, submissionType, onSelectItem }: Cont
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="bg-muted p-2 rounded-md">
-                        <Icon className="h-4 w-4" />
+                      <div className="bg-primary/10 p-2 rounded-md">
+                        <Icon className="h-4 w-4 text-primary" />
                       </div>
                       <h3 className="font-medium text-base">{item.title}</h3>
                     </div>

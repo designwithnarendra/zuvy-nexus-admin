@@ -154,6 +154,7 @@ export const mockUsers: User[] = [
     name: 'Sarah Johnson',
     email: 'sarah.johnson@zuvy.org',
     role: 'Admin',
+    roleId: 'role-1',
     dateAdded: '2024-01-20T14:15:00Z',
     status: 'active'
   },
@@ -162,6 +163,7 @@ export const mockUsers: User[] = [
     name: 'Mike Chen',
     email: 'mike.chen@zuvy.org',
     role: 'Ops',
+    roleId: 'role-2',
     dateAdded: '2024-02-01T09:00:00Z',
     status: 'active'
   },
@@ -170,6 +172,7 @@ export const mockUsers: User[] = [
     name: 'Emily Davis',
     email: 'emily.davis@zuvy.org',
     role: 'Ops',
+    roleId: 'role-2',
     dateAdded: '2024-02-05T11:30:00Z',
     status: 'active'
   },
@@ -178,6 +181,7 @@ export const mockUsers: User[] = [
     name: 'Alex Rodriguez',
     email: 'alex.rodriguez@zuvy.org',
     role: 'Instructor',
+    roleId: 'role-3',
     dateAdded: '2024-02-10T16:45:00Z',
     status: 'active'
   },
@@ -186,6 +190,7 @@ export const mockUsers: User[] = [
     name: 'Lisa Park',
     email: 'lisa.park@zuvy.org',
     role: 'Instructor',
+    roleId: 'role-3',
     dateAdded: '2024-02-15T13:20:00Z',
     status: 'active'
   },
@@ -194,6 +199,7 @@ export const mockUsers: User[] = [
     name: 'David Wilson',
     email: 'david.wilson@zuvy.org',
     role: 'Instructor',
+    roleId: 'role-3',
     dateAdded: '2024-02-20T10:00:00Z',
     status: 'active'
   },
@@ -202,6 +208,7 @@ export const mockUsers: User[] = [
     name: 'Anna Thompson',
     email: 'anna.thompson@zuvy.org',
     role: 'Ops',
+    roleId: 'role-2',
     dateAdded: '2024-02-25T15:30:00Z',
     status: 'active'
   }

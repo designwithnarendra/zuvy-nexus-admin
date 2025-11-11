@@ -80,7 +80,8 @@ export function FeedbackFormEditor({
     if (hasChanges) {
       unsavedChanges.markAsUnsaved();
     }
-  }, [feedbackFormData, initialData, unsavedChanges]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [feedbackFormData, initialData]);
 
   const questionTypes: { value: FeedbackQuestion['questionType']; label: string }[] = [
     { value: 'short-text', label: 'Short Text' },
@@ -177,7 +178,7 @@ export function FeedbackFormEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-8">

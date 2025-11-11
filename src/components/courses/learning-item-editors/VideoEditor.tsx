@@ -182,7 +182,7 @@ export function VideoEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
@@ -344,7 +344,7 @@ export function VideoEditor({
           Cancel
         </Button>
         <Button onClick={handleSubmit}>
-          {mode === 'create' ? 'Add Video' : 'Edit Video'}
+          {mode === 'create' ? 'Add Video' : 'Save Video'}
         </Button>
       </div>
 

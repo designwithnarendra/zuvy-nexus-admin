@@ -1,13 +1,16 @@
 
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, UserPlus, FileSpreadsheet, Search, Trash2, UserMinus, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/contexts/UserContext';
+import { getInstructorBatches, hasMultipleBatches, getInstructorStudents } from '@/utils/instructor-helpers';
+import { mockBatches, mockStudents } from '@/types/mock-data';
 
 // Import our new components
 import MasterStudentTable, { Student } from './students/MasterStudentTable';
@@ -52,6 +55,7 @@ const generateMockStudents = (): Student[] => {
 
 const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
   const router = useRouter();
+  const { currentUser, isInstructor } = useUser();
 
   // State for UI controls
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
@@ -62,31 +66,81 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
   const [batchFilter, setBatchFilter] = useState(initialBatchFilter || 'all');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Get instructor-specific data
+  const instructorBatches = useMemo(() => {
+    if (!currentUser || !isInstructor()) return [];
+    return getInstructorBatches(currentUser.email, courseId);
+  }, [currentUser, isInstructor, courseId]);
+
+  const showBatchFilter = useMemo(() => {
+    if (!currentUser || !isInstructor()) return true; // Admins always see filter
+    return hasMultipleBatches(currentUser.email, courseId);
+  }, [currentUser, isInstructor, courseId]);
+
   // Multi-select state
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [bulkAssignBatch, setBulkAssignBatch] = useState('');;
 
   // Mock data - in a real app this would come from an API
-  const [students, setStudents] = useState<Student[]>(generateMockStudents());
-  
-  const [batches, setBatches] = useState<Batch[]>([
-    {
-      id: 'batch-1',
-      name: 'Full Stack Batch 2024-A',
-      status: 'Ongoing',
-      startDate: '2024-01-15',
-      endDate: '2024-03-15',
-      studentCount: 25
-    },
-    {
-      id: 'batch-2',
-      name: 'Full Stack Batch 2024-B',
-      status: 'Ongoing',
-      startDate: '2024-02-01',
-      endDate: '2024-05-01',
-      studentCount: 25
+  const allStudents = useMemo(() => generateMockStudents(), []);
+
+  // Filter students based on instructor assignment
+  const availableStudents = useMemo(() => {
+    if (!currentUser) return allStudents;
+
+    if (isInstructor()) {
+      // Map mock student type to actual Student type from mockStudents
+      // For now, filter by batch names that match instructor batches
+      const instructorBatchNames = instructorBatches.map(b => b.name);
+      return allStudents.filter(student =>
+        student.batch && instructorBatchNames.includes(student.batch)
+      );
     }
-  ]);
+
+    return allStudents;
+  }, [allStudents, currentUser, isInstructor, instructorBatches]);
+
+  const [students, setStudents] = useState<Student[]>(availableStudents);
+
+  // Update students when availableStudents changes
+  useEffect(() => {
+    setStudents(availableStudents);
+  }, [availableStudents]);
+
+  // Get batches - filter for instructors
+  const batches = useMemo(() => {
+    if (!currentUser || !isInstructor()) {
+      // Admins see all batches for this course
+      return [
+        {
+          id: 'batch-1',
+          name: 'Full Stack Batch 2024-A',
+          status: 'Ongoing',
+          startDate: '2024-01-15',
+          endDate: '2024-03-15',
+          studentCount: 25
+        },
+        {
+          id: 'batch-2',
+          name: 'Full Stack Batch 2024-B',
+          status: 'Ongoing',
+          startDate: '2024-02-01',
+          endDate: '2024-05-01',
+          studentCount: 25
+        }
+      ];
+    }
+
+    // Instructors only see their assigned batches
+    return instructorBatches.map(batch => ({
+      id: batch.id,
+      name: batch.name,
+      status: batch.status === 'ongoing' ? 'Ongoing' : batch.status === 'completed' ? 'Completed' : 'Not Started',
+      startDate: batch.startDate || '',
+      endDate: batch.endDate || '',
+      studentCount: availableStudents.filter(s => s.batch === batch.name).length
+    }));
+  }, [currentUser, isInstructor, instructorBatches, availableStudents]);
 
   // Update batch filter when initialBatchFilter changes
   useEffect(() => {
@@ -241,6 +295,13 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         </div>
       </div>
 
+      {/* Batch Name Display for Single Batch Instructors */}
+      {isInstructor() && instructorBatches.length === 1 && (
+        <div className="flex items-center gap-2">
+          <span className="text-base font-semibold">Batch: {instructorBatches[0].name}</span>
+        </div>
+      )}
+
       {/* Search and Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
@@ -253,18 +314,20 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
           />
         </div>
 
-        <Select value={batchFilter} onValueChange={setBatchFilter}>
-          <SelectTrigger className="w-[200px] h-10">
-            <SelectValue placeholder="Filter by batch" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Batches</SelectItem>
-            {batches.map(batch => (
-              <SelectItem key={batch.id} value={batch.name}>{batch.name}</SelectItem>
-            ))}
-            <SelectItem value="unassigned">Unassigned</SelectItem>
-          </SelectContent>
-        </Select>
+        {showBatchFilter && (
+          <Select value={batchFilter} onValueChange={setBatchFilter}>
+            <SelectTrigger className="w-[200px] h-10">
+              <SelectValue placeholder="Filter by batch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Batches</SelectItem>
+              {batches.map(batch => (
+                <SelectItem key={batch.id} value={batch.name}>{batch.name}</SelectItem>
+              ))}
+              <SelectItem value="unassigned">Unassigned</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[150px] h-10">
@@ -287,13 +350,15 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
             <UserPlus className="h-4 w-4 mr-2" />
             Add Single Student
           </Button>
-          <Button
-            className="bg-primary hover:bg-primary-dark shadow-4dp h-10"
-            onClick={() => setIsBulkUploadModalOpen(true)}
-          >
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Bulk Upload
-          </Button>
+          {!isInstructor() && (
+            <Button
+              className="bg-primary hover:bg-primary-dark shadow-4dp h-10"
+              onClick={() => setIsBulkUploadModalOpen(true)}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Bulk Upload
+            </Button>
+          )}
         </div>
       </div>
 
@@ -356,6 +421,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         showMultiSelect={true}
         onStudentClick={handleStudentClick}
         totalClasses={20}
+        hideBatchColumn={isInstructor() && instructorBatches.length === 1}
       />
 
       {/* Add Student Modal */}

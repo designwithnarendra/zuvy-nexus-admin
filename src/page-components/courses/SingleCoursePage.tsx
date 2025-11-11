@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Upload } from 'lucide-react';
+import { ArrowLeft, Upload, ShieldAlert } from 'lucide-react';
 import CourseViewTabs from '@/components/courses/CourseViewTabs';
 import PublishCourseDialog from '@/components/courses/PublishCourseDialog';
+import { useUser } from '@/contexts/UserContext';
+import { hasInstructorAccessToCourse } from '@/utils/instructor-helpers';
 
 // This would normally come from your API
 const getCourseById = (id: string) => {
@@ -43,14 +45,40 @@ const SingleCoursePage = () => {
   const router = useRouter();
   const courseId = params?.courseId as string;
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
-  
+  const { currentUser, isInstructor } = useUser();
+
   if (!courseId) {
     router.push('/courses');
     return null;
   }
 
+  // Check instructor access
+  if (currentUser && isInstructor()) {
+    const hasAccess = hasInstructorAccessToCourse(currentUser.email, courseId);
+
+    if (!hasAccess) {
+      return (
+        <div className="w-full px-6 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200 max-w-md text-center">
+              <ShieldAlert className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h1 className="font-heading text-h6 mb-2 text-red-900">Access Denied</h1>
+              <p className="text-red-700 mb-6">
+                You don't have permission to access this course. Only instructors assigned to this course's batches can view it.
+              </p>
+              <Button onClick={() => router.push('/courses')} variant="destructive">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to My Courses
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+
   const course = getCourseById(courseId);
-  
+
   if (!course) {
     return (
       <div className="w-full px-6 py-8">
@@ -94,15 +122,17 @@ const SingleCoursePage = () => {
             Back to Course Library
           </Button>
           
-          <div className="flex items-center gap-3">
-            <Button
-              className="bg-primary hover:bg-primary-dark shadow-4dp"
-              onClick={() => setIsPublishDialogOpen(true)}
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Publish Course
-            </Button>
-          </div>
+          {!isInstructor() && (
+            <div className="flex items-center gap-3">
+              <Button
+                className="bg-primary hover:bg-primary-dark shadow-4dp"
+                onClick={() => setIsPublishDialogOpen(true)}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Publish Course
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Course Title and Status */}

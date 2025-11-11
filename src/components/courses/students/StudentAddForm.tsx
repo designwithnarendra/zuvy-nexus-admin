@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Batch } from './BatchCard';
+import { useUser } from '@/contexts/UserContext';
 
 // Form schema validation
 const formSchema = z.object({
@@ -41,6 +42,7 @@ interface StudentAddFormProps {
 
 const StudentAddForm = ({ batches, onAddStudent, onCancel, editingStudent, onEditStudent }: StudentAddFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isInstructor } = useUser();
   const isEditing = !!editingStudent;
 
   // Get batch ID from batch name for editing
@@ -122,9 +124,10 @@ const StudentAddForm = ({ batches, onAddStudent, onCancel, editingStudent, onEdi
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-semibold">Batch (Optional)</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
+              <Select
+                onValueChange={field.onChange}
                 value={field.value}
+                disabled={isInstructor() && isEditing}
               >
                 <FormControl>
                   <SelectTrigger>

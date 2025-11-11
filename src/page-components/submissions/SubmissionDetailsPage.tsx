@@ -29,12 +29,12 @@ import {
   Submission, 
   LearningItem,
 } from '@/types';
-import { 
-  mockStudents, 
+import {
+  mockStudents,
   mockBatches,
-  mockAssignmentSubmissions, 
-  mockQuizSubmissions, 
-  mockCodingSubmissions, 
+  mockAssignmentSubmissions,
+  mockQuizSubmissions,
+  mockCodingSubmissions,
   mockAssessmentSubmissions,
   mockFeedbackSubmissions,
   mockProjectSubmissions,
@@ -45,6 +45,8 @@ import {
   mockFeedbackForms,
   mockProjects
 } from '@/types/mock-data';
+import { useUser } from '@/contexts/UserContext';
+import { getInstructorBatches, hasMultipleBatches } from '@/utils/instructor-helpers';
 
 // Import modal components
 import { AssignmentModalView } from '@/components/courses/submissions/modals/AssignmentModalView';
@@ -59,12 +61,13 @@ interface SubmissionDetailsPageProps {
   submissionType: string;
 }
 
-const SubmissionDetailsPage = ({ 
-  courseId, 
-  itemId, 
-  submissionType 
+const SubmissionDetailsPage = ({
+  courseId,
+  itemId,
+  submissionType
 }: SubmissionDetailsPageProps) => {
   const router = useRouter();
+  const { currentUser, isInstructor } = useUser();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [batches, setBatches] = useState<any[]>([]);
@@ -74,11 +77,17 @@ const SubmissionDetailsPage = ({
   const [isReAttemptModalOpen, setIsReAttemptModalOpen] = useState(false);
   const [selectedSubmissionForReAttempt, setSelectedSubmissionForReAttempt] = useState<string | null>(null);
   const [approvedReAttempts, setApprovedReAttempts] = useState<Set<string>>(new Set());
-  
+
   // Modal states
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+
+  // Get instructor batches
+  const instructorBatches = currentUser && isInstructor()
+    ? getInstructorBatches(currentUser.email, courseId)
+    : [];
+  const showBatchDropdown = !isInstructor() || (currentUser && hasMultipleBatches(currentUser.email, courseId));
 
   // Fetch submissions and students
   useEffect(() => {
@@ -245,34 +254,38 @@ const SubmissionDetailsPage = ({
         <div className="flex items-start gap-8">
           <div className="flex flex-col">
             <label className="text-body2 font-medium text-muted-foreground mb-1">Batch</label>
-            <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="All Batches" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Batches</SelectItem>
-                {batches.map(batch => (
-                  <SelectItem key={batch.id} value={batch.id}>
-                    {batch.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {showBatchDropdown ? (
+              <Select value={selectedBatch} onValueChange={setSelectedBatch}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="All Batches" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Batches</SelectItem>
+                  {batches.map(batch => (
+                    <SelectItem key={batch.id} value={batch.id}>
+                      {batch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="font-semibold">{instructorBatches[0]?.name || 'Batch 1'}</div>
+            )}
           </div>
 
           <div className="flex items-center gap-6 text-body2">
             <div className="text-left">
-              <div className="font-semibold">{filteredSubmissions.length}</div>
               <div className="text-muted-foreground">Total Submissions</div>
+              <div className="font-semibold">{filteredSubmissions.length}</div>
             </div>
             <div className="text-left">
-              <div className="font-semibold">{filteredSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded' || s.status === 'reviewed').length}</div>
               <div className="text-muted-foreground">Submissions Received</div>
+              <div className="font-semibold">{filteredSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded' || s.status === 'reviewed').length}</div>
             </div>
             {submissionType === 'assessments' && (
               <div className="text-left">
-                <div className="font-semibold">{filteredSubmissions.filter(s => (s as any).qualified).length}</div>
                 <div className="text-muted-foreground">Qualified Students</div>
+                <div className="font-semibold">{filteredSubmissions.filter(s => (s as any).qualified).length}</div>
               </div>
             )}
           </div>
@@ -368,7 +381,7 @@ const SubmissionDetailsPage = ({
                           <Download className="h-4 w-4 mr-1" />
                           Download Report
                         </Button>
-                        {submissionType === 'assessments' && (
+                        {submissionType === 'assessments' && !isInstructor() && (
                           <Button
                             variant="ghost"
                             size="sm"

@@ -11,6 +11,7 @@ export interface BaseLearningItem {
   createdAt: Date;
   updatedAt: Date;
   status?: 'draft' | 'published' | 'archived';
+  createdBy?: string; // Email of creator (admin or instructor) - if not present, assume admin content
 }
 
 // Live Class specific data

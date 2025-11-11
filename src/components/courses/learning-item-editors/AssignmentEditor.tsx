@@ -56,7 +56,8 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
     if (hasChanges) {
       unsavedChanges.markAsUnsaved();
     }
-  }, [data, initialData, unsavedChanges]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, initialData]);
 
   // Handle PDF file upload with validation
   const handlePDFUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +108,7 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">

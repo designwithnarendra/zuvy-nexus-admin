@@ -1,8 +1,7 @@
 {
-  "/page": "app/page.js",
-  "/courses/page": "app/courses/page.js",
+  "/role-selector/page": "app/role-selector/page.js",
+  "/courses/[courseId]/modules/[moduleId]/page": "app/courses/[courseId]/modules/[moduleId]/page.js",
   "/content-bank/page": "app/content-bank/page.js",
-  "/courses/[courseId]/page": "app/courses/[courseId]/page.js",
-  "/settings/page": "app/settings/page.js",
-  "/settings/users/page": "app/settings/users/page.js"
+  "/courses/page": "app/courses/page.js",
+  "/courses/[courseId]/page": "app/courses/[courseId]/page.js"
 }

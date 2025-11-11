@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, GripVertical, FolderOpen, Edit, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CounterInput } from '@/components/ui/counter-input';
+import { useUser } from '@/contexts/UserContext';
 
 
 
@@ -41,6 +42,7 @@ interface CurriculumTabProps {
 
 const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
   const router = useRouter();
+  const { isInstructor } = useUser();
   const [contentItems, setContentItems] = useState<ContentItem[]>([
     {
       id: '1',
@@ -251,13 +253,15 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl font-semibold">Course Curriculum</h2>
-        <Button
-          onClick={() => setIsAddModalOpen(true)}
-          className="bg-primary hover:bg-primary-dark h-12"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Module/Project
-        </Button>
+        {!isInstructor() && (
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-primary hover:bg-primary-dark h-12"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Module/Project
+          </Button>
+        )}
       </div>
 
       {/* Content Items */}
@@ -282,13 +286,15 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
             >
               <CardContent className="p-0">
                 <div className="flex items-center gap-4">
-                  {/* Drag Handle */}
-                  <div 
-                    className="cursor-grab hover:text-primary"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <GripVertical className="h-5 w-5" />
-                  </div>
+                  {/* Drag Handle - Only for admins */}
+                  {!isInstructor() && (
+                    <div
+                      className="cursor-grab hover:text-primary"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <GripVertical className="h-5 w-5" />
+                    </div>
+                  )}
 
                   {/* Icon */}
                   <div className="text-muted-foreground">
@@ -311,31 +317,33 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
                     </p>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditItem(item.id);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteItem(item.id);
-                      }}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {/* Actions - Only for admins */}
+                  {!isInstructor() && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditItem(item.id);
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteItem(item.id);
+                        }}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

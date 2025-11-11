@@ -51,12 +51,12 @@ import {
   FeedbackForm,
   Project
 } from '@/types';
-import { 
-  mockStudents, 
+import {
+  mockStudents,
   mockBatches,
-  mockAssignmentSubmissions, 
-  mockQuizSubmissions, 
-  mockCodingSubmissions, 
+  mockAssignmentSubmissions,
+  mockQuizSubmissions,
+  mockCodingSubmissions,
   mockAssessmentSubmissions,
   mockFeedbackSubmissions,
   mockProjectSubmissions,
@@ -67,6 +67,7 @@ import {
   mockFeedbackForms,
   mockProjects
 } from '@/types/mock-data';
+import { useUser } from '@/contexts/UserContext';
 
 interface StudentSubmissionsTableProps {
   courseId: string;
@@ -82,6 +83,7 @@ export const StudentSubmissionsTable = ({
   onBack
 }: StudentSubmissionsTableProps) => {
   const router = useRouter();
+  const { isInstructor } = useUser();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [batches, setBatches] = useState<any[]>([]);
@@ -731,9 +733,9 @@ export const StudentSubmissionsTable = ({
                         return (
                           <TableCell key={column.accessor}>
                             <div className="flex items-center gap-2">
-                              {submissionType === 'assessments' && (
-                                <Button 
-                                  variant="ghost" 
+                              {submissionType === 'assessments' && !isInstructor() && (
+                                <Button
+                                  variant="ghost"
                                   size="sm"
                                   disabled={!(submission as AssessmentSubmission).hasReAttemptRequest}
                                   onClick={() => handleApproveReAttemptClick(submission.id, submission.studentId)}
@@ -805,8 +807,8 @@ export const StudentSubmissionsTable = ({
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
               Close
             </Button>
-            {viewSubmission && viewSubmission.itemType === 'assessment' && (
-              <Button 
+            {viewSubmission && viewSubmission.itemType === 'assessment' && !isInstructor() && (
+              <Button
                 variant="default"
                 disabled={!(viewSubmission as AssessmentSubmission).hasReAttemptRequest}
                 onClick={() => {

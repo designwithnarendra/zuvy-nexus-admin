@@ -263,8 +263,8 @@ export function QuizEditor({
 }: QuizEditorProps) {
   const [quizData, setQuizData] = useState<QuizData>(initialData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [topicFilter, setTopicFilter] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState('');
+  const [topicFilter, setTopicFilter] = useState('all');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [previewQuestion, setPreviewQuestion] = useState<typeof MOCK_MCQ_QUESTIONS[0] | null>(null);
 
   const unsavedChanges = useUnsavedChanges();
@@ -281,7 +281,8 @@ export function QuizEditor({
     if (hasChanges) {
       unsavedChanges.markAsUnsaved();
     }
-  }, [quizData, initialData, unsavedChanges]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizData, initialData]);
 
   // Get unique topics and difficulties for filters
   const allTopics = Array.from(new Set(MOCK_MCQ_QUESTIONS.flatMap(q => q.topics)));
@@ -293,8 +294,8 @@ export function QuizEditor({
       question.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       question.question.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesTopic = !topicFilter || question.topics.includes(topicFilter);
-    const matchesDifficulty = !difficultyFilter || question.difficulty === difficultyFilter;
+    const matchesTopic = topicFilter === 'all' || question.topics.includes(topicFilter);
+    const matchesDifficulty = difficultyFilter === 'all' || question.difficulty === difficultyFilter;
 
     return matchesSearch && matchesTopic && matchesDifficulty;
   });
@@ -336,7 +337,7 @@ export function QuizEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-hidden">
         <div className="p-6 h-full flex flex-col">
           {/* Title - Underlined style as per design specs */}
@@ -370,7 +371,7 @@ export function QuizEditor({
                   <SelectValue placeholder="All Topics" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Topics</SelectItem>
+                  <SelectItem value="all">All Topics</SelectItem>
                   {allTopics.map(topic => (
                     <SelectItem key={topic} value={topic}>{topic}</SelectItem>
                   ))}
@@ -381,7 +382,7 @@ export function QuizEditor({
                   <SelectValue placeholder="All Difficulties" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Difficulties</SelectItem>
+                  <SelectItem value="all">All Difficulties</SelectItem>
                   {allDifficulties.map(difficulty => (
                     <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
                   ))}
