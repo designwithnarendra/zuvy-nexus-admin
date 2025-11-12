@@ -1,7 +1,0 @@
-{
-  "/role-selector/page": "app/role-selector/page.js",
-  "/courses/[courseId]/modules/[moduleId]/page": "app/courses/[courseId]/modules/[moduleId]/page.js",
-  "/content-bank/page": "app/content-bank/page.js",
-  "/courses/page": "app/courses/page.js",
-  "/courses/[courseId]/page": "app/courses/[courseId]/page.js"
-}
