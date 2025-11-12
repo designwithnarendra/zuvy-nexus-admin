@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, X } from 'lucide-react';
 import CourseCard from '@/components/courses/CourseCard';
+import { useUser } from '@/contexts/UserContext';
 
 // Updated dummy data with more statuses
 const dummyCourses = [
@@ -183,17 +184,39 @@ const AllCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  
+  const { currentUser, isInstructor } = useUser();
+
   const [newCourse, setNewCourse] = useState({
     title: '',
     description: ''
   });
 
+  // Get courses based on user role
+  const availableCourses = useMemo(() => {
+    if (!currentUser) return dummyCourses;
+
+    if (isInstructor()) {
+      // For instructors, get their batch's course IDs directly from mockBatches
+      const { mockBatches } = require('@/types/mock-data');
+      const instructorCourseIds = new Set(
+        mockBatches
+          .filter((batch: any) => batch.instructorEmail === currentUser.email)
+          .map((batch: any) => batch.courseId)
+      );
+
+      // Filter dummy courses to only those the instructor is assigned to
+      return dummyCourses.filter(dc => instructorCourseIds.has(dc.id));
+    }
+
+    // Admins see all courses
+    return dummyCourses;
+  }, [currentUser, isInstructor]);
+
   // Calculate pagination indexes
   const indexOfLastCourse = currentPage * itemsPerPage;
   const indexOfFirstCourse = indexOfLastCourse - itemsPerPage;
-  
-  const filteredCourses = dummyCourses.filter(course => {
+
+  const filteredCourses = availableCourses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          course.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || course.status === statusFilter;
@@ -229,16 +252,18 @@ const AllCoursesPage = () => {
               Course Studio
             </h1>
             <p className="text-muted-foreground text-body1">
-              Create, manage, and monitor your educational courses
+              {isInstructor() ? 'Teach and manage your courses' : 'Create, manage, and monitor your educational courses'}
             </p>
           </div>
-          <Button
-            onClick={handleCreateCourse}
-            className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4 h-12"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Create New Course
-          </Button>
+          {!isInstructor() && (
+            <Button
+              onClick={handleCreateCourse}
+              className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4 h-12"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Create New Course
+            </Button>
+          )}
         </div>
       </div>
 

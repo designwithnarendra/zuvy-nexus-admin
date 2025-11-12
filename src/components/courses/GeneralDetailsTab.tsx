@@ -7,13 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Upload, Image, Calendar, Trash2 } from 'lucide-react';
+import { Upload, Image, Calendar, Trash2, Building2 } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 interface GeneralDetailsTabProps {
   courseId: string;
 }
 
 const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
+  const { isInstructor } = useUser();
   const [formData, setFormData] = useState({
     title: 'Full Stack Web Development Bootcamp',
     description: 'Learn modern web development with React, Node.js, and MongoDB. Build real-world projects and deploy them to production.',
@@ -86,31 +88,33 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
             </div>
             
             {/* Image Management Buttons */}
-            <div className="flex flex-col gap-2">
-              <label className="cursor-pointer">
-                <Button variant="outline" size="sm" className="w-full pointer-events-none">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload New Image
-                </Button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="sr-only"
-                />
-              </label>
-              {formData.imageUrl && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleRemoveImage}
-                  className="w-full hover:bg-red-500 hover:text-white"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Remove Image
-                </Button>
-              )}
-            </div>
+            {!isInstructor() && (
+              <div className="flex flex-col gap-2">
+                <label className="cursor-pointer">
+                  <Button variant="outline" size="sm" className="w-full pointer-events-none">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload New Image
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="sr-only"
+                  />
+                </label>
+                {formData.imageUrl && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                    className="w-full hover:bg-red-500 hover:text-white"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Remove Image
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Form Fields */}
@@ -122,6 +126,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="Enter course title"
+                disabled={isInstructor()}
               />
             </div>
 
@@ -133,6 +138,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 placeholder="Enter course description"
                 className="min-h-[120px]"
+                disabled={isInstructor()}
               />
             </div>
 
@@ -143,6 +149,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                   id="startDate"
                   type="date"
                   value={formData.startDate}
+                  disabled={isInstructor()}
                   onChange={(e) => handleInputChange('startDate', e.target.value)}
                   className="cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
@@ -161,46 +168,53 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                     value={formData.collaboratorName}
                     onChange={(e) => handleInputChange('collaboratorName', e.target.value)}
                     placeholder="Enter collaborator name"
+                    disabled={isInstructor()}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm">Collaborator Logo</Label>
                   <div className="flex items-center gap-4">
-                    {formData.collaboratorLogo && (
-                      <div className="w-16 h-16 rounded-lg border bg-muted overflow-hidden">
+                    <div className="w-16 h-16 rounded-lg border bg-muted overflow-hidden flex items-center justify-center">
+                      {formData.collaboratorLogo ? (
                         <img
                           src={formData.collaboratorLogo}
                           alt="Collaborator logo"
                           className="w-full h-full object-contain"
                         />
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <label className="cursor-pointer">
-                        <Button variant="outline" size="sm" className="pointer-events-none">
-                          <Upload className="h-4 w-4 mr-2" />
-                          {formData.collaboratorLogo ? 'Change Logo' : 'Upload Logo'}
-                        </Button>
-                        <input
-                          type="file"
-                          accept=".png,.svg,.jpg,.jpeg"
-                          onChange={handleLogoUpload}
-                          className="sr-only"
-                        />
-                      </label>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        PNG, SVG, or JPG format. Optional.
-                      </p>
+                      ) : (
+                        <Building2 className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
-                    {formData.collaboratorLogo && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleRemoveLogo}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    {!isInstructor() && (
+                      <>
+                        <div className="flex-1">
+                          <label className="cursor-pointer">
+                            <Button variant="outline" size="sm" className="pointer-events-none">
+                              <Upload className="h-4 w-4 mr-2" />
+                              {formData.collaboratorLogo ? 'Change Logo' : 'Upload Logo'}
+                            </Button>
+                            <input
+                              type="file"
+                              accept=".png,.svg,.jpg,.jpeg"
+                              onChange={handleLogoUpload}
+                              className="sr-only"
+                            />
+                          </label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            PNG, SVG, or JPG format.
+                          </p>
+                        </div>
+                        {formData.collaboratorLogo && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleRemoveLogo}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -214,17 +228,18 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
                 value={formData.language}
                 onValueChange={(value) => handleInputChange('language', value)}
                 className="flex gap-6"
+                disabled={isInstructor()}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="English" id="english" />
+                  <RadioGroupItem value="English" id="english" disabled={isInstructor()} />
                   <Label htmlFor="english">English</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Hindi" id="hindi" />
+                  <RadioGroupItem value="Hindi" id="hindi" disabled={isInstructor()} />
                   <Label htmlFor="hindi">Hindi</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Kannada" id="kannada" />
+                  <RadioGroupItem value="Kannada" id="kannada" disabled={isInstructor()} />
                   <Label htmlFor="kannada">Kannada</Label>
                 </div>
               </RadioGroup>
@@ -232,11 +247,14 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t">
-          <Button onClick={handleSave} className="bg-primary hover:bg-primary-dark">
-            Save Changes
-          </Button>
-        </div>
+        {/* Save Changes Button - Only for Admin */}
+        {!isInstructor() && (
+          <div className="flex justify-end pt-4 border-t">
+            <Button onClick={handleSave} className="bg-primary hover:bg-primary-dark">
+              Save Changes
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

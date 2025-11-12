@@ -280,8 +280,8 @@ export function CodingProblemEditor({
 }: CodingProblemEditorProps) {
   const [codingProblemData, setCodingProblemData] = useState<CodingProblemData>(initialData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [topicFilter, setTopicFilter] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState('');
+  const [topicFilter, setTopicFilter] = useState('all');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [previewProblem, setPreviewProblem] = useState<typeof MOCK_CODING_PROBLEMS[0] | null>(null);
 
   const unsavedChanges = useUnsavedChanges();
@@ -298,7 +298,8 @@ export function CodingProblemEditor({
     if (hasChanges) {
       unsavedChanges.markAsUnsaved();
     }
-  }, [codingProblemData, initialData, unsavedChanges]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codingProblemData, initialData]);
 
   // Get unique topics and difficulties for filters
   const allTopics = Array.from(new Set(MOCK_CODING_PROBLEMS.flatMap(p => p.topics)));
@@ -310,8 +311,8 @@ export function CodingProblemEditor({
       problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       problem.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesTopic = !topicFilter || problem.topics.includes(topicFilter);
-    const matchesDifficulty = !difficultyFilter || problem.difficulty === difficultyFilter;
+    const matchesTopic = topicFilter === 'all' || problem.topics.includes(topicFilter);
+    const matchesDifficulty = difficultyFilter === 'all' || problem.difficulty === difficultyFilter;
 
     return matchesSearch && matchesTopic && matchesDifficulty;
   });
@@ -346,7 +347,7 @@ export function CodingProblemEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-hidden">
         <div className="p-6 h-full flex flex-col">
           {/* Title - Underlined style as per design specs */}
@@ -380,7 +381,7 @@ export function CodingProblemEditor({
                   <SelectValue placeholder="All Topics" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Topics</SelectItem>
+                  <SelectItem value="all">All Topics</SelectItem>
                   {allTopics.map(topic => (
                     <SelectItem key={topic} value={topic}>{topic}</SelectItem>
                   ))}
@@ -391,7 +392,7 @@ export function CodingProblemEditor({
                   <SelectValue placeholder="All Difficulties" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Difficulties</SelectItem>
+                  <SelectItem value="all">All Difficulties</SelectItem>
                   {allDifficulties.map(difficulty => (
                     <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
                   ))}

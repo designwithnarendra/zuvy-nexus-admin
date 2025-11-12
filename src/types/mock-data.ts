@@ -120,6 +120,7 @@ export const mockArticles: Article[] = [
     position: 1,
     createdAt: '2023-12-05T10:00:00Z',
     updatedAt: '2023-12-05T10:00:00Z',
+    createdBy: 'sarah.johnson@zuvy.org', // Admin created
     content: '# HTML Document Structure\n\nIn this article, we will learn about the basic structure of an HTML document...',
     estimatedReadTime: 15
   },
@@ -131,6 +132,7 @@ export const mockArticles: Article[] = [
     position: 1,
     createdAt: '2023-12-10T11:30:00Z',
     updatedAt: '2023-12-10T11:30:00Z',
+    createdBy: 'alex.rodriguez@zuvy.org', // Instructor created
     content: '# CSS Box Model\n\nThe CSS Box Model is fundamental to understanding layout in web design...',
     estimatedReadTime: 20
   }
@@ -146,6 +148,7 @@ export const mockVideos: Video[] = [
     position: 2,
     createdAt: '2023-12-06T14:20:00Z',
     updatedAt: '2023-12-06T14:20:00Z',
+    createdBy: 'sarah.johnson@zuvy.org', // Admin created
     description: 'Learn how to create and style HTML forms for user input.',
     videoUrl: 'https://example.com/videos/html-forms.mp4',
     videoDuration: 1800, // 30 minutes
@@ -159,6 +162,7 @@ export const mockVideos: Video[] = [
     position: 2,
     createdAt: '2023-12-11T15:45:00Z',
     updatedAt: '2023-12-11T15:45:00Z',
+    createdBy: 'lisa.park@zuvy.org', // Instructor created
     description: 'Master the flexible box layout model in CSS.',
     videoUrl: 'https://example.com/videos/css-flexbox.mp4',
     videoDuration: 2400, // 40 minutes
@@ -257,6 +261,7 @@ export const mockAssignments: Assignment[] = [
     position: 3,
     createdAt: '2023-12-12T11:00:00Z',
     updatedAt: '2023-12-12T11:00:00Z',
+    createdBy: 'david.wilson@zuvy.org', // Instructor created
     instructions: 'Create a responsive layout using CSS Grid and Flexbox following the provided design.',
     allowedSubmissionTypes: ['file', 'text'],
     dueDate: '2024-02-15T23:59:59Z'
@@ -444,14 +449,16 @@ export const mockBatches: Batch[] = [
     id: 'batch-1',
     name: 'Full Stack Batch 2024-A',
     courseId: '1',
+    instructorEmail: 'alex.rodriguez@zuvy.org', // Alex - Single batch instructor
     status: 'ongoing',
     startDate: '2024-01-15T00:00:00Z',
     endDate: '2024-03-15T00:00:00Z'
   },
   {
     id: 'batch-2',
-    name: 'Full Stack Batch 2024-B', 
+    name: 'Full Stack Batch 2024-B',
     courseId: '1',
+    instructorEmail: 'lisa.park@zuvy.org', // Lisa - Multiple batches
     status: 'ongoing',
     startDate: '2024-02-01T00:00:00Z',
     endDate: '2024-05-01T00:00:00Z'
@@ -460,9 +467,37 @@ export const mockBatches: Batch[] = [
     id: 'batch-3',
     name: 'Data Science Cohort 2024-A',
     courseId: '2',
+    instructorEmail: 'david.wilson@zuvy.org', // David - Multiple batches
     status: 'ongoing',
     startDate: '2024-02-01T00:00:00Z',
     endDate: '2024-04-15T00:00:00Z'
+  },
+  {
+    id: 'batch-4',
+    name: 'Full Stack Batch 2024-C',
+    courseId: '1',
+    instructorEmail: 'lisa.park@zuvy.org', // Lisa - Multiple batches
+    status: 'not_started',
+    startDate: '2024-03-15T00:00:00Z',
+    endDate: '2024-06-15T00:00:00Z'
+  },
+  {
+    id: 'batch-5',
+    name: 'Data Science Cohort 2024-B',
+    courseId: '2',
+    instructorEmail: 'lisa.park@zuvy.org', // Lisa - Multiple batches (across courses)
+    status: 'ongoing',
+    startDate: '2024-02-15T00:00:00Z',
+    endDate: '2024-05-01T00:00:00Z'
+  },
+  {
+    id: 'batch-6',
+    name: 'Data Science Cohort 2024-C',
+    courseId: '2',
+    instructorEmail: 'david.wilson@zuvy.org', // David - Multiple batches
+    status: 'not_started',
+    startDate: '2024-03-01T00:00:00Z',
+    endDate: '2024-05-15T00:00:00Z'
   }
 ];
 

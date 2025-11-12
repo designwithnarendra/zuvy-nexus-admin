@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, BookOpen, Video, FileText, Code, HelpCircle, MessageSquare, ClipboardCheck, GraduationCap, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, BookOpen, Video, FileText, Code, HelpCircle, MessageSquare, ClipboardCheck, GraduationCap, Trash2, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DeleteContentModal } from '@/components/courses/curriculum/DeleteContentModal';
+import { useUser } from '@/contexts/UserContext';
 
 // Import the actual editor components
 import { LiveClassEditor } from '@/components/courses/learning-item-editors/LiveClassEditor';
@@ -41,6 +42,7 @@ interface ContentDisplayItem {
   classStatus?: 'upcoming' | 'ongoing' | 'completed'; // For live classes
   recordingUrl?: string; // For completed live classes
   recordingPlatform?: 'youtube' | 'upload'; // For completed live classes
+  createdBy?: string; // Email of creator (admin or instructor)
 }
 
 interface ModulePageProps {
@@ -50,6 +52,7 @@ interface ModulePageProps {
 
 const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   const router = useRouter();
+  const { currentUser, isInstructor } = useUser();
 
   // Mock module data - would come from API
   const moduleData = {
@@ -85,7 +88,27 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ContentDisplayItem | null>(null);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
   const contentListRef = useRef<HTMLDivElement>(null);
+
+  // Helper functions for content ownership and permissions
+  const isAdminContent = (item: ContentDisplayItem) => {
+    // If no createdBy field, assume it's admin content (existing items before this feature)
+    if (!item.createdBy) return true;
+    // Check if createdBy is different from current user
+    return currentUser && item.createdBy !== currentUser.email;
+  };
+
+  const canEditContent = (item: ContentDisplayItem) => {
+    if (!isInstructor()) return true; // Admins can edit everything
+    return !isAdminContent(item); // Instructors can only edit their own content
+  };
+
+  const canDragItem = (item: ContentDisplayItem) => {
+    if (!isInstructor()) return true; // Admins can reorder everything
+    return !isAdminContent(item); // Instructors can only drag their own items
+  };
 
   const getContentIcon = (type: ContentType) => {
     switch (type) {
@@ -124,16 +147,21 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     }
   };
 
-  const contentTypes = [
-    { type: 'live-class', label: 'Live Class', icon: <Video className="h-4 w-4" /> },
-    { type: 'video', label: 'Video', icon: <Video className="h-4 w-4" /> },
-    { type: 'article', label: 'Article', icon: <FileText className="h-4 w-4" /> },
-    { type: 'assignment', label: 'Assignment', icon: <ClipboardCheck className="h-4 w-4" /> },
-    { type: 'coding-problem', label: 'Coding Problem', icon: <Code className="h-4 w-4" /> },
-    { type: 'quiz', label: 'Quiz', icon: <HelpCircle className="h-4 w-4" /> },
-    { type: 'feedback-form', label: 'Feedback Form', icon: <MessageSquare className="h-4 w-4" /> },
-    { type: 'assessment', label: 'Assessment', icon: <GraduationCap className="h-4 w-4" /> }
+  const allContentTypes = [
+    { type: 'live-class', label: 'Live Class', icon: <Video className="h-4 w-4" />, adminOnly: true },
+    { type: 'video', label: 'Video', icon: <Video className="h-4 w-4" />, adminOnly: false },
+    { type: 'article', label: 'Article', icon: <FileText className="h-4 w-4" />, adminOnly: false },
+    { type: 'assignment', label: 'Assignment', icon: <ClipboardCheck className="h-4 w-4" />, adminOnly: false },
+    { type: 'coding-problem', label: 'Coding Problem', icon: <Code className="h-4 w-4" />, adminOnly: false },
+    { type: 'quiz', label: 'Quiz', icon: <HelpCircle className="h-4 w-4" />, adminOnly: false },
+    { type: 'feedback-form', label: 'Feedback Form', icon: <MessageSquare className="h-4 w-4" />, adminOnly: false },
+    { type: 'assessment', label: 'Assessment', icon: <GraduationCap className="h-4 w-4" />, adminOnly: true }
   ];
+
+  // Filter content types based on role
+  const contentTypes = isInstructor()
+    ? allContentTypes.filter(ct => !ct.adminOnly)
+    : allContentTypes;
 
   const handleAddContentType = (type: string) => {
     console.log('Adding content type:', type);
@@ -145,7 +173,8 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       id: newItemId,
       type: type as ContentType,
       title: `Untitled ${contentTypeLabel}`,
-      status: 'not-started'
+      status: 'not-started',
+      createdBy: currentUser?.email // Track who created this content
     };
 
     // Add to the end of content items
@@ -196,6 +225,45 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       handleRemoveNewItem(itemToDelete.id);
       setItemToDelete(null);
     }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, item: ContentDisplayItem, index: number) => {
+    if (!canDragItem(item)) {
+      e.preventDefault();
+      return;
+    }
+    setDraggedItemIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedItemIndex !== null) {
+      setDropTargetIndex(index);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItemIndex(null);
+    setDropTargetIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedItemIndex === null || draggedItemIndex === index) {
+      setDraggedItemIndex(null);
+      setDropTargetIndex(null);
+      return;
+    }
+
+    const newItems = [...contentItems];
+    const [draggedItem] = newItems.splice(draggedItemIndex, 1);
+    newItems.splice(index, 0, draggedItem);
+
+    setContentItems(newItems);
+    setDraggedItemIndex(null);
+    setDropTargetIndex(null);
   };
 
   // Helper function to convert ContentDisplayItem to proper editor data
@@ -324,98 +392,85 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
     // Get the proper data format for the editor
     const editorData = getEditorData(selectedItem);
+    const editorMode = canEditContent(selectedItem) ? "edit" : "view";
 
     // Render the appropriate editor component based on content type
     switch (selectedItem.type) {
       case 'live-class':
         return (
-          <div className="flex-1 h-[100vh]">
-            <LiveClassEditor
-              key={selectedItem.id}
-              initialData={editorData as LiveClassData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <LiveClassEditor
+            key={selectedItem.id}
+            initialData={editorData as LiveClassData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'video':
         return (
-          <div className="flex-1 h-[100vh]">
-            <VideoEditor
-              key={selectedItem.id}
-              initialData={editorData as VideoData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <VideoEditor
+            key={selectedItem.id}
+            initialData={editorData as VideoData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'article':
         return (
-          <div className="flex-1 h-[100vh]">
-            <ArticleEditor
-              key={selectedItem.id}
-              initialData={editorData as ArticleData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <ArticleEditor
+            key={selectedItem.id}
+            initialData={editorData as ArticleData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'assignment':
         return (
-          <div className="flex-1 h-[100vh]">
-            <AssignmentEditor
-              key={selectedItem.id}
-              initialData={editorData as AssignmentData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <AssignmentEditor
+            key={selectedItem.id}
+            initialData={editorData as AssignmentData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'quiz':
         return (
-          <div className="flex-1 h-[100vh]">
-            <QuizEditor
-              key={selectedItem.id}
-              initialData={editorData as QuizData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <QuizEditor
+            key={selectedItem.id}
+            initialData={editorData as QuizData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'feedback-form':
         return (
-          <div className="flex-1 h-[100vh]">
-            <FeedbackFormEditor
-              key={selectedItem.id}
-              initialData={editorData as FeedbackFormData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <FeedbackFormEditor
+            key={selectedItem.id}
+            initialData={editorData as FeedbackFormData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       case 'coding-problem':
         return (
-          <div className="flex-1 h-[100vh]">
-            <CodingProblemEditor
-              key={selectedItem.id}
-              initialData={editorData as CodingProblemData}
-              mode="edit"
-              onSave={handleEditorSave}
-              onCancel={handleEditorCancel}
-            />
-          </div>
+          <CodingProblemEditor
+            key={selectedItem.id}
+            initialData={editorData as CodingProblemData}
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
         );
 
       default:
@@ -489,20 +544,36 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
             </div>
           ) : (
             <div className="p-2">
-              {contentItems.map((item) => (
+              {contentItems.map((item, index) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedItem(item)}
                   onMouseEnter={() => setHoveredItemId(item.id)}
                   onMouseLeave={() => setHoveredItemId(null)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={(e) => handleDrop(e, index)}
                   className={cn(
                     "p-3 mb-2 rounded-lg cursor-pointer border transition-colors relative group",
                     selectedItem?.id === item.id
                       ? "bg-primary/10 border-primary"
-                      : "hover:bg-primary-light border-transparent"
+                      : "hover:bg-primary-light border-transparent",
+                    draggedItemIndex === index && "opacity-40",
+                    dropTargetIndex === index && "border-primary border-2"
                   )}
                 >
                   <div className="flex items-start gap-2">
+                    {/* Drag Handle - Only show for draggable items */}
+                    {canDragItem(item) && (
+                      <div
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, item, index)}
+                        onDragEnd={handleDragEnd}
+                        className="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </div>
+                    )}
                     <div className="mt-0.5 text-muted-foreground">
                       {getContentIcon(item.type)}
                     </div>
@@ -510,18 +581,27 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
                       <h4 className="font-medium text-body2 leading-tight mb-1">
                         {item.title}
                       </h4>
-                      <p className="text-body2 text-muted-foreground mb-1" style={{ fontSize: '0.875rem' }}>
-                        {getContentTypeLabel(item.type)}
+                      <p className="text-body2 text-muted-foreground mb-1 flex items-center gap-1 flex-wrap" style={{ fontSize: '0.875rem' }}>
+                        <span>{getContentTypeLabel(item.type)}</span>
                         {item.duration && (
                           <>
-                            <span className="mx-1">•</span>
-                            {item.duration}
+                            <span>•</span>
+                            <span>{item.duration}</span>
+                          </>
+                        )}
+                        {/* Added by Instructor badge for admin view */}
+                        {!isInstructor() && item.createdBy && item.createdBy !== currentUser?.email && (
+                          <>
+                            <span>•</span>
+                            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 px-1.5 py-0">
+                              Added by Instructor
+                            </Badge>
                           </>
                         )}
                       </p>
                     </div>
-                    {/* Delete Button - Shows on Hover */}
-                    {hoveredItemId === item.id && (
+                    {/* Delete Button - Shows on Hover only for editable content */}
+                    {hoveredItemId === item.id && canEditContent(item) && (
                       <Button
                         variant="ghost"
                         size="icon"

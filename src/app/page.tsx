@@ -1,14 +1,20 @@
 'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/contexts/UserContext'
 
 export default function HomePage() {
-  const router = useRouter();
+  const router = useRouter()
+  const { currentUser } = useUser()
 
   useEffect(() => {
-    router.push('/courses');
-  }, [router]);
+    if (currentUser) {
+      router.push('/courses')
+    } else {
+      router.push('/role-selector')
+    }
+  }, [currentUser, router])
 
-  return null;
+  return null
 }

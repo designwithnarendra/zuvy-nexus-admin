@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Info, BookOpen, Users, Settings, FileText, UserCheck } from 'lucide-react';
@@ -11,6 +11,7 @@ import StudentsTab from './StudentsTab';
 import SettingsTab from './SettingsTab';
 import SubmissionsTab from './SubmissionsTab';
 import BatchesTab from './BatchesTab';
+import { useUser } from '@/contexts/UserContext';
 
 interface CourseViewTabsProps {
   courseId: string;
@@ -18,10 +19,32 @@ interface CourseViewTabsProps {
 
 const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
   const searchParams = useSearchParams();
+  const { isInstructor } = useUser();
   const [activeTab, setActiveTab] = useState('general');
   const [batchFilter, setBatchFilter] = useState<string | null>(null);
   const [initialSubmissionType, setInitialSubmissionType] = useState<string | null>(null);
   const studentsTabRef = useRef<HTMLDivElement>(null);
+
+  // Define available tabs based on role
+  const availableTabs = useMemo(() => {
+    const allTabs = [
+      { value: 'general', label: 'General Details', shortLabel: 'General', icon: Info },
+      { value: 'curriculum', label: 'Curriculum', shortLabel: 'Content', icon: BookOpen },
+      { value: 'students', label: 'Students', shortLabel: 'Students', icon: Users },
+      { value: 'batches', label: 'Batches', shortLabel: 'Batches', icon: UserCheck, adminOnly: true },
+      { value: 'submissions', label: 'Submissions', shortLabel: 'Submits', icon: FileText },
+      { value: 'settings', label: 'Settings', shortLabel: 'Settings', icon: Settings, adminOnly: true }
+    ];
+
+    if (isInstructor()) {
+      return allTabs.filter(tab => !tab.adminOnly);
+    }
+
+    return allTabs;
+  }, [isInstructor]);
+
+  // Calculate grid columns based on number of tabs
+  const gridCols = availableTabs.length;
 
   // Check URL parameters on mount
   useEffect(() => {
@@ -59,80 +82,54 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-6 bg-card border border-border rounded-lg p-1 h-12">
-        <TabsTrigger 
-          value="general" 
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <Info className="h-4 w-4" />
-          <span className="hidden sm:inline">General Details</span>
-          <span className="sm:hidden">General</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="curriculum"
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <BookOpen className="h-4 w-4" />
-          <span className="hidden sm:inline">Curriculum</span>
-          <span className="sm:hidden">Content</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="students"
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <Users className="h-4 w-4" />
-          <span className="hidden sm:inline">Students</span>
-          <span className="sm:hidden">Students</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="batches"
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <UserCheck className="h-4 w-4" />
-          <span className="hidden sm:inline">Batches</span>
-          <span className="sm:hidden">Batches</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="submissions"
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <FileText className="h-4 w-4" />
-          <span className="hidden sm:inline">Submissions</span>
-          <span className="sm:hidden">Submits</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="settings"
-          className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
-        </TabsTrigger>
+      <TabsList
+        className="grid w-full bg-card border border-border rounded-lg p-1 h-12"
+        style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)` }}
+      >
+        {availableTabs.map(tab => {
+          const Icon = tab.icon;
+          return (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="flex items-center justify-center gap-2 h-10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Icon className="h-4 w-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.shortLabel}</span>
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
 
       <div className="mt-6">
         <TabsContent value="general" className="mt-0">
           <GeneralDetailsTab courseId={courseId} />
         </TabsContent>
-        
+
         <TabsContent value="curriculum" className="mt-0">
           <CurriculumTab courseId={courseId} />
         </TabsContent>
-        
+
         <TabsContent value="students" className="mt-0" ref={studentsTabRef}>
           <StudentsTab courseId={courseId} initialBatchFilter={batchFilter} />
         </TabsContent>
-        
-        <TabsContent value="batches" className="mt-0">
-          <BatchesTab courseId={courseId} />
-        </TabsContent>
-        
+
+        {!isInstructor() && (
+          <TabsContent value="batches" className="mt-0">
+            <BatchesTab courseId={courseId} />
+          </TabsContent>
+        )}
+
         <TabsContent value="submissions" className="mt-0">
           <SubmissionsTab courseId={courseId} initialSubmissionType={initialSubmissionType} />
         </TabsContent>
-        
-        <TabsContent value="settings" className="mt-0">
-          <SettingsTab courseId={courseId} />
-        </TabsContent>
+
+        {!isInstructor() && (
+          <TabsContent value="settings" className="mt-0">
+            <SettingsTab courseId={courseId} />
+          </TabsContent>
+        )}
       </div>
     </Tabs>
   );

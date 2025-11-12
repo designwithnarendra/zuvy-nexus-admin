@@ -198,20 +198,15 @@ export function LiveClassEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       {/* Top Bar */}
-      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0">
+      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0 w-full">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold">
             {liveClassData.title || 'Untitled Live Class'}
           </h2>
           {liveClassData.classStatus && getStatusBadge(liveClassData.classStatus)}
         </div>
-        {showSaveButton && (
-          <Button onClick={handleSubmit} disabled={!hasChanges}>
-            Save Live Class
-          </Button>
-        )}
       </div>
 
       {/* Content */}
@@ -492,6 +487,16 @@ export function LiveClassEditor({
             )}
           </div>
         </div>
+      </div>
+
+      {/* Footer with CTA buttons */}
+      <div className="flex justify-between items-center p-6 border-t bg-background sticky bottom-0">
+        <Button variant="outline" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={!hasChanges}>
+          Save Live Class
+        </Button>
       </div>
 
       {/* Unsaved Changes Modal */}

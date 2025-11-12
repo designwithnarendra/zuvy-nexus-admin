@@ -136,7 +136,7 @@ export function ArticleEditor({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
@@ -327,7 +327,7 @@ export function ArticleEditor({
           </Button>
         )}
         <Button onClick={handleSubmit} className={hideCancel ? 'ml-auto' : ''}>
-          {mode === 'create' ? 'Add Article' : 'Edit Article'}
+          {mode === 'create' ? 'Add Article' : 'Save Article'}
         </Button>
       </div>
 
