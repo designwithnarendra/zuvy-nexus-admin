@@ -9,13 +9,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Shield, GraduationCap } from 'lucide-react'
+import AdminOnboarding from '@/components/onboarding/AdminOnboarding'
 import type { User } from '@/types'
 
 export default function RoleSelectorPage() {
   const router = useRouter()
   const { setCurrentUser } = useUser()
   const [showInstructorSelect, setShowInstructorSelect] = useState(false)
+  const [showAdminSelect, setShowAdminSelect] = useState(false)
   const [selectedInstructor, setSelectedInstructor] = useState<string>('')
+  const [selectedAdminType, setSelectedAdminType] = useState<string>('')
+  const [showAdminOnboarding, setShowAdminOnboarding] = useState(false)
+  const [pendingAdmin, setPendingAdmin] = useState<User | null>(null)
 
   // Get all instructors
   const instructors = mockUsers.filter(u => u.role === 'Instructor')
@@ -39,6 +44,44 @@ export default function RoleSelectorPage() {
     }
   }
 
+  const handleAdminClick = () => {
+    setShowAdminSelect(true)
+  }
+
+  const handleAdminTypeSelection = () => {
+    const admin = mockUsers.find(u => u.role === 'Admin')
+    if (admin && selectedAdminType) {
+      const adminWithType = {
+        ...admin,
+        adminType: selectedAdminType as 'Admin-Self Managed' | 'Admin-Zuvy Managed'
+      }
+      
+      // If Self Managed, show onboarding flow
+      if (selectedAdminType === 'Admin-Self Managed') {
+        setPendingAdmin(adminWithType)
+        setShowAdminOnboarding(true)
+      } else {
+        // If Zuvy Managed, go directly to dashboard
+        setCurrentUser(adminWithType)
+        router.push('/courses')
+      }
+    }
+  }
+
+  const handleSuperAdminSelection = () => {
+    const superAdmin: User = {
+      id: 'superadmin_1',
+      name: 'Super Admin',
+      email: 'superadmin@zuvy.com',
+      role: 'SuperAdmin',
+      roleId: 'role_superadmin',
+      dateAdded: new Date().toISOString(),
+      status: 'active'
+    }
+    setCurrentUser(superAdmin)
+    router.push('/courses')
+  }
+
   const handleInstructorClick = () => {
     setShowInstructorSelect(true)
   }
@@ -49,6 +92,18 @@ export default function RoleSelectorPage() {
       setCurrentUser(instructor)
       router.push('/courses')
     }
+  }
+
+  const handleOnboardingComplete = () => {
+    if (pendingAdmin) {
+      setCurrentUser(pendingAdmin)
+      router.push('/courses')
+    }
+  }
+
+  // Show onboarding flow if triggered
+  if (showAdminOnboarding && pendingAdmin) {
+    return <AdminOnboarding onComplete={handleOnboardingComplete} adminName={pendingAdmin.name} />
   }
 
   return (
@@ -63,7 +118,48 @@ export default function RoleSelectorPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Super Admin Card */}
+          <Card className="relative overflow-hidden hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-violet-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-bl-full" />
+            <CardHeader className="relative">
+              <div className="w-16 h-16 bg-violet-500/10 rounded-full flex items-center justify-center mb-4">
+                <Shield className="w-8 h-8 text-violet-600" />
+              </div>
+              <CardTitle className="text-2xl">Super Admin</CardTitle>
+              <CardDescription className="text-base">
+                Complete platform oversight and management
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative space-y-4">
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Manage organizations and POCs</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Configure organization management types</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Full access to all platform features</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>System-wide administration and oversight</span>
+                </li>
+              </ul>
+              <Button
+                className="w-full mt-4 bg-violet-600 hover:bg-violet-700"
+                size="lg"
+                onClick={handleSuperAdminSelection}
+              >
+                Continue as Super Admin
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Admin Card */}
           <Card className="relative overflow-hidden hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-primary">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full" />
@@ -77,31 +173,75 @@ export default function RoleSelectorPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="relative space-y-4">
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Manage courses, content, and curriculum</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>User and role management</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Access to all batches and students</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Platform-wide analytics and settings</span>
-                </li>
-              </ul>
-              <Button
-                className="w-full mt-4"
-                size="lg"
-                onClick={handleAdminSelection}
-              >
-                Continue as Admin
-              </Button>
+              {!showAdminSelect ? (
+                <>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Manage courses, content, and curriculum</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>User and role management</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Access to all batches and students</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Platform-wide analytics and settings</span>
+                    </li>
+                  </ul>
+                  <Button
+                    className="w-full mt-4"
+                    size="lg"
+                    onClick={handleAdminClick}
+                  >
+                    Continue as Admin
+                  </Button>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">
+                      Select Admin Type
+                    </label>
+                    <Select value={selectedAdminType} onValueChange={setSelectedAdminType}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Choose an admin type..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Admin-Self Managed">
+                          <span className="font-medium">Admin-Self Managed</span>
+                        </SelectItem>
+                        <SelectItem value="Admin-Zuvy Managed">
+                          <span className="font-medium">Admin-Zuvy Managed</span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={handleAdminTypeSelection}
+                    disabled={!selectedAdminType}
+                  >
+                    Continue as Admin
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full"
+                    size="sm"
+                    onClick={() => {
+                      setShowAdminSelect(false)
+                      setSelectedAdminType('')
+                    }}
+                  >
+                    Back to role selection
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -202,3 +342,4 @@ export default function RoleSelectorPage() {
     </div>
   )
 }
+

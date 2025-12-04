@@ -319,7 +319,25 @@ export type Submission =
 // Role-Based Access Control Types
 // ==========================================
 
-export type UserRole = 'Admin' | 'Ops' | 'Instructor';
+export type UserRole = 'Admin' | 'Ops' | 'Instructor' | 'SuperAdmin';
+
+// ==========================================
+// Organisation Types
+// ==========================================
+
+export type ManagementType = 'Self Managed' | 'Zuvy Managed';
+
+export interface Organisation {
+  id: string;
+  name: string;
+  managementType: ManagementType;
+  pointOfContactName: string;
+  pointOfContactEmail: string;
+  zuvyAssigneeName?: string; // Optional, only for Zuvy Managed
+  zuvyAssigneeEmail?: string; // Optional, only for Zuvy Managed
+  dateAdded: string; // ISO date string
+  logo?: string; // Optional logo URL, will show avatar with initials if not provided
+}
 
 export interface User {
   id: string;
@@ -330,6 +348,7 @@ export interface User {
   dateAdded: string; // ISO date string
   status: 'active' | 'inactive' | 'pending';
   avatar?: string;
+  adminType?: 'Admin-Self Managed' | 'Admin-Zuvy Managed'; // For Admin role
 }
 
 export interface Role {
