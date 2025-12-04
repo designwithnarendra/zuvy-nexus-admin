@@ -9,6 +9,7 @@ import { LayoutDashboard, Layers, Database, Settings, LogOut } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUser } from '@/contexts/UserContext';
+import OrganizationHeader from './OrganizationHeader';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -30,21 +31,21 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       href: '/courses',
       icon: Layers,
       active: pathname.startsWith('/courses'),
-      roles: ['Admin', 'Instructor'] // Available to both
+      roles: ['Admin', 'Instructor', 'SuperAdmin'] // Available to Admin, Instructor, and SuperAdmin
     },
     {
       name: 'Content Bank',
       href: '/content-bank',
       icon: Database,
       active: pathname.startsWith('/content-bank'),
-      roles: ['Admin', 'Instructor'] // Available to both
+      roles: ['Admin', 'Instructor', 'SuperAdmin'] // Available to Admin, Instructor, and SuperAdmin
     },
     {
       name: 'Roles and Permissions',
       href: '/settings',
       icon: Settings,
       active: pathname.startsWith('/settings'),
-      roles: ['Admin'] // Admin only
+      roles: ['Admin', 'SuperAdmin'] // Admin and SuperAdmin only
     }
   ];
 
@@ -58,22 +59,30 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     router.push('/role-selector');
   };
 
+  // Check if user is Admin to show organization header
+  const isAdmin = currentUser?.role === 'Admin';
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header Navigation */}
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex h-16 items-center justify-between w-full px-6">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/zuvy-logo-horizontal.png"
-                alt="Zuvy"
-                width={104}
-                height={40}
-                className="h-10 w-auto"
-                priority
-              />
-            </Link>
+            {/* Show Organization Header for Admins, otherwise show Zuvy Logo */}
+            {isAdmin ? (
+              <OrganizationHeader />
+            ) : (
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/zuvy-logo-horizontal.png"
+                  alt="Zuvy"
+                  width={104}
+                  height={40}
+                  className="h-10 w-auto"
+                  priority
+                />
+              </Link>
+            )}
             
             <nav className="flex items-center space-x-1">
               {navigationItems.map((item) => {
@@ -99,8 +108,17 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           
           <div className="ml-auto flex items-center gap-3">
             {currentUser && (
-              <Badge className="bg-info/10 text-info border-info/20 px-3 py-1 text-sm font-medium">
-                {currentUser.role}
+              <Badge 
+                className={cn(
+                  "px-3 py-1 text-sm font-medium border",
+                  currentUser.role === 'SuperAdmin' 
+                    ? "bg-violet-50 text-violet-700 border-violet-200"
+                    : currentUser.role === 'Admin'
+                    ? "bg-info/10 text-info border-info/20"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                )}
+              >
+                {currentUser.role === 'SuperAdmin' ? 'Super Admin' : currentUser.role}
               </Badge>
             )}
             <Button

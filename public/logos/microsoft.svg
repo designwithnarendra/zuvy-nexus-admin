@@ -1,0 +1,14 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Microsoft Four Squares -->
+  <!-- Red Square -->
+  <rect x="30" y="30" width="50" height="50" fill="#F25022"/>
+  
+  <!-- Green Square -->
+  <rect x="120" y="30" width="50" height="50" fill="#7FBA00"/>
+  
+  <!-- Blue Square -->
+  <rect x="30" y="120" width="50" height="50" fill="#00A4EF"/>
+  
+  <!-- Yellow Square -->
+  <rect x="120" y="120" width="50" height="50" fill="#FFB900"/>
+</svg>

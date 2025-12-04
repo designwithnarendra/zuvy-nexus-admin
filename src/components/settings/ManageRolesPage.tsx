@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@/contexts/UserContext';
 import { Role, Action, RoleActionPermission } from '@/types/index';
 import { mockRoles, mockActions, mockRoleActionPermissions } from '@/types/mock-rbac-data';
 import { toast } from 'sonner';
@@ -14,6 +15,8 @@ import { Plus, Edit, Users, Trash2, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ManageRolesPage = () => {
+  const { currentUser } = useUser();
+  const isRestrictedUser = currentUser?.role === 'Admin' || currentUser?.role === 'SuperAdmin';
   const [roles, setRoles] = useState<Role[]>(mockRoles);
   const [actions, setActions] = useState<Action[]>(mockActions);
   const [permissions, setPermissions] = useState<RoleActionPermission[]>(mockRoleActionPermissions);
@@ -284,6 +287,29 @@ const ManageRolesPage = () => {
     }
   }, [roleActions, selectedActionId]);
 
+  // Initialize actionPermissionsMap with default permissions
+  useEffect(() => {
+    const permissionsMap: Record<string, Array<{id: string, name: string, description: string, enabled: boolean}>> = {};
+    
+    actions.forEach(action => {
+      // Create relevant descriptions based on action name
+      const createDesc = `Ability to create new ${action.name.toLowerCase()}`;
+      const viewDesc = `Ability to view existing ${action.name.toLowerCase()}`;
+      const editDesc = `Ability to modify and update ${action.name.toLowerCase()}`;
+      const deleteDesc = `Ability to remove ${action.name.toLowerCase()}`;
+      
+      const crudPermissions = [
+        { id: `${action.id}-create`, name: 'Create', description: createDesc, enabled: true },
+        { id: `${action.id}-view`, name: 'View', description: viewDesc, enabled: true },
+        { id: `${action.id}-edit`, name: 'Edit', description: editDesc, enabled: true },
+        { id: `${action.id}-delete`, name: 'Delete', description: deleteDesc, enabled: true }
+      ];
+      permissionsMap[action.id] = crudPermissions;
+    });
+    
+    setActionPermissionsMap(permissionsMap);
+  }, [actions]);
+
   return (
     <div className="w-full">
       {/* Sticky Header and Tabs */}
@@ -296,10 +322,12 @@ const ManageRolesPage = () => {
               Configure role permissions and manage system actions
             </p>
           </div>
-          <Button onClick={() => setIsAddRoleModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Role
-          </Button>
+          {!isRestrictedUser && (
+            <Button onClick={() => setIsAddRoleModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Role
+            </Button>
+          )}
         </div>
 
         {/* Role Tabs */}
@@ -354,24 +382,26 @@ const ManageRolesPage = () => {
             {/* Role Header */}
             <div className="flex items-center justify-between">
               <h6 className="text-base font-semibold text-muted-foreground">{selectedRole?.name}</h6>
-              <div className="flex gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleEdit(selectedRole, 'role')}
-                >
-                  <Edit className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 hover:bg-destructive-light hover:text-destructive"
-                  onClick={() => handleDelete(selectedRole, 'role')}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
+              {!isRestrictedUser && (
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0"
+                    onClick={() => handleEdit(selectedRole, 'role')}
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0 hover:bg-destructive-light hover:text-destructive"
+                    onClick={() => handleDelete(selectedRole, 'role')}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
             </div>
             
             <div className="flex items-center justify-between">
@@ -393,48 +423,52 @@ const ManageRolesPage = () => {
                     <div className="font-medium">{action.name}</div>
                     <div className="text-xs opacity-75 mt-1">{action.description}</div>
                   </button>
-                  <div className="absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className={cn(
-                        "h-8 w-8 p-0",
-                        selectedActionId === action.id && "text-white hover:text-white"
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(action, 'action');
-                      }}
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className={cn(
-                        "h-8 w-8 p-0 hover:bg-destructive-light",
-                        selectedActionId === action.id ? "text-white hover:text-destructive" : "hover:text-destructive"
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(action, 'action');
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  {!isRestrictedUser && (
+                    <div className="absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className={cn(
+                          "h-8 w-8 p-0",
+                          selectedActionId === action.id && "text-white hover:text-white"
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(action, 'action');
+                        }}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className={cn(
+                          "h-8 w-8 p-0 hover:bg-destructive-light",
+                          selectedActionId === action.id ? "text-white hover:text-destructive" : "hover:text-destructive"
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(action, 'action');
+                        }}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
               
-              {/* Add Action Button at bottom */}
-              <Button 
-                variant="outline" 
-                className="w-full mt-4"
-                onClick={() => setIsAddActionModalOpen(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Role Action
-              </Button>
+              {/* Add Action Button at bottom - Hidden for Admin and SuperAdmin */}
+              {!isRestrictedUser && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => setIsAddActionModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Role Action
+                </Button>
+              )}
             </div>
           </div>
 
@@ -447,14 +481,33 @@ const ManageRolesPage = () => {
                   <h6 className="text-base font-semibold">Permissions for {selectedAction.name}</h6>
                   <p className="text-sm text-muted-foreground">{selectedAction.description}</p>
                 </div>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => setIsAddPermissionModalOpen(true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Permission
-                </Button>
+                <div className="flex gap-2">
+                  {actionPermissions.length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const allEnabled = actionPermissions.every(p => p.enabled);
+                        setActionPermissionsMap(prev => ({
+                          ...prev,
+                          [selectedActionId]: (prev[selectedActionId] || []).map(p => ({...p, enabled: !allEnabled}))
+                        }));
+                      }}
+                    >
+                      {actionPermissions.every(p => p.enabled) ? 'Deselect All' : 'Select All'}
+                    </Button>
+                  )}
+                  {!isRestrictedUser && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setIsAddPermissionModalOpen(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Permission
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {actionPermissions.length === 0 ? (
@@ -464,63 +517,63 @@ const ManageRolesPage = () => {
                   <p className="text-sm">Add your first permission for this role action</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {actionPermissions.map((permission) => (
-                    <div 
-                      key={permission.id} 
-                      className="group relative p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer"
-                      onClick={() => {
-                        setActionPermissionsMap(prev => ({
-                          ...prev,
-                          [selectedActionId]: (prev[selectedActionId] || []).map(p => 
-                            p.id === permission.id ? {...p, enabled: !p.enabled} : p
-                          )
-                        }));
-                      }}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <Checkbox
-                          checked={permission.enabled}
-                          onCheckedChange={(checked) => {
-                            setActionPermissionsMap(prev => ({
-                              ...prev,
-                              [selectedActionId]: (prev[selectedActionId] || []).map(p => 
-                                p.id === permission.id ? {...p, enabled: !!checked} : p
-                              )
-                            }));
-                          }}
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium">{permission.name}</div>
-                          <div className="text-sm text-muted-foreground">{permission.description}</div>
+                <div className="space-y-4">
+                  {/* Permission Cards Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {actionPermissions.map((permission) => (
+                      <div 
+                        key={permission.id} 
+                        className="p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer bg-card"
+                        onClick={() => {
+                          setActionPermissionsMap(prev => ({
+                            ...prev,
+                            [selectedActionId]: (prev[selectedActionId] || []).map(p => 
+                              p.id === permission.id ? {...p, enabled: !p.enabled} : p
+                            )
+                          }));
+                        }}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <Checkbox
+                            checked={permission.enabled}
+                            className="mt-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            onCheckedChange={(checked) => {
+                              setActionPermissionsMap(prev => ({
+                                ...prev,
+                                [selectedActionId]: (prev[selectedActionId] || []).map(p => 
+                                  p.id === permission.id ? {...p, enabled: !!checked} : p
+                                )
+                              }));
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm">{permission.name}</div>
+                            <div className="text-xs text-muted-foreground mt-1">{permission.description}</div>
+                          </div>
                         </div>
                       </div>
-                      <div className="absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(permission, 'permission');
-                          }}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 hover:bg-destructive-light hover:text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(permission, 'permission');
-                          }}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bottom Section with Counter and Save Button */}
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      {actionPermissions.filter(p => p.enabled).length} permissions selected
                     </div>
-                  ))}
+                    <Button 
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                      onClick={() => {
+                        toast.success('Changes saved successfully!', {
+                          description: `Permissions for ${selectedAction.name} have been updated.`
+                        });
+                      }}
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>

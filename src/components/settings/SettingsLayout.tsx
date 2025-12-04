@@ -3,8 +3,9 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUser } from '@/contexts/UserContext';
 import { cn } from '@/lib/utils';
-import { Users, Shield } from 'lucide-react';
+import { Users, Building2, Shield } from 'lucide-react';
 
 interface SettingsLayoutProps {
   children: ReactNode;
@@ -12,21 +13,37 @@ interface SettingsLayoutProps {
 
 const SettingsLayout = ({ children }: SettingsLayoutProps) => {
   const pathname = usePathname();
+  const { currentUser } = useUser();
   
-  const settingsNavItems = [
+  // Define all possible nav items
+  const allSettingsNavItems = [
     {
       name: 'Users',
       href: '/settings/users',
       icon: Users,
-      active: pathname === '/settings/users' || pathname === '/settings'
+      active: pathname === '/settings/users' || pathname === '/settings',
+      roles: ['Admin']
+    },
+    {
+      name: 'Organisations',
+      href: '/settings/organisations',
+      icon: Building2,
+      active: pathname === '/settings/organisations',
+      roles: ['SuperAdmin']
     },
     {
       name: 'Manage Role Functions',
       href: '/settings/manage-roles',
       icon: Shield,
-      active: pathname === '/settings/manage-roles'
+      active: pathname === '/settings/manage-roles',
+      roles: ['Admin', 'SuperAdmin']
     }
   ];
+
+  // Filter nav items based on current user role
+  const settingsNavItems = currentUser
+    ? allSettingsNavItems.filter(item => item.roles.includes(currentUser.role))
+    : allSettingsNavItems.filter(item => item.roles.includes('Admin'));
 
   return (
     <div className="w-full px-6 py-8">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import UserInviteSection from './UserInviteSection';
 import RoleSelector from './RoleSelector';
 
 const UsersPage = () => {
+  const { currentUser } = useUser();
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
@@ -28,6 +30,8 @@ const UsersPage = () => {
     email: '',
     role: '' as UserRole | ''
   });
+  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   // Filter users based on search term and role filter
   const filteredUsers = users.filter(user => {
@@ -99,13 +103,18 @@ const UsersPage = () => {
   };
 
   const handleDeleteUser = (userId: string) => {
-    const user = users.find(u => u.id === userId);
-    if (!user) return;
+    setDeletingUserId(userId);
+    setIsDeleteUserModalOpen(true);
+  };
 
-    if (window.confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
+  const confirmDeleteUser = () => {
+    if (deletingUserId) {
+      const user = users.find(u => u.id === deletingUserId);
+      setUsers(prev => prev.filter(u => u.id !== deletingUserId));
+      setIsDeleteUserModalOpen(false);
+      setDeletingUserId(null);
       toast.success('User deleted successfully!', {
-        description: `${user.name} has been removed from the system.`
+        description: `${user?.name} has been removed from the system.`
       });
     }
   };
@@ -140,8 +149,8 @@ const UsersPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* Invite Section */}
-      <UserInviteSection onInviteGenerated={handleInviteGenerated} />
+      {/* Invite Section - Hidden for Admin role */}
+      {currentUser?.role !== 'Admin' && <UserInviteSection onInviteGenerated={handleInviteGenerated} />}
 
       {/* Users Section */}
       <div className="space-y-6">
@@ -308,6 +317,33 @@ const UsersPage = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Delete User Confirmation Modal */}
+        <Dialog open={isDeleteUserModalOpen} onOpenChange={setIsDeleteUserModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Delete</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete {users.find(u => u.id === deletingUserId)?.name}? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsDeleteUserModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={confirmDeleteUser}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Edit User Modal */}
         <Dialog open={isEditUserModalOpen} onOpenChange={setIsEditUserModalOpen}>

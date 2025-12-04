@@ -5,7 +5,8 @@ import {
   RoleActionPermission, 
   InviteLink,
   UserRole,
-  ActionType
+  ActionType,
+  Organisation
 } from './index';
 
 // Mock Actions based on the reference image
@@ -162,8 +163,8 @@ export const mockUsers: User[] = [
     id: '2',
     name: 'Mike Chen',
     email: 'mike.chen@zuvy.org',
-    role: 'Ops',
-    roleId: 'role-2',
+    role: 'Admin',
+    roleId: 'role-1',
     dateAdded: '2024-02-01T09:00:00Z',
     status: 'active'
   },
@@ -261,3 +262,83 @@ export const canRolePerformAction = (roleId: string, actionId: string): boolean 
   );
   return permission?.allowed || false;
 };
+
+// Mock Organisations
+export const mockOrganisations: Organisation[] = [
+  {
+    id: 'org_1',
+    name: 'Amazon Future Engineer',
+    managementType: 'Self Managed',
+    pointOfContactName: 'John Doe',
+    pointOfContactEmail: 'john.doe@amazon.com',
+    logo: '/logos/amazon-future-engineer.svg',
+    dateAdded: '2024-01-15'
+  },
+  {
+    id: 'org_2',
+    name: 'Microsoft',
+    managementType: 'Zuvy Managed',
+    pointOfContactName: 'Sarah Smith',
+    pointOfContactEmail: 'sarah.smith@microsoft.com',
+    zuvyAssigneeName: 'Alex Kumar',
+    zuvyAssigneeEmail: 'alex.kumar@zuvy.com',
+    logo: '/logos/microsoft.svg',
+    dateAdded: '2024-02-20'
+  },
+  {
+    id: 'org_3',
+    name: 'Global Solutions Inc',
+    managementType: 'Self Managed',
+    pointOfContactName: 'Michael Johnson',
+    pointOfContactEmail: 'michael@globalsolutions.com',
+    dateAdded: '2024-03-10'
+  },
+  {
+    id: 'org_4',
+    name: 'Amazon Future Engineer',
+    managementType: 'Zuvy Managed',
+    pointOfContactName: 'Emily Brown',
+    pointOfContactEmail: 'emily.brown@amazon.com',
+    zuvyAssigneeName: 'Priya Sharma',
+    zuvyAssigneeEmail: 'priya.sharma@zuvy.com',
+    logo: '/logos/amazon-future-engineer.svg',
+    dateAdded: '2024-04-05'
+  },
+  {
+    id: 'org_5',
+    name: 'Enterprise Solutions',
+    managementType: 'Self Managed',
+    pointOfContactName: 'David Wilson',
+    pointOfContactEmail: 'david.wilson@enterprisesol.com',
+    dateAdded: '2024-05-12'
+  }
+];
+
+// Admin to Organization Mapping
+export interface AdminOrganizationMapping {
+  adminId: string;
+  adminType: 'Admin-Self Managed' | 'Admin-Zuvy Managed';
+  organisationIds: string[];
+  defaultOrganisationId: string;
+  lastAccessedOrganisationId: string;
+  lastAccessedAt: string;
+}
+
+export const mockAdminOrganisationMappings: AdminOrganizationMapping[] = [
+  {
+    adminId: '1', // This is the Admin user from mockUsers (Sarah Johnson)
+    adminType: 'Admin-Self Managed',
+    organisationIds: ['org_1'], // Amazon Future Engineer
+    defaultOrganisationId: 'org_1',
+    lastAccessedOrganisationId: 'org_1',
+    lastAccessedAt: new Date().toISOString()
+  },
+  {
+    adminId: '2', // Second admin for Zuvy Managed (Mike Chen)
+    adminType: 'Admin-Zuvy Managed',
+    organisationIds: ['org_2', 'org_4'], // Microsoft and Amazon Future Engineer
+    defaultOrganisationId: 'org_2',
+    lastAccessedOrganisationId: 'org_2',
+    lastAccessedAt: new Date().toISOString()
+  }
+];
