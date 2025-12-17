@@ -52,7 +52,17 @@ const OrganizationDetailsDrawer = ({
   const [isDeleteOrgModalOpen, setIsDeleteOrgModalOpen] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle close with animation delay
+  const handleAnimatedClose = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      onClose();
+      setIsAnimating(false);
+    }, 500); // Match the animation duration
+  };
 
   // Update editedOrg when org prop changes
   useEffect(() => {
@@ -70,7 +80,7 @@ const OrganizationDetailsDrawer = ({
           id: '1',
           name: 'John Doe',
           email: 'john.doe@amazon.com',
-          role: 'Org Admin',
+          role: 'Admin',
           dateAdded: 'Jan 15, 2024',
           avatar: 'JD'
         },
@@ -86,7 +96,7 @@ const OrganizationDetailsDrawer = ({
           id: '3',
           name: 'Bob Wilson',
           email: 'bob.w@amazon.com',
-          role: 'Learner',
+          role: 'Ops',
           dateAdded: 'Feb 12, 2024',
           avatar: 'BW'
         }
@@ -208,7 +218,7 @@ const OrganizationDetailsDrawer = ({
     if (editedOrg) {
       onSave(editedOrg);
       toast.success('Organization updated successfully!');
-      onClose();
+      handleAnimatedClose();
     }
   };
 
@@ -217,17 +227,17 @@ const OrganizationDetailsDrawer = ({
   return (
     <>
       {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 transition-opacity"
-          onClick={onClose}
-        />
-      )}
-
-      {/* Drawer - 2/3 width, starts exactly where header ends */}
       <div
-        className={`fixed top-[60px] right-0 h-[calc(100vh-60px)] w-2/3 bg-background shadow-2xl z-40 transform transition-transform duration-300 flex flex-col ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed inset-0 bg-black/30 backdrop-blur-md z-30 ${
+          isOpen && !isAnimating ? 'animate-backdrop-in opacity-100' : 'animate-backdrop-out opacity-0 pointer-events-none'
+        }`}
+        onClick={handleAnimatedClose}
+      />
+
+      {/* Drawer - slides in from right with smooth animation */}
+      <div
+        className={`fixed top-16 right-0 bottom-0 w-2/3 bg-background shadow-2xl z-40 flex flex-col ${
+          isOpen && !isAnimating ? 'animate-drawer-in translate-x-0 opacity-100' : 'animate-drawer-out translate-x-full opacity-0 pointer-events-none'
         }`}
       >
         {/* Sticky Header */}
@@ -289,7 +299,7 @@ const OrganizationDetailsDrawer = ({
           {/* Header Actions */}
           <div className="flex items-center gap-2">
             <button
-              onClick={onClose}
+              onClick={handleAnimatedClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               title="Close"
             >
@@ -347,9 +357,9 @@ const OrganizationDetailsDrawer = ({
                       <Label className="font-semibold">Select Role *</Label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[
-                          { id: 'org-admin', name: 'Org Admin', icon: Shield, description: 'Full access to organization' },
+                          { id: 'admin', name: 'Admin', icon: Shield, description: 'Full access to organization' },
                           { id: 'instructor', name: 'Instructor', icon: GraduationCap, description: 'Manage courses and students' },
-                          { id: 'learner', name: 'Learner', icon: Users, description: 'Access to learning content' }
+                          { id: 'ops', name: 'Ops', icon: Users, description: 'Day to day operations' }
                         ].map((role) => {
                           const Icon = role.icon;
                           const isSelected = newUser.role === role.name;
@@ -432,9 +442,9 @@ const OrganizationDetailsDrawer = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="Org Admin">Org Admin</SelectItem>
+                  <SelectItem value="Admin">Admin</SelectItem>
                   <SelectItem value="Instructor">Instructor</SelectItem>
-                  <SelectItem value="Learner">Learner</SelectItem>
+                  <SelectItem value="Ops">Ops</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -472,9 +482,9 @@ const OrganizationDetailsDrawer = ({
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Org Admin">Org Admin</SelectItem>
+                              <SelectItem value="Admin">Admin</SelectItem>
                               <SelectItem value="Instructor">Instructor</SelectItem>
-                              <SelectItem value="Learner">Learner</SelectItem>
+                              <SelectItem value="Ops">Ops</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -543,9 +553,9 @@ const OrganizationDetailsDrawer = ({
                     <Label className="font-semibold">Select Role *</Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[
-                        { id: 'org-admin', name: 'Org Admin', icon: Shield, description: 'Full access to organization' },
+                        { id: 'admin', name: 'Admin', icon: Shield, description: 'Full access to organization' },
                         { id: 'instructor', name: 'Instructor', icon: GraduationCap, description: 'Manage courses and students' },
-                        { id: 'learner', name: 'Learner', icon: Users, description: 'Access to learning content' }
+                        { id: 'ops', name: 'Ops', icon: Users, description: 'Day to day operations' }
                       ].map((role) => {
                         const Icon = role.icon;
                         const isSelected = editingUser?.role === role.name;
@@ -620,7 +630,7 @@ const OrganizationDetailsDrawer = ({
             Delete Organisation
           </button>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={handleAnimatedClose}>
               Cancel
             </Button>
             <Button className="bg-primary hover:bg-primary/90 text-white" onClick={handleSave}>

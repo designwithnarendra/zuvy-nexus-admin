@@ -179,13 +179,53 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'drawer-in': {
+					from: {
+						transform: 'translateX(100%)',
+						opacity: '0'
+					},
+					to: {
+						transform: 'translateX(0)',
+						opacity: '1'
+					}
+				},
+				'drawer-out': {
+					from: {
+						transform: 'translateX(0)',
+						opacity: '1'
+					},
+					to: {
+						transform: 'translateX(100%)',
+						opacity: '0'
+					}
+				},
+				'backdrop-in': {
+					from: {
+						opacity: '0'
+					},
+					to: {
+						opacity: '1'
+					}
+				},
+				'backdrop-out': {
+					from: {
+						opacity: '1'
+					},
+					to: {
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'scale-in': 'scale-in 0.2s ease-out',
+				'drawer-in': 'drawer-in 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
+				'drawer-out': 'drawer-out 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
+				'backdrop-in': 'backdrop-in 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
+				'backdrop-out': 'backdrop-out 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)'
 			}
 		}
 	},

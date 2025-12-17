@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Shield, GraduationCap } from 'lucide-react'
 import AdminOnboarding from '@/components/onboarding/AdminOnboarding'
+import AdminSelfManagedOnboarding from '@/components/onboarding/AdminSelfManagedOnboarding'
 import type { User } from '@/types'
 
 export default function RoleSelectorPage() {
@@ -20,6 +21,7 @@ export default function RoleSelectorPage() {
   const [selectedInstructor, setSelectedInstructor] = useState<string>('')
   const [selectedAdminType, setSelectedAdminType] = useState<string>('')
   const [showAdminOnboarding, setShowAdminOnboarding] = useState(false)
+  const [showAdminSelfManagedOnboarding, setShowAdminSelfManagedOnboarding] = useState(false)
   const [pendingAdmin, setPendingAdmin] = useState<User | null>(null)
 
   // Get all instructors
@@ -56,10 +58,10 @@ export default function RoleSelectorPage() {
         adminType: selectedAdminType as 'Admin-Self Managed' | 'Admin-Zuvy Managed'
       }
       
-      // If Self Managed, show onboarding flow
+      // If Self Managed, show new onboarding flow
       if (selectedAdminType === 'Admin-Self Managed') {
         setPendingAdmin(adminWithType)
-        setShowAdminOnboarding(true)
+        setShowAdminSelfManagedOnboarding(true)
       } else {
         // If Zuvy Managed, go directly to dashboard
         setCurrentUser(adminWithType)
@@ -101,7 +103,18 @@ export default function RoleSelectorPage() {
     }
   }
 
+  const handleLogout = () => {
+    setShowAdminSelfManagedOnboarding(false)
+    setShowAdminSelect(false)
+    setPendingAdmin(null)
+    setSelectedAdminType('')
+  }
+
   // Show onboarding flow if triggered
+  if (showAdminSelfManagedOnboarding && pendingAdmin) {
+    return <AdminSelfManagedOnboarding onComplete={handleOnboardingComplete} adminName={pendingAdmin.name} onLogout={handleLogout} />
+  }
+
   if (showAdminOnboarding && pendingAdmin) {
     return <AdminOnboarding onComplete={handleOnboardingComplete} adminName={pendingAdmin.name} />
   }
