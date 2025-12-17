@@ -13,17 +13,21 @@ import OrganizationHeader from './OrganizationHeader';
 
 interface MainLayoutProps {
   children: ReactNode;
+  hideNavigation?: boolean;
 }
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, logout, isInstructor } = useUser();
 
   // Don't show layout on role selector page
-  if (pathname === '/role-selector') {
+  const isRoleSelector = pathname === '/role-selector' || pathname?.startsWith('/role-selector');
+  if (isRoleSelector) {
+    console.log('🚀 MainLayout: Detected role-selector page, returning children only. Pathname:', pathname);
     return <>{children}</>;
   }
+  console.log('📋 MainLayout: Rendering full layout. Pathname:', pathname);
 
   const allNavigationItems = [
     {
@@ -64,7 +68,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header Navigation */}
+      {/* Header Navigation - Hidden on role-selector page */}
+      {pathname !== '/role-selector' && (
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex h-16 items-center justify-between w-full px-6">
           <div className="flex items-center gap-8">
@@ -84,6 +89,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               </Link>
             )}
             
+            {pathname !== '/role-selector' && (
             <nav className="flex items-center space-x-1">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
@@ -104,6 +110,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 );
               })}
             </nav>
+            )}
           </div>
           
           <div className="ml-auto flex items-center gap-3">
@@ -134,6 +141,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           </div>
         </div>
       </header>
+      )}
 
       {/* Main Content */}
       <main className="flex-1">
