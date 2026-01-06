@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['placeholder.svg'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placeholder.svg',
+      },
+    ],
     unoptimized: true,
-  },
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
   },
   typescript: {
     // Warning: This allows production builds to successfully complete even if
