@@ -115,7 +115,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         {
           id: 'batch-1',
           name: 'Full Stack Batch 2024-A',
-          status: 'Ongoing',
+          status: 'Ongoing' as const,
           startDate: '2024-01-15',
           endDate: '2024-03-15',
           studentCount: 25
@@ -123,7 +123,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
         {
           id: 'batch-2',
           name: 'Full Stack Batch 2024-B',
-          status: 'Ongoing',
+          status: 'Ongoing' as const,
           startDate: '2024-02-01',
           endDate: '2024-05-01',
           studentCount: 25
@@ -135,7 +135,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
     return instructorBatches.map(batch => ({
       id: batch.id,
       name: batch.name,
-      status: batch.status === 'ongoing' ? 'Ongoing' : batch.status === 'completed' ? 'Completed' : 'Not Started',
+      status: (batch.status === 'ongoing' ? 'Ongoing' : batch.status === 'completed' ? 'Completed' : 'Not Started') as 'Not Started' | 'Ongoing' | 'Completed',
       startDate: batch.startDate || '',
       endDate: batch.endDate || '',
       studentCount: availableStudents.filter(s => s.batch === batch.name).length
