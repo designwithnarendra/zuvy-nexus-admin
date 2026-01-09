@@ -17,7 +17,11 @@ import { cn } from '@/lib/utils';
 import UserInviteSection from './UserInviteSection';
 import RoleSelector from './RoleSelector';
 
-const UsersPage = () => {
+interface UsersPageProps {
+  hideInviteSection?: boolean;
+}
+
+const UsersPage = ({ hideInviteSection = false }: UsersPageProps) => {
   const { currentUser } = useUser();
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState('');
@@ -149,8 +153,8 @@ const UsersPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* Invite Section - Hidden for Admin role */}
-      {currentUser?.role !== 'Admin' && <UserInviteSection onInviteGenerated={handleInviteGenerated} />}
+      {/* Invite Section - Hidden for Admin role or when hideInviteSection is true */}
+      {!hideInviteSection && currentUser?.role !== 'Admin' && <UserInviteSection onInviteGenerated={handleInviteGenerated} />}
 
       {/* Users Section */}
       <div className="space-y-6">

@@ -36,7 +36,7 @@ const SettingsLayout = ({ children }: SettingsLayoutProps) => {
       href: '/settings/manage-roles',
       icon: Shield,
       active: pathname === '/settings/manage-roles',
-      roles: ['Admin', 'SuperAdmin']
+      roles: ['Admin']
     }
   ];
 
@@ -47,7 +47,8 @@ const SettingsLayout = ({ children }: SettingsLayoutProps) => {
 
   return (
     <div className="w-full px-6 py-8">
-      {/* Secondary Navigation */}
+      {/* Secondary Navigation - Only show if there are multiple nav items */}
+      {settingsNavItems.length > 1 && (
       <nav className="flex items-center space-x-1 mb-8">
         {settingsNavItems.map((item) => {
           const Icon = item.icon;
@@ -68,6 +69,7 @@ const SettingsLayout = ({ children }: SettingsLayoutProps) => {
           );
         })}
       </nav>
+      )}
 
       {/* Main Content */}
       <main>

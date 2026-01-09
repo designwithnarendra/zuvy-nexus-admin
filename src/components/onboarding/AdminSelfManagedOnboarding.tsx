@@ -82,88 +82,126 @@ const AdminSelfManagedOnboarding = ({ onComplete, adminName, onLogout }: AdminSe
   // Stage 1: Invitation Card Screen
   if (stage === 'invitation') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-50 flex flex-col">
-        {/* Header */}
-        <header className="border-b bg-white/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between px-6">
-            <Image
-              src="/zuvy-logo-horizontal.png"
-              alt="Zuvy"
-              width={104}
-              height={40}
-              className="h-10 w-auto"
-              priority
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-red-500 hover:text-white hover:bg-red-500"
-              title="Logout"
-              aria-label="Logout"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </header>
-        
-        {/* Content */}
-        <div className="flex-1 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-b from-[#E8E5DB] via-[#F0EEEA] to-[#E8E5DB] flex flex-col items-center justify-center p-4">
+        {/* Main Content Container */}
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+          {/* White Card */}
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
             {/* Card Content */}
-            <div className="p-12 space-y-8">
+            <div className="px-10 py-12 space-y-7">
               {/* Logo */}
               <div className="flex justify-center">
                 <Image
                   src="/zuvy-logo-horizontal.png"
                   alt="Zuvy"
-                  width={80}
-                  height={32}
+                  width={100}
+                  height={40}
                   className="h-8 w-auto"
+                  priority
                 />
               </div>
 
-              {/* Heading */}
-              <div className="text-center space-y-3">
-                <h1 className="text-h4 font-heading font-bold text-foreground">
-                  Welcome to Zuvy
+              {/* Main Heading */}
+              <div className="text-center space-y-2">
+                <h1 className="text-3xl leading-tight font-semibold text-[#1F2937]">
+                  Build Skills of Future<br/>in Tech
                 </h1>
               </div>
 
-              {/* Google Button */}
+              {/* Description */}
+              <div className="text-center">
+                <p className="text-[#6B7280] text-sm leading-relaxed">
+                  Master in-demand programming skills and<br/>
+                  step into a world of opportunities. Start<br/>
+                  learning today!
+                </p>
+              </div>
+
+              {/* Google Login Button */}
               <Button
                 onClick={handleContinueFromInvitation}
-                className="w-full py-3 text-body1 bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg flex items-center justify-center gap-2"
+                className="w-full py-3 text-base bg-[#2D5016] hover:bg-[#245010] text-white rounded-lg flex items-center justify-center gap-2 font-semibold transition-colors"
                 size="lg"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  <path fill="white" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="white" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="white" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="white" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                <span>Continue with Google</span>
+                <span>Login with Google</span>
               </Button>
+            </div>
+          </div>
 
-              {/* Legal Text */}
-              <p className="text-center text-xs text-muted-foreground leading-relaxed">
-                By continuing, you acknowledge that you have read and understood, and agree to Zuvy's{' '}
-                <a href="#" className="text-slate-600 underline hover:text-slate-700">
-                  Terms
-                </a>
-                {' '}and{' '}
-                <a href="#" className="text-slate-600 underline hover:text-slate-700">
-                  Privacy Policy
-                </a>
-                .
-              </p>
+          {/* Testimonials Section */}
+          <div className="mt-16 space-y-6">
+            {/* Row 1 - 5 items */}
+            <div className="grid grid-cols-5 gap-3">
+              {/* Testimonial 1 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center mb-2 font-bold text-white text-xs">
+                  PS
+                </div>
+                <p className="text-xs font-semibold text-[#1F2937]">Priya Sharma</p>
+                <p className="text-xs text-[#6B7280] mt-1 leading-tight">SDE Intern at Google</p>
+              </div>
+
+              {/* Stat 1 */}
+              <div className="flex flex-col items-center justify-center text-center bg-[#FEF3C7] rounded-xl p-3">
+                <p className="text-xl font-bold text-[#1F2937]">2000+</p>
+                <p className="text-xs text-[#6B7280] mt-1">Learners across 18 states</p>
+              </div>
+
+              {/* Testimonial 2 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center mb-2 font-bold text-white text-xs">
+                  RK
+                </div>
+                <p className="text-xs font-semibold text-[#1F2937]">Rahul Kumar</p>
+                <p className="text-xs text-[#6B7280] mt-1 leading-tight">Frontend Dev at Flipkart</p>
+              </div>
+
+              {/* Stat 2 */}
+              <div className="flex flex-col items-center justify-center text-center bg-[#FEF3C7] rounded-xl p-3">
+                <p className="text-xl font-bold text-[#1F2937]">400+</p>
+                <p className="text-xs text-[#6B7280] mt-1">Internships secured</p>
+              </div>
+
+              {/* Testimonial 3 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center mb-2 font-bold text-white text-xs">
+                  AS
+                </div>
+                <p className="text-xs font-semibold text-[#1F2937]">Anita Singh</p>
+                <p className="text-xs text-[#6B7280] mt-1 leading-tight">Backend Dev at Zomato</p>
+              </div>
             </div>
 
-            {/* Bottom Border */}
-            <div className="h-1 bg-gradient-to-r from-emerald-400 to-emerald-500"></div>
+            {/* Row 2 - 3 items */}
+            <div className="grid grid-cols-3 gap-3">
+              {/* Stat 3 */}
+              <div className="flex flex-col items-center justify-center text-center bg-[#FEF3C7] rounded-xl p-3">
+                <p className="text-xl font-bold text-[#1F2937]">Over 70%</p>
+                <p className="text-xs text-[#6B7280] mt-1">Learners are women</p>
+              </div>
+
+              {/* Testimonial 4 */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center mb-2 font-bold text-white text-xs">
+                  VP
+                </div>
+                <p className="text-xs font-semibold text-[#1F2937]">Vikram Patel</p>
+                <p className="text-xs text-[#6B7280] mt-1 leading-tight">Full Stack at Swiggy</p>
+              </div>
+
+              {/* Stat 4 */}
+              <div className="flex flex-col items-center justify-center text-center bg-[#FEF3C7] rounded-xl p-3">
+                <p className="text-xl font-bold text-[#1F2937]">10 Months</p>
+                <p className="text-xs text-[#6B7280] mt-1">Bootcamp duration</p>
+              </div>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     )
