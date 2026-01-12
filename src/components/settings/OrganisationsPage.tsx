@@ -9,12 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Organisation, ManagementType } from '@/types/index';
 import { mockOrganisations } from '@/types/mock-rbac-data';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import DataTable from '@/components/shared/DataTable';
 import AddOrganisationModal from './AddOrganisationModal';
-import OrganizationDetailsDrawer from './OrganizationDetailsDrawer';
 
 const OrganisationsPage = () => {
+  const router = useRouter();
   const [organisations, setOrganisations] = useState<Organisation[]>(mockOrganisations);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -23,8 +24,6 @@ const OrganisationsPage = () => {
   const [deletingOrganisation, setDeletingOrganisation] = useState<Organisation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [managementTypeFilter, setManagementTypeFilter] = useState<string>('all');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedOrgForDrawer, setSelectedOrgForDrawer] = useState<Organisation | null>(null);
   
   // Management Type Change Modal States
   const [isManagementTypeChangeModalOpen, setIsManagementTypeChangeModalOpen] = useState(false);
@@ -92,23 +91,6 @@ const OrganisationsPage = () => {
   const handleDeleteClick = (org: Organisation) => {
     setDeletingOrganisation(org);
     setIsDeleteModalOpen(true);
-  };
-
-  const handleOpenDrawer = (org: Organisation) => {
-    console.log('Opening drawer for org:', org);
-    setSelectedOrgForDrawer(org);
-    setIsDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setIsDrawerOpen(false);
-    setSelectedOrgForDrawer(null);
-  };
-
-  const handleSaveDrawer = (updatedOrg: Organisation) => {
-    setOrganisations(prev => prev.map(org => 
-      org.id === updatedOrg.id ? updatedOrg : org
-    ));
   };
 
   const confirmDelete = () => {
@@ -219,7 +201,7 @@ const OrganisationsPage = () => {
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          handleOpenDrawer(org);
+          router.push(`/settings/organisations/${org.id}`);
         }}
         className="font-medium text-primary hover:underline transition-colors text-left cursor-pointer"
         type="button"
@@ -282,9 +264,9 @@ const OrganisationsPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">
+          <h1 className="font-heading text-h5 mb-2">
             Organisations ({filteredOrganisations.length})
-          </h2>
+          </h1>
           <p className="text-muted-foreground">
             Manage organizations onboarded on the platform
           </p>
@@ -463,13 +445,6 @@ const OrganisationsPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Organization Details Drawer */}
-      <OrganizationDetailsDrawer
-        org={selectedOrgForDrawer}
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        onSave={handleSaveDrawer}
-      />
     </div>
   );
 };

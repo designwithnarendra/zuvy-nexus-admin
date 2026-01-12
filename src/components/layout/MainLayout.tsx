@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Layers, Database, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Layers, Database, Settings, LogOut, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUser } from '@/contexts/UserContext';
@@ -27,29 +27,44 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
     console.log('🚀 MainLayout: Detected role-selector page, returning children only. Pathname:', pathname);
     return <>{children}</>;
   }
+
+  // Don't show layout on organisation detail pages
+  const isOrgDetail = /^\/settings\/organisations\/[^/]+\/?$/.test(pathname);
+  if (isOrgDetail) {
+    console.log('🚀 MainLayout: Detected organisation detail page, returning children only. Pathname:', pathname);
+    return <>{children}</>;
+  }
+
   console.log('📋 MainLayout: Rendering full layout. Pathname:', pathname);
 
   const allNavigationItems = [
+    {
+      name: 'Organisations',
+      href: '/settings/organisations',
+      icon: Building2,
+      active: pathname.startsWith('/settings/organisations'),
+      roles: ['SuperAdmin']
+    },
     {
       name: 'Course Studio',
       href: '/courses',
       icon: Layers,
       active: pathname.startsWith('/courses'),
-      roles: ['Admin', 'Instructor', 'SuperAdmin'] // Available to Admin, Instructor, and SuperAdmin
+      roles: ['Admin', 'Instructor']
     },
     {
       name: 'Content Bank',
       href: '/content-bank',
       icon: Database,
       active: pathname.startsWith('/content-bank'),
-      roles: ['Admin', 'Instructor', 'SuperAdmin'] // Available to Admin, Instructor, and SuperAdmin
+      roles: ['Admin', 'Instructor', 'SuperAdmin']
     },
     {
       name: 'Roles and Permissions',
       href: '/settings',
       icon: Settings,
       active: pathname.startsWith('/settings'),
-      roles: ['Admin', 'SuperAdmin'] // Admin and SuperAdmin only
+      roles: ['Admin']
     }
   ];
 
@@ -65,6 +80,8 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
 
   // Check if user is Admin to show organization header
   const isAdmin = currentUser?.role === 'Admin';
+  const isSuperAdmin = currentUser?.role === 'SuperAdmin';
+  const isOrganisationsPage = pathname === '/settings/organisations' || pathname === '/settings/organisations/';
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,6 +93,17 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
             {/* Show Organization Header for Admins, otherwise show Zuvy Logo */}
             {isAdmin ? (
               <OrganizationHeader />
+            ) : isSuperAdmin && isOrganisationsPage ? (
+              <div className="flex items-center">
+                <Image
+                  src="/zuvy-logo-horizontal.png"
+                  alt="Zuvy"
+                  width={104}
+                  height={40}
+                  className="h-10 w-auto"
+                  priority
+                />
+              </div>
             ) : (
               <Link href="/" className="flex items-center">
                 <Image

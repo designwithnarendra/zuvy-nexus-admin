@@ -81,7 +81,7 @@ export default function RoleSelectorPage() {
       status: 'active'
     }
     setCurrentUser(superAdmin)
-    router.push('/courses')
+    router.push('/settings/organisations')
   }
 
   const handleInstructorClick = () => {
