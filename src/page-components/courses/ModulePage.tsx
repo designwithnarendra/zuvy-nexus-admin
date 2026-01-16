@@ -18,6 +18,7 @@ import { AssignmentEditor } from '@/components/courses/learning-item-editors/Ass
 import { QuizEditor } from '@/components/courses/learning-item-editors/QuizEditor';
 import { FeedbackFormEditor } from '@/components/courses/learning-item-editors/FeedbackFormEditor';
 import { CodingProblemEditor } from '@/components/courses/learning-item-editors/CodingProblemEditor';
+import { AssessmentEditor } from '@/components/courses/learning-item-editors/AssessmentEditor';
 
 // Import the updated types
 import {
@@ -77,7 +78,8 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       { id: '7', type: 'assignment' as ContentType, title: 'DOM Selection Practice', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
       { id: '8', type: 'quiz' as ContentType, title: 'DOM Fundamentals Quiz', duration: '5 questions', status: 'not-started' as const },
       { id: '9', type: 'feedback-form' as ContentType, title: 'Module 2 Feedback', duration: 'Due: Dec 15, 2024', status: 'not-started' as const },
-      { id: '10', type: 'coding-problem' as ContentType, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const }
+      { id: '10', type: 'coding-problem' as ContentType, title: 'Array Manipulation Challenge', duration: 'Practice problem', status: 'not-started' as const },
+      { id: '11', type: 'assessment' as ContentType, title: 'Module 2 Assessment', duration: '30 questions', status: 'not-started' as const }
     ]
   };
 
@@ -87,6 +89,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   const [newContentItems, setNewContentItems] = useState<Set<string>>(new Set()); // Track new items
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ContentDisplayItem | null>(null);
+  const [deleteFromSystem, setDeleteFromSystem] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
@@ -222,8 +225,15 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
+      // Handle system deletion for live classes
+      if (itemToDelete.type === 'live-class' && deleteFromSystem) {
+        console.log(`Deleting live class "${itemToDelete.title}" from system completely`);
+        // API call to delete from system would go here
+      }
+
       handleRemoveNewItem(itemToDelete.id);
       setItemToDelete(null);
+      setDeleteFromSystem(false); // Reset flag
     }
   };
 
@@ -331,7 +341,97 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
         return {
           ...baseData,
           type: 'feedback-form' as const,
-          questions: []
+          questions: [
+            {
+              id: 'q1',
+              questionText: 'How would you rate the overall quality of Module 2: DOM Manipulation & Events?',
+              questionType: 'rating' as const,
+              required: true,
+              ratingScale: {
+                min: 1,
+                max: 10,
+                minLabel: 'Poor',
+                midLabel: 'Average',
+                maxLabel: 'Excellent'
+              }
+            },
+            {
+              id: 'q2',
+              questionText: 'How well did the module content help you understand DOM manipulation concepts?',
+              questionType: 'rating' as const,
+              required: true,
+              ratingScale: {
+                min: 1,
+                max: 10,
+                minLabel: 'Not at all',
+                midLabel: 'Somewhat',
+                maxLabel: 'Very well'
+              }
+            },
+            {
+              id: 'q3',
+              questionText: 'Which topics did you find most valuable? (Select all that apply)',
+              questionType: 'multiple-choice' as const,
+              required: true,
+              options: [
+                'DOM Fundamentals and Element Selection',
+                'Event Handling and Listeners',
+                'DOM Traversal and Manipulation',
+                'Event Bubbling and Delegation',
+                'Practical Exercises and Coding Challenges'
+              ]
+            },
+            {
+              id: 'q4',
+              questionText: 'What was the pace of the module for you?',
+              questionType: 'single-choice' as const,
+              required: true,
+              options: [
+                'Too slow',
+                'Just right',
+                'Too fast',
+                'Inconsistent'
+              ]
+            },
+            {
+              id: 'q5',
+              questionText: 'How confident do you feel applying DOM manipulation in real projects?',
+              questionType: 'rating' as const,
+              required: true,
+              ratingScale: {
+                min: 1,
+                max: 10,
+                minLabel: 'Not confident',
+                midLabel: 'Moderately confident',
+                maxLabel: 'Very confident'
+              }
+            },
+            {
+              id: 'q6',
+              questionText: 'What did you like most about this module?',
+              questionType: 'long-text' as const,
+              required: false
+            },
+            {
+              id: 'q7',
+              questionText: 'What could be improved in this module?',
+              questionType: 'long-text' as const,
+              required: false
+            },
+            {
+              id: 'q8',
+              questionText: 'Would you recommend this module to other learners?',
+              questionType: 'single-choice' as const,
+              required: true,
+              options: [
+                'Definitely yes',
+                'Probably yes',
+                'Not sure',
+                'Probably not',
+                'Definitely not'
+              ]
+            }
+          ]
         } as FeedbackFormData;
 
       case 'coding-problem':
@@ -344,7 +444,13 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
         } as CodingProblemData;
 
       default:
-        return baseData;
+        return {
+          ...baseData,
+          type: 'assessment' as const,
+          questionIds: [],
+          codingProblemIds: [],
+          topics: []
+        };
     }
   };
 
@@ -356,7 +462,7 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
     if (selectedItem) {
       const updatedItem = { ...selectedItem, title: data.title };
       setSelectedItem(updatedItem);
-      
+
       // If this was a new item, remove it from new items tracking since it's now saved
       if (newContentItems.has(selectedItem.id)) {
         setNewContentItems(prev => {
@@ -473,6 +579,17 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           />
         );
 
+      case 'assessment':
+        return (
+          <AssessmentEditor
+            key={selectedItem.id}
+            initialData={editorData as any} // AssessmentData type
+            mode={editorMode as 'create' | 'edit'}
+            onSave={handleEditorSave}
+            onCancel={handleEditorCancel}
+          />
+        );
+
       default:
         return (
           <div className="flex-1 flex items-center justify-center h-[100vh]">
@@ -487,14 +604,14 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
   };
 
   return (
-    <div className="flex h-[100vh] overflow-hidden bg-background">
+    <div className="fixed top-16 left-0 right-0 bottom-0 flex bg-background overflow-hidden">
       {/* Left Sidebar - 25% width */}
-      <div className="w-1/4 border-r bg-card flex flex-col h-full">
+      <div className="w-1/4 border-r bg-card flex flex-col h-full overflow-hidden">
         {/* Header - Fixed */}
         <div className="p-4 border-b shrink-0">
           <Button
             variant="ghost"
-            onClick={() => router.push(`/courses/${courseId}`)}
+            onClick={() => router.push(`/courses/${courseId}?tab=curriculum`)}
             className="mb-4 hover:text-primary hover:bg-transparent p-0"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -620,15 +737,23 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
       </div>
 
       {/* Right Content Area - 75% width */}
-      {renderContentEditor()}
+      <div className="w-3/4 flex flex-col h-full overflow-hidden">
+        {renderContentEditor()}
+      </div>
 
       {/* Delete Content Modal */}
       <DeleteContentModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteFromSystem(false); // Reset on close
+        }}
         onConfirm={handleConfirmDelete}
         contentTitle={itemToDelete?.title || ''}
         contentType={itemToDelete ? getContentTypeLabel(itemToDelete.type) : ''}
+        isLiveClass={itemToDelete?.type === 'live-class'}
+        deleteFromSystem={deleteFromSystem}
+        onDeleteFromSystemChange={setDeleteFromSystem}
       />
     </div>
   );

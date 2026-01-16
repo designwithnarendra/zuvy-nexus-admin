@@ -16,7 +16,7 @@ interface AddModuleFormProps {
 
 const AddModuleForm = ({ newModuleData, onDataChange, onSubmit, onCancel }: AddModuleFormProps) => {
   return (
-    <Card className="shadow-4dp">
+    <Card className="shadow-soft">
       <CardHeader>
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-lg">Add New Content</h3>

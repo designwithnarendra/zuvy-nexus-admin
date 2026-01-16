@@ -68,13 +68,13 @@ export function VideoEditor({
       unsavedChanges.markAsUnsaved();
     }
   }, [videoData, initialData]);
-  
+
   // Handle source type change
   const handleSourceTypeChange = (value: VideoSourceType) => {
     setVideoData(prev => ({ ...prev, sourceType: value }));
     setPreviewUrl(null); // Reset preview when source type changes
   };
-  
+
   // Handle file upload with proper file handling
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -106,32 +106,32 @@ export function VideoEditor({
   const triggerFileUpload = () => {
     document.getElementById('video-file-upload')?.click();
   };
-  
+
   // Handle URL preview
   const handleUrlPreview = () => {
     if (videoData.url) {
       setPreviewUrl(videoData.url);
     }
   };
-  
+
   // Extract video ID from YouTube URL
   const extractVideoId = (url: string): string | null => {
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
   };
-  
+
   // Generate embed URL for YouTube
   const getEmbedUrl = (): string | null => {
     if (!videoData.url) return null;
-    
+
     if (videoData.sourceType === 'youtube') {
       const videoId = extractVideoId(videoData.url);
       return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
     }
-    
+
     return videoData.url;
   };
-  
+
   // Handle form submission
   const handleSubmit = async () => {
     try {
@@ -183,158 +183,169 @@ export function VideoEditor({
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Top Bar - Fixed */}
+      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0 w-full">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">
+            {videoData.title || 'Untitled Video'}
+          </h2>
+        </div>
+      </div>
+
+      {/* Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
-          {/* Title - Underlined style as per design specs */}
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={videoData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="Video Title"
-              className="text-xl font-semibold bg-transparent border-none outline-none border-b-2 border-border focus:border-primary transition-colors w-full pb-1"
-              style={{ fontSize: '1.25rem' }} // h5 size as per specs
-            />
-          </div>
+            {/* Title input field */}
+            <div>
+              <Label htmlFor="video-title">Title</Label>
+              <Input
+                id="video-title"
+                type="text"
+                value={videoData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="Video Title"
+                className="mt-2"
+              />
+            </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={videoData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Enter video description"
-              className="min-h-[100px]"
-            />
-          </div>
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={videoData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Enter video description"
+                className="min-h-[100px]"
+              />
+            </div>
 
-          {/* Video Source Selection */}
-          <div className="space-y-4">
-            <Label>Video Source</Label>
-            <RadioGroup
-              value={videoData.sourceType}
-              onValueChange={(value) => handleSourceTypeChange(value as VideoSourceType)}
-              className="flex gap-6"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="youtube" id="youtube" />
-                <Label htmlFor="youtube" className="cursor-pointer">YouTube</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="upload" id="upload" />
-                <Label htmlFor="upload" className="cursor-pointer">Direct Upload</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* YouTube URL Input with Bookmark Preview */}
-          {videoData.sourceType === 'youtube' && (
+            {/* Video Source Selection */}
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="url">YouTube URL</Label>
-                <div className="mt-2">
-                  <Input
-                    id="url"
-                    type="url"
-                    value={videoData.url || ''}
-                    onChange={(e) => handleUrlChange(e.target.value)}
-                    placeholder="https://www.youtube.com/watch?v=..."
-                  />
+              <Label>Video Source</Label>
+              <RadioGroup
+                value={videoData.sourceType}
+                onValueChange={(value) => handleSourceTypeChange(value as VideoSourceType)}
+                className="flex gap-6"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="youtube" id="youtube" />
+                  <Label htmlFor="youtube" className="cursor-pointer">YouTube</Label>
                 </div>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="upload" id="upload" />
+                  <Label htmlFor="upload" className="cursor-pointer">Direct Upload</Label>
+                </div>
+              </RadioGroup>
+            </div>
 
-              {/* YouTube Bookmark Preview */}
-              {videoData.url && (
-                <div className="border rounded-lg p-4 bg-gray-50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-12 bg-red-600 rounded flex items-center justify-center">
-                      <Video className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{videoData.title || 'YouTube Video'}</h4>
-                      <p className="text-xs text-muted-foreground">youtube.com</p>
-                      <p className="text-xs text-muted-foreground mt-1 truncate">{videoData.url}</p>
-                    </div>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
+            {/* YouTube URL Input with Bookmark Preview */}
+            {videoData.sourceType === 'youtube' && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="url">YouTube URL</Label>
+                  <div className="mt-2">
+                    <Input
+                      id="url"
+                      type="url"
+                      value={videoData.url || ''}
+                      onChange={(e) => handleUrlChange(e.target.value)}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                    />
                   </div>
                 </div>
-              )}
-            </div>
-          )}
 
-          {/* Video Upload Area */}
-          {videoData.sourceType === 'upload' && (
+                {/* YouTube Bookmark Preview */}
+                {videoData.url && (
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-16 h-12 bg-red-600 rounded flex items-center justify-center">
+                        <Video className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{videoData.title || 'YouTube Video'}</h4>
+                        <p className="text-xs text-muted-foreground">youtube.com</p>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">{videoData.url}</p>
+                      </div>
+                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Video Upload Area */}
+            {videoData.sourceType === 'upload' && (
+              <div className="space-y-2">
+                <Label>Upload Video File</Label>
+                <input
+                  type="file"
+                  accept="video/mp4,video/mov,video/avi,video/wmv,video/quicktime"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="video-file-upload"
+                />
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 font-medium">Drag and drop or click to upload a video file</p>
+                    <p className="text-xs text-gray-500">Supported formats: MP4, MOV, AVI, WMV (Max 50MB)</p>
+                    <Button variant="outline" onClick={triggerFileUpload} className="mt-3">
+                      <FileUp className="h-4 w-4 mr-2" />
+                      Choose File
+                    </Button>
+                  </div>
+                </div>
+                {videoData.fileUrl && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">✓ Video uploaded successfully</p>
+                    <div className="mt-2">
+                      <video
+                        src={videoData.fileUrl}
+                        className="w-full max-w-sm h-32 object-cover rounded border"
+                        controls
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Transcript Upload (Optional) */}
             <div className="space-y-2">
-              <Label>Upload Video File</Label>
-              <input
-                type="file"
-                accept="video/mp4,video/mov,video/avi,video/wmv,video/quicktime"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="video-file-upload"
-              />
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-                <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <Label htmlFor="transcript">
+                Transcript <span className="text-sm text-muted-foreground font-normal">(Optional)</span>
+              </Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                <FileUp className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600 font-medium">Drag and drop or click to upload a video file</p>
-                  <p className="text-xs text-gray-500">Supported formats: MP4, MOV, AVI, WMV (Max 50MB)</p>
-                  <Button variant="outline" onClick={triggerFileUpload} className="mt-3">
-                    <FileUp className="h-4 w-4 mr-2" />
+                  <p className="text-sm text-gray-600">Upload transcript file</p>
+                  <p className="text-xs text-gray-500">Supported formats: TXT, SRT, VTT</p>
+                  <input
+                    type="file"
+                    accept=".txt,.srt,.vtt"
+                    onChange={handleTranscriptFileUpload}
+                    className="hidden"
+                    id="transcript-upload"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('transcript-upload')?.click()}
+                    className="mt-2"
+                  >
                     Choose File
                   </Button>
                 </div>
               </div>
-              {videoData.fileUrl && (
+              {videoData.transcript && (
                 <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-800 font-medium">✓ Video uploaded successfully</p>
-                  <div className="mt-2">
-                    <video
-                      src={videoData.fileUrl}
-                      className="w-full max-w-sm h-32 object-cover rounded border"
-                      controls
-                    />
-                  </div>
+                  <p className="text-sm text-green-800 font-medium">✓ Transcript uploaded successfully</p>
                 </div>
               )}
             </div>
-          )}
-
-          {/* Transcript Upload (Optional) */}
-          <div className="space-y-2">
-            <Label htmlFor="transcript">
-              Transcript <span className="text-sm text-muted-foreground font-normal">(Optional)</span>
-            </Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
-              <FileUp className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">Upload transcript file</p>
-                <p className="text-xs text-gray-500">Supported formats: TXT, SRT, VTT</p>
-                <input
-                  type="file"
-                  accept=".txt,.srt,.vtt"
-                  onChange={handleTranscriptFileUpload}
-                  className="hidden"
-                  id="transcript-upload"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById('transcript-upload')?.click()}
-                  className="mt-2"
-                >
-                  Choose File
-                </Button>
-              </div>
-            </div>
-            {videoData.transcript && (
-              <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800 font-medium">✓ Transcript uploaded successfully</p>
-              </div>
-            )}
           </div>
-        </div>
         </div>
       </div>
 

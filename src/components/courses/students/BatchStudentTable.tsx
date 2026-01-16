@@ -163,7 +163,7 @@ const BatchStudentTable = ({
 
   return (
     <>
-      <Card className="shadow-4dp">
+      <Card className="shadow-soft">
         <CardHeader>
           <CardTitle className="font-heading text-xl flex items-center gap-2">
             {batch.name} - Students

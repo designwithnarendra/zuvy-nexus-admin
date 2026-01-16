@@ -168,8 +168,8 @@ export function LearningItemEditorsDemo() {
       title: 'React Developer Assessment',
       description: 'Comprehensive assessment for React developers.',
       selectedQuestions: [
-        { id: 'q1', type: 'mcq' as const, title: 'What is React?', difficulty: 'easy' as const },
-        { id: 'q2', type: 'coding' as const, title: 'Implement a counter', difficulty: 'easy' as const },
+        { id: 'q1', type: 'mcq' as const, title: 'What is React?', difficulty: 'Easy' as const },
+        { id: 'q2', type: 'coding' as const, title: 'Implement a counter', difficulty: 'Easy' as const },
       ],
       questionDistribution: [
         {

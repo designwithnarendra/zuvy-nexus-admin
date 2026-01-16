@@ -56,9 +56,14 @@ const DataTable = ({
     return Array.from(new Set(values));
   };
 
-  const uniqueTypes = getUniqueValues('type');
-  const uniqueTopics = getUniqueValues('topic');
-  const uniqueDifficulties = getUniqueValues('difficulty');
+  // Check if columns include specific fields
+  const hasTypeColumn = columns.some(col => col.key === 'type');
+  const hasTopicColumn = columns.some(col => col.key === 'topic');
+  const hasDifficultyColumn = columns.some(col => col.key === 'difficulty');
+
+  const uniqueTypes = hasTypeColumn ? getUniqueValues('type') : [];
+  const uniqueTopics = hasTopicColumn ? getUniqueValues('topic') : [];
+  const uniqueDifficulties = hasDifficultyColumn ? getUniqueValues('difficulty') : [];
 
   // Filter data based on search term and filters
   const filteredData = data.filter(item => {

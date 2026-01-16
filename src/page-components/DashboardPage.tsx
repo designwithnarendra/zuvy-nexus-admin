@@ -229,7 +229,7 @@ const DashboardPage = () => {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* High Performing Courses */}
-          <Card className="shadow-4dp">
+          <Card className="shadow-soft">
             <CardHeader>
               <CardTitle className="font-heading text-body1 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ const DashboardPage = () => {
           </Card>
 
           {/* Low Performing Courses */}
-          <Card className="shadow-4dp">
+          <Card className="shadow-soft">
             <CardHeader>
               <CardTitle className="font-heading text-body1 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -315,7 +315,7 @@ const DashboardPage = () => {
         {/* Right Column */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <Card className="shadow-4dp">
+          <Card className="shadow-soft">
             <CardHeader>
               <CardTitle className="font-heading text-body1 font-semibold">Quick Actions</CardTitle>
             </CardHeader>
@@ -340,7 +340,7 @@ const DashboardPage = () => {
           </Card>
 
           {/* Recent Activity */}
-          <Card className="shadow-4dp">
+          <Card className="shadow-soft">
             <CardHeader>
               <CardTitle className="font-heading text-body1 font-semibold">Recent Activity</CardTitle>
             </CardHeader>

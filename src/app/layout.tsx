@@ -19,6 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=switzer@100,300,400,401,500,600,700,800&f[]=plein@400,500,700,900&display=swap"
+        />
+      </head>
       <body>
         <ClientProviders>
           <TooltipProvider>
