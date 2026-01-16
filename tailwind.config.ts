@@ -20,13 +20,13 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'heading': ['Rajdhani', 'sans-serif'],
-				'body': ['Sentient', 'sans-serif'],
+				'heading': ['Plein', 'Inter', 'sans-serif'],
+				'body': ['Switzer', 'Inter', 'sans-serif'],
 				'mono': ['JetBrains Mono', 'monospace'],
 			},
 			fontSize: {
 				// Brand typography scale - Zuvy Design System
-				// Headings - Rajdhani font with line-height 1.3
+				// Headings - Plein font with line-height 1.3
 				'h1': ['5.5rem', { lineHeight: '1.3', fontWeight: '700' }],      // 88px
 				'h2': ['4rem', { lineHeight: '1.3', fontWeight: '700' }],        // 64px
 				'h3': ['3rem', { lineHeight: '1.3', fontWeight: '700' }],        // 48px
@@ -42,7 +42,7 @@ export default {
 				'h5-mobile': ['1.5rem', { lineHeight: '1.3', fontWeight: '700' }],    // 24px
 				'h6-mobile': ['1.125rem', { lineHeight: '1.3', fontWeight: '700' }],  // 18px
 
-				// Body text - Sentient font with line-height 1.5
+				// Body text - Switzer font with line-height 1.5
 				'body1': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],         // 16px
 				'body2': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],     // 14px
 				'caption': ['0.75rem', { lineHeight: '1.5', fontWeight: '400' }],    // 12px
@@ -62,6 +62,19 @@ export default {
 					light: 'hsl(var(--primary-light))',
 					dark: 'hsl(var(--primary-dark))',
 					foreground: 'hsl(var(--primary-foreground))'
+				},
+				grey: {
+					light: 'hsl(var(--grey-light))',
+					DEFAULT: 'hsl(var(--grey))',
+					dark: 'hsl(var(--grey-dark))'
+				},
+				text: {
+					primary: 'hsl(var(--text-primary))',
+					secondary: 'hsl(var(--text-secondary))',
+					tertiary: 'hsl(var(--text-tertiary))',
+					muted: 'hsl(var(--text-muted))',
+					accent: 'hsl(var(--text-accent))',
+					interactive: 'hsl(var(--text-interactive))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -215,6 +228,60 @@ export default {
 					to: {
 						opacity: '0'
 					}
+				},
+				'scroll-left': {
+					'0%': {
+						transform: 'translateX(0)'
+					},
+					'100%': {
+						transform: 'translateX(-100%)'
+					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0px)'
+					},
+					'50%': {
+						transform: 'translateY(-20px)'
+					}
+				},
+				'float-slow': {
+					'0%, 100%': {
+						transform: 'translateY(0px)'
+					},
+					'50%': {
+						transform: 'translateY(-15px)'
+					}
+				},
+				'spin-slow': {
+					'0%': {
+						transform: 'rotate(0deg)'
+					},
+					'100%': {
+						transform: 'rotate(360deg)'
+					}
+				},
+				'drift': {
+					'0%, 100%': {
+						transform: 'translate(0, 0)'
+					},
+					'25%': {
+						transform: 'translate(10px, -10px)'
+					},
+					'50%': {
+						transform: 'translate(0, -20px)'
+					},
+					'75%': {
+						transform: 'translate(-10px, -10px)'
+					}
+				},
+				'pulse-subtle': {
+					'0%, 100%': {
+						opacity: '1'
+					},
+					'50%': {
+						opacity: '0.8'
+					}
 				}
 			},
 			animation: {
@@ -225,7 +292,15 @@ export default {
 				'drawer-in': 'drawer-in 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
 				'drawer-out': 'drawer-out 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
 				'backdrop-in': 'backdrop-in 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
-				'backdrop-out': 'backdrop-out 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)'
+				'backdrop-out': 'backdrop-out 0.5s cubic-bezier(0.32, 0.72, 0.5, 1)',
+				'scroll-left': 'scroll-left 30s linear infinite',
+				'scroll-left-fast': 'scroll-left 15s linear infinite',
+				'scroll-left-mobile': 'scroll-left 10s linear infinite',
+				'float': 'float 6s ease-in-out infinite',
+				'float-slow': 'float-slow 8s ease-in-out infinite',
+				'spin-slow': 'spin-slow 12s linear infinite',
+				'drift': 'drift 10s ease-in-out infinite',
+				'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite'
 			}
 		}
 	},

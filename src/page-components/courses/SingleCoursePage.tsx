@@ -125,7 +125,7 @@ const SingleCoursePage = () => {
           {!isInstructor() && (
             <div className="flex items-center gap-3">
               <Button
-                className="bg-primary hover:bg-primary-dark shadow-4dp"
+                className="bg-primary hover:bg-primary-dark shadow-soft"
                 onClick={() => setIsPublishDialogOpen(true)}
               >
                 <Upload className="h-4 w-4 mr-2" />

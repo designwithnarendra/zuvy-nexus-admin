@@ -4,9 +4,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { GripVertical, Edit, Trash2, FileText, Video, ClipboardCheck, Code, BookOpen } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { GripVertical, Edit, Trash2, FileText, Video, ClipboardCheck, Code, BookOpen, AlertTriangle } from 'lucide-react';
 import { LearningItem } from './types';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface LearningItemCardProps {
   learningItem: LearningItem;
@@ -24,9 +26,9 @@ interface LearningItemCardProps {
   dropPosition?: 'above' | 'below';
 }
 
-const LearningItemCard = ({ 
-  learningItem, 
-  onDelete, 
+const LearningItemCard = ({
+  learningItem,
+  onDelete,
   onEdit,
   isDragging = false,
   index = 0,
@@ -40,6 +42,10 @@ const LearningItemCard = ({
   dropPosition = 'above'
 }: LearningItemCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteFromSystem, setDeleteFromSystem] = useState(false);
+  const { toast } = useToast();
+
+  const isLiveClass = learningItem.type === 'live-class';
 
   const getItemIcon = (type: string) => {
     switch (type) {
@@ -117,23 +123,51 @@ const LearningItemCard = ({
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Learning Item</DialogTitle>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                  <DialogTitle>Delete {isLiveClass ? 'Live Class' : 'Learning Item'}</DialogTitle>
+                </div>
                 <DialogDescription>
                   Are you sure you want to delete "{learningItem.title}"? This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
+              {isLiveClass && (
+                <div className="flex items-start space-x-2 py-4">
+                  <Checkbox
+                    id="delete-from-system"
+                    checked={deleteFromSystem}
+                    onCheckedChange={(checked) => setDeleteFromSystem(checked as boolean)}
+                  />
+                  <label
+                    htmlFor="delete-from-system"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Also delete the live class from system. It won't be available in existing classes anymore.
+                  </label>
+                </div>
+              )}
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                <Button variant="outline" onClick={() => {
+                  setDeleteDialogOpen(false);
+                  setDeleteFromSystem(false);
+                }}>
                   Cancel
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   onClick={() => {
                     onDelete();
+                    if (isLiveClass && deleteFromSystem) {
+                      toast({
+                        title: "Live class deleted from system",
+                        description: "The live class has been removed from the system and won't be available in existing classes.",
+                      });
+                    }
                     setDeleteDialogOpen(false);
+                    setDeleteFromSystem(false);
                   }}
                 >
-                  Delete Item
+                  Delete
                 </Button>
               </DialogFooter>
             </DialogContent>

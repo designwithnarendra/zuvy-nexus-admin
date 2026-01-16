@@ -42,7 +42,7 @@ const CourseCard = ({
 
   return (
     <Card
-      className="group cursor-pointer transition-all duration-200 hover:shadow-hover hover:-translate-y-1 bg-card border-border flex flex-col h-full"
+      className="group cursor-pointer transition-all duration-200 hover:shadow-medium hover:-translate-y-1 bg-card border-border flex flex-col h-full"
       onClick={onClick}
     >
       <CardHeader className="p-0">

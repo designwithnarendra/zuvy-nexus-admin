@@ -138,9 +138,9 @@ export function FeedbackFormEditor({
     const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === questionId
         ? {
-            ...q,
-            options: q.options?.map((opt, idx) => idx === optionIndex ? value : opt)
-          }
+          ...q,
+          options: q.options?.map((opt, idx) => idx === optionIndex ? value : opt)
+        }
         : q
     );
     handleInputChange('questions', updatedQuestions);
@@ -150,9 +150,9 @@ export function FeedbackFormEditor({
     const updatedQuestions = (feedbackFormData.questions || []).map(q =>
       q.id === questionId
         ? {
-            ...q,
-            options: q.options?.filter((_, idx) => idx !== optionIndex)
-          }
+          ...q,
+          options: q.options?.filter((_, idx) => idx !== optionIndex)
+        }
         : q
     );
     handleInputChange('questions', updatedQuestions);
@@ -179,18 +179,29 @@ export function FeedbackFormEditor({
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Top Bar - Fixed */}
+      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0 w-full">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">
+            {feedbackFormData.title || 'Untitled Feedback Form'}
+          </h2>
+        </div>
+      </div>
+
+      {/* Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-8">
-            {/* Title - Underlined style as per design specs */}
-            <div className="space-y-3">
-              <input
+            {/* Title input field */}
+            <div>
+              <Label htmlFor="feedback-title">Title</Label>
+              <Input
+                id="feedback-title"
                 type="text"
                 value={feedbackFormData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="Feedback Form Title"
-                className="text-xl font-semibold bg-transparent border-none outline-none border-b-2 border-border focus:border-primary transition-colors w-full pb-1"
-                style={{ fontSize: '1.25rem' }} // h5 size as per specs
+                className="mt-2"
               />
             </div>
 
