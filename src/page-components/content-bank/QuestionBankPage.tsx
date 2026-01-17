@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -101,10 +101,6 @@ const QuestionBankPage = () => {
     }
   };
 
-  // Filter questions by active tab
-  const filteredQuestions = useMemo(() => {
-    return questions.filter(q => q.type === activeTab);
-  }, [activeTab]);
 
   const questionColumns = [
     { key: 'text', label: 'Question' },
@@ -231,19 +227,6 @@ const QuestionBankPage = () => {
     );
   };
 
-  // Get tab title based on active tab
-  const getTabTitle = () => {
-    switch (activeTab) {
-      case 'MCQ':
-        return 'MCQs';
-      case 'Coding':
-        return 'Coding Questions';
-      case 'Open Ended':
-        return 'Open Ended Questions';
-      default:
-        return 'MCQs';
-    }
-  };
 
   return (
     <div className="w-full px-6 py-8">
@@ -281,11 +264,10 @@ const QuestionBankPage = () => {
           </Button>
         </div>
 
-        {/* Tab Content */}
-        <TabsContent value={activeTab} className="mt-0">
-          {/* Title with Count and Create Button */}
+        {/* MCQ Tab Content */}
+        <TabsContent value="MCQ" className="mt-0">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="font-heading text-h5">{getTabTitle()} ({filteredQuestions.length})</h1>
+            <h1 className="font-heading text-h5">MCQs ({questions.filter(q => q.type === 'MCQ').length})</h1>
             <Button
               onClick={handleCreateQuestionClick}
               className="bg-primary hover:bg-primary-dark shadow-soft"
@@ -294,10 +276,50 @@ const QuestionBankPage = () => {
               Create Question
             </Button>
           </div>
-
-          {/* Questions Table */}
           <DataTable
-            data={filteredQuestions.map(formatQuestionData)}
+            data={questions.filter(q => q.type === 'MCQ').map(formatQuestionData)}
+            columns={questionColumns}
+            searchable
+            filterable
+            itemsPerPage={20}
+          />
+        </TabsContent>
+
+        {/* Coding Tab Content */}
+        <TabsContent value="Coding" className="mt-0">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="font-heading text-h5">Coding Questions ({questions.filter(q => q.type === 'Coding').length})</h1>
+            <Button
+              onClick={handleCreateQuestionClick}
+              className="bg-primary hover:bg-primary-dark shadow-soft"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Question
+            </Button>
+          </div>
+          <DataTable
+            data={questions.filter(q => q.type === 'Coding').map(formatQuestionData)}
+            columns={questionColumns}
+            searchable
+            filterable
+            itemsPerPage={20}
+          />
+        </TabsContent>
+
+        {/* Open Ended Tab Content */}
+        <TabsContent value="Open Ended" className="mt-0">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="font-heading text-h5">Open Ended Questions ({questions.filter(q => q.type === 'Open Ended').length})</h1>
+            <Button
+              onClick={handleCreateQuestionClick}
+              className="bg-primary hover:bg-primary-dark shadow-soft"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Question
+            </Button>
+          </div>
+          <DataTable
+            data={questions.filter(q => q.type === 'Open Ended').map(formatQuestionData)}
             columns={questionColumns}
             searchable
             filterable
