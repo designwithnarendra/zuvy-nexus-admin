@@ -247,8 +247,8 @@ const AllCoursesPage = () => {
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <h1 className="font-heading text-h5 md:text-h5 text-foreground mb-2">
+          <div className="space-y-0.5">
+            <h1 className="font-heading text-h5 md:text-h5 text-foreground">
               Course Studio
             </h1>
             <p className="text-muted-foreground text-body1">

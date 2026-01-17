@@ -15,7 +15,7 @@ import { Organisation } from '@/types/index';
 import { mockOrganisations } from '@/types/mock-rbac-data';
 import AllCoursesPage from '../courses/AllCoursesPage';
 import QuestionBankPage from '../content-bank/QuestionBankPage';
-import ManageRolesPage from '@/components/settings/ManageRolesPage';
+import OrganisationManageRoles from '@/components/settings/OrganisationManageRoles';
 import UsersPage from '@/components/settings/UsersPage';
 
 interface OrganisationDetailPageProps {
@@ -72,7 +72,7 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
       id: 'roles',
       label: 'Roles and Permissions',
       icon: Settings,
-      component: ManageRolesPage
+      component: OrganisationManageRoles
     }
   ];
 
@@ -209,8 +209,16 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
       {/* Main Content */}
       <main className="flex-1 pt-16">
         <div className="p-6">
-          {activeTab === 'courses' && <AllCoursesPage />}
-          {activeTab === 'content-bank' && <QuestionBankPage />}
+          {activeTab === 'courses' && (
+            <div className="-mx-6 -mt-14">
+              <AllCoursesPage />
+            </div>
+          )}
+          {activeTab === 'content-bank' && (
+            <div className="-mx-6 -mt-14">
+              <QuestionBankPage />
+            </div>
+          )}
           {activeTab === 'roles' && (
             <div className="w-full">
               {/* Roles and Permissions Sub-tabs */}
@@ -245,7 +253,7 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
 
               {/* Sub-tab content */}
               {activeRolesSubTab === 'users' && <UsersPage hideInviteSection={true} />}
-              {activeRolesSubTab === 'manage-roles' && <ManageRolesPage />}
+              {activeRolesSubTab === 'manage-roles' && <OrganisationManageRoles />}
             </div>
           )}
         </div>
