@@ -1,5 +1,5 @@
-import ManageRolesPage from '@/components/settings/ManageRolesPage';
+import AdminDashboardManageRoles from '@/components/settings/AdminDashboardManageRoles';
 
 export default function SettingsManageRolesPage() {
-  return <ManageRolesPage />;
+  return <AdminDashboardManageRoles />;
 }

@@ -1,72 +1,65 @@
 'use client'
 
-import { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
-import { UserRole } from '@/types/index';
-import { mockRoles } from '@/types/mock-rbac-data';
-import { Shield, Users, Settings, GraduationCap } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface RoleSelectorProps {
-  selectedRole?: UserRole;
-  onRoleSelect: (role: UserRole) => void;
+  roles: Array<{ id: string; name: string; description?: string }>;
+  selectedRoleId: string;
+  onRoleSelect: (roleId: string) => void;
   className?: string;
 }
 
-const roleIcons = {
-  'Admin': Settings,
-  'Ops': Users,
-  'Instructor': GraduationCap
-};
-
-const RoleSelector = ({ selectedRole, onRoleSelect, className }: RoleSelectorProps) => {
+const RoleSelector: React.FC<RoleSelectorProps> = ({
+  roles,
+  selectedRoleId,
+  onRoleSelect,
+  className,
+}) => {
   return (
-    <div className={cn("grid grid-cols-1 sm:grid-cols-2 gap-4", className)}>
-      {mockRoles.map((role) => {
-        const Icon = roleIcons[role.name];
-        const isSelected = selectedRole === role.name;
-        
-        return (
-          <div
+    <div
+      className={cn(
+        'bg-card rounded-lg border border-border overflow-hidden sticky top-6',
+        className
+      )}
+    >
+      {/* Header */}
+      <div className="bg-background px-4 py-4 border-b border-border">
+        <p className="text-sm font-medium text-muted-foreground font-body">
+          Select Role
+        </p>
+      </div>
+
+      {/* Role List */}
+      <div className="divide-y divide-border">
+        {roles.map((role) => (
+          <button
             key={role.id}
-            onClick={() => onRoleSelect(role.name)}
+            onClick={() => onRoleSelect(role.id)}
             className={cn(
-              "relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
-              "hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-              isSelected
-                ? "border-primary bg-primary/5 shadow-sm"
-                : "border-border hover:border-primary/50"
+              'w-full text-left px-4 py-4 transition-all duration-200 flex items-center justify-between gap-2',
+              selectedRoleId === role.id
+                ? 'bg-success-light border-l-4 border-l-success'
+                : 'bg-white hover:bg-muted border-l-4 border-l-transparent'
             )}
           >
-            <div className="flex items-start space-x-3">
-              <div className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full",
-                isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-              )}>
-                <Icon className="h-5 w-5" />
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <h3 className={cn(
-                  "text-sm font-semibold",
-                  isSelected ? "text-primary" : "text-foreground"
-                )}>
-                  {role.name}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  {role.description}
-                </p>
-              </div>
+            <div
+              className={cn(
+                'text-sm font-medium truncate',
+                selectedRoleId === role.id
+                  ? 'text-success-dark'
+                  : 'text-foreground'
+              )}
+            >
+              {role.name}
             </div>
-            
-            {/* Selection indicator */}
-            {isSelected && (
-              <div className="absolute top-2 right-2">
-                <div className="h-3 w-3 bg-primary rounded-full" />
-              </div>
+            {selectedRoleId === role.id && (
+              <Check className="h-4 w-4 text-success flex-shrink-0" />
             )}
-          </div>
-        );
-      })}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
