@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { User, UserRole } from '@/types/index';
-import { mockUsers } from '@/types/mock-rbac-data';
+import { mockUsers, mockRoles } from '@/types/mock-rbac-data';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -208,8 +208,12 @@ const UsersPage = ({ hideInviteSection = false }: UsersPageProps) => {
                 <div className="space-y-2">
                   <Label className="font-semibold">Select Role *</Label>
                   <RoleSelector
-                    selectedRole={newUser.role || undefined}
-                    onRoleSelect={(role) => setNewUser(prev => ({ ...prev, role }))}
+                    roles={mockRoles}
+                    selectedRoleId={mockRoles.find(r => r.name === newUser.role)?.id || ''}
+                    onRoleSelect={(roleId) => {
+                      const role = mockRoles.find(r => r.id === roleId);
+                      if (role) setNewUser(prev => ({ ...prev, role: role.name as UserRole }));
+                    }}
                   />
                 </div>
                 
@@ -384,8 +388,12 @@ const UsersPage = ({ hideInviteSection = false }: UsersPageProps) => {
               <div className="space-y-2">
                 <Label className="font-semibold">Select Role *</Label>
                 <RoleSelector
-                  selectedRole={editingUser?.role}
-                  onRoleSelect={(role) => setEditingUser(prev => prev ? { ...prev, role } : null)}
+                  roles={mockRoles}
+                  selectedRoleId={mockRoles.find(r => r.name === editingUser?.role)?.id || ''}
+                  onRoleSelect={(roleId) => {
+                    const role = mockRoles.find(r => r.id === roleId);
+                    if (role) setEditingUser(prev => prev ? { ...prev, role: role.name as UserRole } : null);
+                  }}
                 />
               </div>
               

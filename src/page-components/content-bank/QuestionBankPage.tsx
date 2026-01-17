@@ -230,16 +230,30 @@ const QuestionBankPage = () => {
 
   return (
     <div className="w-full px-6 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="space-y-0.5">
-          <h1 className="font-heading text-h5">Question Bank ({questions.length})</h1>
-          <p className="text-muted-foreground">
-            Centralized repository for all assessment questions
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as QuestionType)} className="w-full">
+        {/* Tab Navigation with Manage Topics */}
+        <div className="flex items-center justify-between mb-6">
+          <TabsList className="bg-muted">
+            <TabsTrigger
+              value="MCQ"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              MCQs
+            </TabsTrigger>
+            <TabsTrigger
+              value="Coding"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Coding Questions
+            </TabsTrigger>
+            <TabsTrigger
+              value="Open Ended"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Open Ended Questions
+            </TabsTrigger>
+          </TabsList>
+
           <Button
             variant="outline"
             onClick={() => setIsManageTopicsOpen(true)}
