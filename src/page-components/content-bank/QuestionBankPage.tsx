@@ -232,8 +232,8 @@ const QuestionBankPage = () => {
     <div className="w-full px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="font-heading text-h5 mb-2">Question Bank ({questions.length})</h1>
+        <div className="space-y-0.5">
+          <h1 className="font-heading text-h5">Question Bank ({questions.length})</h1>
           <p className="text-muted-foreground">
             Centralized repository for all assessment questions
           </p>
