@@ -210,12 +210,12 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
       <main className="flex-1 pt-16">
         <div className="p-6">
           {activeTab === 'courses' && (
-            <div className="-mx-6 -mt-6 -mb-6">
+            <div className="-mx-6 -mt-14">
               <AllCoursesPage />
             </div>
           )}
           {activeTab === 'content-bank' && (
-            <div className="-mx-6 -mt-6 -mb-6">
+            <div className="-mx-6 -mt-14">
               <QuestionBankPage />
             </div>
           )}
