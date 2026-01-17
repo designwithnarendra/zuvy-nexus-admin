@@ -15,18 +15,10 @@ import { Plus, GripVertical, FolderOpen, Edit, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CounterInput } from '@/components/ui/counter-input';
 import { useUser } from '@/contexts/UserContext';
-
-
-
-
-interface ContentItem {
-  id: string;
-  type: 'module' | 'project';
-  title: string;
-  description: string;
-  duration: number; // duration in weeks
-  difficulty?: 'Easy' | 'Medium' | 'Hard';
-}
+import { useToast } from '@/hooks/use-toast';
+import ModuleCard from './curriculum/ModuleCard';
+import ProjectCard from './curriculum/ProjectCard';
+import { ContentItem, LearningItem } from './curriculum/types';
 
 interface NewItemData {
   type: 'module' | 'project';
@@ -43,20 +35,108 @@ interface CurriculumTabProps {
 const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
   const router = useRouter();
   const { isInstructor } = useUser();
+  const { toast } = useToast();
   const [contentItems, setContentItems] = useState<ContentItem[]>([
     {
       id: '1',
       type: 'module',
       title: 'Introduction to Web Development',
       description: 'Fundamentals of HTML, CSS, and JavaScript',
-      duration: 2
+      duration: 2,
+      isExpanded: false,
+      showAddContent: false,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+      items: [
+        {
+          id: 'li-1-1',
+          type: 'video' as const,
+          title: 'HTML Basics',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          sourceType: 'youtube' as const
+        },
+        {
+          id: 'li-1-2',
+          type: 'article' as const,
+          title: 'CSS Fundamentals',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          contentType: 'rich-text' as const
+        },
+        {
+          id: 'li-1-3',
+          type: 'live-class' as const,
+          title: 'JavaScript Introduction',
+          duration: 60,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          startDate: new Date('2024-02-01'),
+          startTime: '10:00'
+        },
+        {
+          id: 'li-1-4',
+          type: 'quiz' as const,
+          title: 'Web Dev Basics Quiz',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          questionIds: [],
+          topics: [],
+          randomizeQuestions: false,
+          allowMultipleAttempts: false
+        }
+      ]
     },
     {
       id: '2',
       type: 'module',
       title: 'Advanced JavaScript',
       description: 'Deep dive into ES6+, async programming, and modern JavaScript',
-      duration: 3
+      duration: 3,
+      isExpanded: false,
+      showAddContent: false,
+      createdAt: new Date('2024-01-02'),
+      updatedAt: new Date('2024-01-02'),
+      items: [
+        {
+          id: 'li-2-1',
+          type: 'video' as const,
+          title: 'ES6 Features',
+          createdAt: new Date('2024-01-02'),
+          updatedAt: new Date('2024-01-02'),
+          sourceType: 'youtube' as const
+        },
+        {
+          id: 'li-2-2',
+          type: 'coding-problem' as const,
+          title: 'Async/Await Practice',
+          createdAt: new Date('2024-01-02'),
+          updatedAt: new Date('2024-01-02'),
+          difficulty: 'Medium' as const,
+          topics: ['JavaScript'],
+          isFromContentBank: false
+        },
+        {
+          id: 'li-2-3',
+          type: 'live-class' as const,
+          title: 'Advanced Patterns Workshop',
+          duration: 90,
+          createdAt: new Date('2024-01-02'),
+          updatedAt: new Date('2024-01-02'),
+          startDate: new Date('2024-02-05'),
+          startTime: '14:00'
+        },
+        {
+          id: 'li-2-4',
+          type: 'assignment' as const,
+          title: 'Build a Promise Chain',
+          createdAt: new Date('2024-01-02'),
+          updatedAt: new Date('2024-01-02'),
+          instructions: '',
+          instructionType: 'text' as const,
+          submissionTypes: ['file']
+        }
+      ]
     },
     {
       id: '3',
@@ -64,14 +144,58 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: 'Portfolio Website',
       description: 'Build a responsive personal portfolio using HTML, CSS, and JavaScript',
       duration: 1,
-      difficulty: 'Easy' as const
+      difficulty: 'Easy' as const,
+      createdAt: new Date('2024-01-03'),
+      updatedAt: new Date('2024-01-03')
     },
     {
       id: '4',
       type: 'module',
       title: 'React Fundamentals',
       description: 'Learn React components, state management, and hooks',
-      duration: 3
+      duration: 3,
+      isExpanded: false,
+      showAddContent: false,
+      createdAt: new Date('2024-01-04'),
+      updatedAt: new Date('2024-01-04'),
+      items: [
+        {
+          id: 'li-4-1',
+          type: 'article' as const,
+          title: 'React Components Overview',
+          createdAt: new Date('2024-01-04'),
+          updatedAt: new Date('2024-01-04'),
+          contentType: 'rich-text' as const
+        },
+        {
+          id: 'li-4-2',
+          type: 'video' as const,
+          title: 'State and Props',
+          createdAt: new Date('2024-01-04'),
+          updatedAt: new Date('2024-01-04'),
+          sourceType: 'youtube' as const
+        },
+        {
+          id: 'li-4-3',
+          type: 'live-class' as const,
+          title: 'Hooks Deep Dive',
+          duration: 120,
+          createdAt: new Date('2024-01-04'),
+          updatedAt: new Date('2024-01-04'),
+          startDate: new Date('2024-02-10'),
+          startTime: '15:00'
+        },
+        {
+          id: 'li-4-4',
+          type: 'coding-problem' as const,
+          title: 'Build a Todo App',
+          createdAt: new Date('2024-01-04'),
+          updatedAt: new Date('2024-01-04'),
+          difficulty: 'Easy' as const,
+          topics: ['React'],
+          isFromContentBank: false
+        }
+      ]
     },
     {
       id: '5',
@@ -79,7 +203,9 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: 'E-commerce Application',
       description: 'Full-stack e-commerce app with React, Node.js, and MongoDB',
       duration: 3,
-      difficulty: 'Hard' as const
+      difficulty: 'Hard' as const,
+      createdAt: new Date('2024-01-05'),
+      updatedAt: new Date('2024-01-05')
     }
   ]);
 
@@ -133,6 +259,9 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       title: newItemData.title,
       description: newItemData.description,
       duration: newItemData.duration,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...(newItemData.type === 'module' ? { isExpanded: false, showAddContent: false, items: [] } : {}),
       ...(newItemData.type === 'project' ? { difficulty: newItemData.difficulty } : {})
     };
 
@@ -154,7 +283,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
   const handleEditItem = (itemId: string) => {
     const item = contentItems.find(item => item.id === itemId);
     if (!item) return;
-    
+
     // Set up edit modal with current item data
     setEditingItem(item);
     setEditItemData({
@@ -169,7 +298,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
 
   const handleUpdateItem = () => {
     if (!editingItem) return;
-    
+
     const updatedItem: ContentItem = {
       ...editingItem,
       type: editItemData.type,
@@ -179,12 +308,12 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
       ...(editItemData.type === 'project' ? { difficulty: editItemData.difficulty } : {})
     };
 
-    setContentItems(prev => prev.map(item => 
+    setContentItems(prev => prev.map(item =>
       item.id === editingItem.id ? updatedItem : item
     ));
     setIsEditModalOpen(false);
     setEditingItem(null);
-    
+
     // For projects, navigate to project page after editing as per requirements
     if (updatedItem.type === 'project') {
       router.push(`/courses/${courseId}/projects/${updatedItem.id}`);
@@ -212,6 +341,78 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
     } else if (item.type === 'project') {
       router.push(`/courses/${courseId}/projects/${itemId}`);
     }
+  };
+
+  // Handler for toggling module expansion
+  const handleToggle = (itemId: string) => {
+    setContentItems(prev => prev.map(item =>
+      item.id === itemId ? { ...item, isExpanded: !item.isExpanded } : item
+    ));
+  };
+
+  // Handler for deleting learning items from modules
+  const handleDeleteLearningItem = (moduleId: string, learningItemId: string) => {
+    setContentItems(prev => prev.map(item => {
+      if (item.id === moduleId && item.items) {
+        return {
+          ...item,
+          items: item.items.filter(li => li.id !== learningItemId)
+        };
+      }
+      return item;
+    }));
+  };
+
+  // Handler for toggling add content section
+  const handleToggleAddContent = (itemId: string) => {
+    setContentItems(prev => prev.map(item =>
+      item.id === itemId ? { ...item, showAddContent: !item.showAddContent } : item
+    ));
+  };
+
+  // Handler for adding learning items (placeholder for now)
+  const handleAddLearningItem = (type: string) => {
+    toast({
+      title: "Feature in development",
+      description: `Adding ${type} content will be implemented soon.`,
+    });
+  };
+
+  // Handler for editing learning items (placeholder for now)
+  const handleEditLearningItem = (itemId: string, type: string) => {
+    toast({
+      title: "Feature in development",
+      description: `Editing ${type} content will be implemented soon.`,
+    });
+  };
+
+  // Handler for dropping items into modules (placeholder for now)
+  const handleDropItemIntoModule = (moduleId: string, item: any) => {
+    toast({
+      title: "Feature in development",
+      description: "Drag and drop functionality will be implemented soon.",
+    });
+  };
+
+  // Handler for reordering learning items within a module
+  const handleReorderLearningItems = (moduleId: string, newItems: LearningItem[]) => {
+    setContentItems(prev => prev.map(item =>
+      item.id === moduleId ? { ...item, items: newItems } : item
+    ));
+  };
+
+  // Handler for navigating to module/project detail page
+  const handleNavigateToModule = (itemId: string, type: 'module' | 'project') => {
+    if (type === 'module') {
+      router.push(`/courses/${courseId}/modules/${itemId}`);
+    } else {
+      router.push(`/courses/${courseId}/projects/${itemId}`);
+    }
+  };
+
+  // Handler for editing module/project
+  const handleEditModule = (itemId: string) => {
+    handleEditItem(itemId);
   };
 
   // Drag and Drop Handlers (simplified)
@@ -266,89 +467,69 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
 
       {/* Content Items */}
       <div className="space-y-4">
-        {contentItems.map((item, index) => (
-          <div
-            key={item.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, item.id)}
-            onDragEnd={handleDragEnd}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDrop={(e) => handleDrop(e, index)}
-            className={cn(
-              "transition-all duration-200 cursor-grab active:cursor-grabbing",
-              draggedItemId === item.id && "opacity-50",
-              dragOverIndex === index && "border-t-2 border-primary"
-            )}
-          >
-            <Card 
-              className="p-4 cursor-pointer hover:shadow-md transition-shadow" 
-              onClick={() => handleCardClick(item.id)}
-            >
-              <CardContent className="p-0">
-                <div className="flex items-center gap-4">
-                  {/* Drag Handle - Only for admins */}
-                  {!isInstructor() && (
-                    <div
-                      className="cursor-grab hover:text-primary"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <GripVertical className="h-5 w-5" />
-                    </div>
-                  )}
-
-                  {/* Icon */}
-                  <div className="text-muted-foreground">
-                    <FolderOpen className="h-5 w-5" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium text-lg">{getContentIndex(index)}: {item.title}</h3>
-                      {item.type === 'project' && item.difficulty && (
-                        <Badge variant="outline" className={getDifficultyColor(item.difficulty)}>
-                          {item.difficulty}
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-muted-foreground text-sm mb-2">{item.description}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Duration: {item.duration} {item.duration === 1 ? 'week' : 'weeks'}
-                    </p>
-                  </div>
-
-                  {/* Actions - Only for admins */}
-                  {!isInstructor() && (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditItem(item.id);
-                        }}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteItem(item.id);
-                        }}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
+        {contentItems.map((item, index) => {
+          if (item.type === 'module') {
+            return (
+              <div
+                key={item.id}
+                draggable={!isInstructor()}
+                onDragStart={(e) => !isInstructor() && handleDragStart(e, item.id)}
+                onDragEnd={!isInstructor() ? handleDragEnd : undefined}
+                onDragOver={(e) => !isInstructor() && handleDragOver(e, index)}
+                onDrop={(e) => !isInstructor() && handleDrop(e, index)}
+                className={cn(
+                  !isInstructor() && "transition-all duration-200",
+                  draggedItemId === item.id && "opacity-50",
+                  dragOverIndex === index && "border-t-2 border-primary"
+                )}
+              >
+                <ModuleCard
+                  item={item}
+                  index={index}
+                  onToggle={handleToggle}
+                  onDelete={handleDeleteItem}
+                  onDeleteLearningItem={handleDeleteLearningItem}
+                  onToggleAddContent={handleToggleAddContent}
+                  getContentIndex={getContentIndex}
+                  onAddItem={handleAddLearningItem}
+                  onEditItem={handleEditLearningItem}
+                  onDropItem={handleDropItemIntoModule}
+                  onReorderLearningItems={handleReorderLearningItems}
+                  onEditModule={handleEditModule}
+                  onNavigateToModule={handleNavigateToModule}
+                  isDragging={draggedItemId === item.id}
+                />
+              </div>
+            );
+          } else {
+            return (
+              <div
+                key={item.id}
+                draggable={!isInstructor()}
+                onDragStart={(e) => !isInstructor() && handleDragStart(e, item.id)}
+                onDragEnd={!isInstructor() ? handleDragEnd : undefined}
+                onDragOver={(e) => !isInstructor() && handleDragOver(e, index)}
+                onDrop={(e) => !isInstructor() && handleDrop(e, index)}
+                className={cn(
+                  !isInstructor() && "transition-all duration-200",
+                  draggedItemId === item.id && "opacity-50",
+                  dragOverIndex === index && "border-t-2 border-primary"
+                )}
+              >
+                <ProjectCard
+                  item={item}
+                  index={index}
+                  onDelete={handleDeleteItem}
+                  onEditProject={(projectId) => handleEditItem(projectId)}
+                  onNavigateToProject={handleNavigateToModule}
+                  getContentIndex={getContentIndex}
+                  getDifficultyColor={getDifficultyColor}
+                  isDragging={draggedItemId === item.id}
+                />
+              </div>
+            );
+          }
+        })}
       </div>
 
       {/* Add Module/Project Modal */}

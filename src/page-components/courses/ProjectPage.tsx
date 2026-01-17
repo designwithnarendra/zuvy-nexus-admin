@@ -114,7 +114,7 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => router.push(`/courses/${courseId}`)}
+            onClick={() => router.push(`/courses/${courseId}?tab=curriculum`)}
             className="mb-6 hover:text-primary hover:bg-transparent p-0"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -272,7 +272,7 @@ const ProjectPage = ({ courseId, projectId }: ProjectPageProps) => {
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push(`/courses/${courseId}`)}
+              onClick={() => router.push(`/courses/${courseId}?tab=curriculum`)}
             >
               Cancel
             </Button>

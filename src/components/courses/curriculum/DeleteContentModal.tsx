@@ -18,6 +18,9 @@ interface DeleteContentModalProps {
   onConfirm: () => void;
   contentTitle: string;
   contentType: string;
+  isLiveClass?: boolean;
+  deleteFromSystem?: boolean;
+  onDeleteFromSystemChange?: (value: boolean) => void;
 }
 
 export function DeleteContentModal({
@@ -26,6 +29,9 @@ export function DeleteContentModal({
   onConfirm,
   contentTitle,
   contentType,
+  isLiveClass = false,
+  deleteFromSystem = false,
+  onDeleteFromSystemChange,
 }: DeleteContentModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -42,6 +48,28 @@ export function DeleteContentModal({
           <DialogDescription className="text-sm text-muted-foreground">
             Are you sure you want to delete &quot;{contentTitle}&quot;? This action cannot be undone.
           </DialogDescription>
+
+          {/* Live Class System Deletion Checkbox */}
+          {isLiveClass && onDeleteFromSystemChange && (
+            <div className="mt-4 pt-4 border-t">
+              <label className="flex items-start space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={deleteFromSystem}
+                  onChange={(e) => onDeleteFromSystemChange(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                />
+                <div>
+                  <span className="text-sm font-medium text-foreground block">
+                    Delete live class from system
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    It will not be available anymore
+                  </span>
+                </div>
+              </label>
+            </div>
+          )}
         </DialogHeader>
 
         <DialogFooter className="flex gap-2 sm:gap-0">

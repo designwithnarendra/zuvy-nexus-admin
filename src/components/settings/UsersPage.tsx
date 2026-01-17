@@ -59,6 +59,7 @@ const UsersPage = ({ hideInviteSection = false }: UsersPageProps) => {
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
+      roleId: `role-${newUser.role.toLowerCase()}`,
       dateAdded: new Date().toISOString(),
       status: 'active'
     };

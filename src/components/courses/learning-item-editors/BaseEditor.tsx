@@ -52,7 +52,8 @@ export function BaseEditor({
       'quiz': 'Quiz',
       'coding': 'Coding Problem',
       'feedback': 'Feedback Form',
-      'reading': 'Reading',
+      'live-class': 'Live Class',
+      'assessment': 'Assessment',
     };
     return typeMap[type] || 'Content';
   };

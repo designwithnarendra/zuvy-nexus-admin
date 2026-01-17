@@ -109,18 +109,29 @@ export function AssignmentEditor({ initialData, onSave, onCancel, mode }: Assign
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Top Bar - Fixed */}
+      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0 w-full">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">
+            {data.title || 'Untitled Assignment'}
+          </h2>
+        </div>
+      </div>
+
+      {/* Content - Scrollable */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
           <div className="space-y-6">
-            {/* Title - Underlined style as per design specs */}
-            <div className="space-y-3">
-              <input
+            {/* Title input field */}
+            <div>
+              <Label htmlFor="assignment-title">Title</Label>
+              <Input
+                id="assignment-title"
                 type="text"
                 value={data.title}
                 onChange={(e) => handleChange('title', e.target.value)}
                 placeholder="Assignment Title"
-                className="text-xl font-semibold bg-transparent border-none outline-none border-b-2 border-border focus:border-primary transition-colors w-full pb-1"
-                style={{ fontSize: '1.25rem' }} // h5 size as per specs
+                className="mt-2"
               />
             </div>
 
