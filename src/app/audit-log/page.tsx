@@ -68,7 +68,7 @@ export default function AuditLogPage() {
       },
       action: 'published course',
       module: 'Course Studio',
-      target: '"Full Stack Web Development Bootcamp"',
+      target: 'Full Stack Web Development Bootcamp',
       timestamp: '09:15 PM',
       details: {
         type: 'STATUS',
@@ -89,7 +89,7 @@ export default function AuditLogPage() {
       },
       action: 'updated course image for',
       module: 'Course Studio',
-      target: '"Python for Data Science"',
+      target: 'Python for Data Science',
       timestamp: '08:45 PM',
       details: {
         type: 'IMAGE',
@@ -131,7 +131,7 @@ export default function AuditLogPage() {
       },
       action: 'deleted module',
       module: 'Course Studio',
-      target: '"Deprecated PHP Basics" from "Legacy Course"',
+      target: 'Deprecated PHP Basics from Legacy Course',
       timestamp: '06:20 PM',
       details: {
         type: 'MODULE_DELETE',
@@ -152,7 +152,7 @@ export default function AuditLogPage() {
       },
       action: 'created new batch',
       module: 'Course Studio',
-      target: '"Full Stack Batch 2024-C" for "Full Stack Web Development" - 40 students',
+      target: 'Full Stack Batch 2024-C for Full Stack Web Development.',
       timestamp: '05:10 PM',
       details: {
         type: 'BATCH',
@@ -175,7 +175,7 @@ export default function AuditLogPage() {
       },
       action: 'created MCQ question',
       module: 'Content Bank',
-      target: '"JavaScript Variable Declaration" for "React Fundamentals" topic',
+      target: 'JavaScript Variable Declaration for React Fundamentals topic',
       timestamp: '04:45 PM',
       details: {
         type: 'QUESTION_TYPE',
@@ -196,7 +196,7 @@ export default function AuditLogPage() {
       },
       action: 'bulk uploaded',
       module: 'Content Bank',
-      target: '32 questions to "React Fundamentals" topic',
+      target: '32 questions to React Fundamentals topic',
       timestamp: '03:30 PM',
       details: {
         type: 'UPLOAD_TYPE',
@@ -217,7 +217,7 @@ export default function AuditLogPage() {
       },
       action: 'generated AI content for',
       module: 'Content Bank',
-      target: '"Node.js Best Practices" topic - 8 questions',
+      target: 'Node.js Best Practices topic - 8 questions',
       timestamp: '02:15 PM',
       details: {
         type: 'AI_GENERATION',
@@ -238,7 +238,7 @@ export default function AuditLogPage() {
       },
       action: 'created open-ended question',
       module: 'Content Bank',
-      target: '"Design a REST API" for "Node.js Advanced" topic',
+      target: 'Design a REST API for Node.js Advanced topic',
       timestamp: '01:00 PM',
       details: {
         type: 'QUESTION_TYPE',
@@ -283,7 +283,7 @@ export default function AuditLogPage() {
       },
       action: 'added student',
       module: 'Course Studio',
-      target: 'Kate Hernandez to "Full Stack Batch 2024-A"',
+      target: 'Kate Hernandez to Full Stack Batch 2024-A',
       timestamp: '04:30 PM',
       dateLabel: '4 days ago',
       details: {
@@ -305,7 +305,7 @@ export default function AuditLogPage() {
       },
       action: 'bulk uploaded',
       module: 'Course Studio',
-      target: '25 students to "Advanced JavaScript" batch for Python Course',
+      target: '25 students to Advanced JavaScript batch for Python Course',
       timestamp: '02:00 PM',
       dateLabel: '4 days ago',
       details: {
@@ -327,7 +327,7 @@ export default function AuditLogPage() {
       },
       action: 'updated student batch for',
       module: 'Course Studio',
-      target: 'Bob Johnson in "Full Stack Web Development"',
+      target: 'Bob Johnson in Full Stack Web Development',
       timestamp: '10:15 AM',
       dateLabel: '3 days ago',
       details: {
@@ -349,7 +349,7 @@ export default function AuditLogPage() {
       },
       action: 'removed student',
       module: 'Course Studio',
-      target: 'Chris Martinez from "Python Batch 2024-A"',
+      target: 'Chris Martinez from Python Batch 2024-A',
       timestamp: '03:45 PM',
       dateLabel: '2 days ago',
       details: {
@@ -373,7 +373,7 @@ export default function AuditLogPage() {
       },
       action: 'graded submission in',
       module: 'Submissions',
-      target: '"DOM Fundamentals Quiz" for "Full Stack Web Development" - John Doe',
+      target: 'DOM Fundamentals Quiz for Full Stack Web Development - John Doe',
       timestamp: '06:20 PM',
       dateLabel: '2 days ago',
       details: {
@@ -395,7 +395,7 @@ export default function AuditLogPage() {
       },
       action: 'approved re-attempt for',
       module: 'Submissions',
-      target: '"React State Management Assessment" in "Advanced JavaScript" - Mark Davis',
+      target: 'React State Management Assessment in Advanced JavaScript - Mark Davis',
       timestamp: '02:30 PM',
       dateLabel: '2 days ago',
       details: {
@@ -417,7 +417,7 @@ export default function AuditLogPage() {
       },
       action: 'downloaded report for',
       module: 'Submissions',
-      target: '"Web Development Fundamentals Assessment" in Python Course',
+      target: 'Web Development Fundamentals Assessment in Python Course',
       timestamp: '11:00 AM',
       dateLabel: '1 day ago',
       details: {
@@ -441,7 +441,7 @@ export default function AuditLogPage() {
       },
       action: 'updated role permissions for',
       module: 'Roles and Permissions',
-      target: '"Instructor" role in "Course Studio" - Web Development department',
+      target: 'Instructor role in Course Studio - Web Development department',
       timestamp: '04:00 PM',
       dateLabel: '1 day ago',
       details: {
@@ -463,7 +463,7 @@ export default function AuditLogPage() {
       },
       action: 'created new role',
       module: 'Roles and Permissions',
-      target: '"Content Manager" with permissions (View, Create, Edit, Delete, Publish, Download, Import, Export)',
+      target: 'Content Manager with permissions (View, Create, Edit, Delete, Publish, Download, Import, Export)',
       timestamp: '10:30 AM',
       dateLabel: '1 day ago',
       details: {
@@ -487,7 +487,7 @@ export default function AuditLogPage() {
       },
       action: 'updated course type for',
       module: 'Settings',
-      target: '"Advanced Python" in "Programming" department',
+      target: 'Advanced Python in Programming department',
       timestamp: '05:30 PM',
       dateLabel: 'January 30, 2026',
       details: {
@@ -509,7 +509,7 @@ export default function AuditLogPage() {
       },
       action: 'enabled module sequencing for',
       module: 'Settings',
-      target: '"Web Development Bootcamp" - Course structure updated',
+      target: 'Web Development Bootcamp - Course structure updated',
       timestamp: '03:15 PM',
       dateLabel: 'January 29, 2026',
       details: {
@@ -531,7 +531,7 @@ export default function AuditLogPage() {
       },
       action: 'archived course',
       module: 'Course Studio',
-      target: '"Legacy PHP Course" - All student data archived',
+      target: 'Legacy PHP Course - All student data archived',
       timestamp: '02:00 PM',
       dateLabel: 'January 28, 2026',
       details: {
@@ -623,7 +623,7 @@ export default function AuditLogPage() {
       },
       action: 'deleted question from',
       module: 'Content Bank',
-      target: '"Outdated CSS Question" in "Advanced CSS" topic - Easy difficulty',
+      target: 'Outdated CSS Question in Advanced CSS topic - Easy difficulty',
       timestamp: '04:45 PM',
       dateLabel: 'January 24, 2026',
       details: {
@@ -645,7 +645,7 @@ export default function AuditLogPage() {
       },
       action: 'created coding problem in',
       module: 'Content Bank',
-      target: '"Implement Binary Search" in "Algorithms" topic - Hard difficulty',
+      target: 'Implement Binary Search in Algorithms topic - Hard difficulty',
       timestamp: '02:20 PM',
       dateLabel: 'January 23, 2026',
       details: {
@@ -669,7 +669,7 @@ export default function AuditLogPage() {
       },
       action: 'updated batch details for',
       module: 'Course Studio',
-      target: '"Full Stack Batch 2024-A" in "Full Stack Web Development"',
+      target: 'Full Stack Batch 2024-A in Full Stack Web Development',
       timestamp: '11:00 AM',
       dateLabel: 'January 22, 2026',
       details: {
@@ -691,7 +691,7 @@ export default function AuditLogPage() {
       },
       action: 'archived batch for',
       module: 'Course Studio',
-      target: '"Python Batch 2023-B" in "Python Programming Fundamentals"',
+      target: 'Python Batch 2023-B in Python Programming Fundamentals',
       timestamp: '08:45 AM',
       dateLabel: 'January 21, 2026',
       details: {
@@ -715,7 +715,7 @@ export default function AuditLogPage() {
       },
       action: 'updated organization settings for',
       module: 'Settings',
-      target: '"Amazon Future Engineer" program - Logo and domain updated',
+      target: 'Amazon Future Engineer program - Logo and domain updated',
       timestamp: '05:30 PM',
       dateLabel: 'January 20, 2026',
       details: {
@@ -829,7 +829,7 @@ export default function AuditLogPage() {
                 <div className="px-6 py-5 hover:bg-slate-50 transition-colors">
                   <div className="space-y-3">
                     {/* Main Entry Row */}
-                    <div className="flex gap-5 items-center group">
+                    <div className="flex gap-5 items-start group">
                       {/* Avatar */}
                       <div className={`flex-shrink-0 w-10 h-10 rounded-full ${getInitialsBgColor(log.user.initials)} flex items-center justify-center border-2 border-slate-200 shadow-sm`}>
                         <span className="text-xs font-bold text-foreground">
@@ -927,11 +927,11 @@ export default function AuditLogPage() {
                             </div>
                           ) : (
                             <div className="flex items-center gap-3">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-muted/20 text-muted-foreground border border-muted/40">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-muted/20 text-muted-foreground">
                                 {log.details.from}
                               </span>
                               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-success/10 text-success border border-success/30">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-success/10 text-success">
                                 {log.details.to}
                               </span>
                             </div>
