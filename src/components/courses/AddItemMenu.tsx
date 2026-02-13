@@ -264,7 +264,7 @@ const AddItemMenu = ({ isOpen, onClose, courseId }: AddItemMenuProps) => {
                 <Button
                   key={item.type}
                   variant="outline"
-                  className="h-auto p-4 flex flex-col items-start gap-3 hover:shadow-4dp transition-all"
+                  className="h-auto p-4 flex flex-col items-start gap-3 hover:shadow-soft transition-all"
                   onClick={() => handleItemSelect(item.type)}
                 >
                   <div className={`p-2 rounded-md ${item.color}`}>

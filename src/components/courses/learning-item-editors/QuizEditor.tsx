@@ -198,7 +198,7 @@ function QuestionPreviewModal({ question, isOpen, onClose }: QuestionPreviewModa
             <div className="flex items-center gap-2 mt-2">
               <Badge variant={
                 question.difficulty === 'Easy' ? 'default' :
-                question.difficulty === 'Medium' ? 'secondary' : 'destructive'
+                  question.difficulty === 'Medium' ? 'secondary' : 'destructive'
               }>
                 {question.difficulty}
               </Badge>
@@ -225,9 +225,8 @@ function QuestionPreviewModal({ question, isOpen, onClose }: QuestionPreviewModa
               <h3 className="font-semibold mb-4">Answer Options</h3>
               <div className="space-y-3">
                 {question.options.map((option, index) => (
-                  <div key={option.id} className={`border rounded p-3 flex items-center gap-3 ${
-                    option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'
-                  }`}>
+                  <div key={option.id} className={`border rounded p-3 flex items-center gap-3 ${option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'
+                    }`}>
                     <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-xs font-semibold">
                       {String.fromCharCode(65 + index)}
                     </div>
@@ -338,27 +337,40 @@ export function QuizEditor({
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Top Bar - Fixed */}
+      <div className="flex justify-between items-center p-4 border-b bg-background shrink-0 w-full">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">
+            {quizData.title || 'Untitled Quiz'}
+          </h2>
+        </div>
+      </div>
+
+      {/* Content - Scrollable */}
       <div className="flex-1 overflow-hidden">
         <div className="p-6 h-full flex flex-col">
-          {/* Title - Underlined style as per design specs */}
-          <div className="mb-6">
-            <input
-              type="text"
-              value={quizData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="Quiz Title"
-              className="text-xl font-semibold bg-transparent border-none outline-none border-b-2 border-border focus:border-primary transition-colors w-full pb-1"
-              style={{ fontSize: '1.25rem' }} // h5 size as per specs
-            />
-          </div>
+          <div className="mb-6 space-y-3">
+            {/* Title input field - 480px fixed width, left-aligned */}
+            <div className="w-[480px]">
+              <Label htmlFor="quiz-title">Title</Label>
+              <Input
+                id="quiz-title"
+                type="text"
+                value={quizData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="Quiz Title"
+                className="mt-2"
+              />
+            </div>
 
-          {/* Search and Filters */}
-          <div className="mb-4 space-y-4">
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <div className="relative">
+            {/* Search and Filters - Search bar 480px, filters on same row */}
+            <div className="flex gap-4 items-end">
+              <div className="w-[480px]">
+                <Label htmlFor="search-questions">Search Questions</Label>
+                <div className="relative mt-2">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
+                    id="search-questions"
                     placeholder="Search questions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -379,10 +391,10 @@ export function QuizEditor({
               </Select>
               <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
                 <SelectTrigger className="w-40">
-                  <SelectValue placeholder="All Difficulties" />
+                  <SelectValue placeholder="Any Difficulty" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Difficulties</SelectItem>
+                  <SelectItem value="all">Any Difficulty</SelectItem>
                   {allDifficulties.map(difficulty => (
                     <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
                   ))}
@@ -403,11 +415,10 @@ export function QuizEditor({
                   {filteredQuestions.map(question => (
                     <div
                       key={question.id}
-                      className={`border rounded-lg p-4 transition-colors ${
-                        isQuestionSelected(question.id)
+                      className={`border rounded-lg p-4 transition-colors ${isQuestionSelected(question.id)
                           ? 'border-primary bg-primary/5'
                           : 'hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <div className="space-y-3">
                         <div>
@@ -419,7 +430,7 @@ export function QuizEditor({
                           <Badge
                             variant={
                               question.difficulty === 'Easy' ? 'default' :
-                              question.difficulty === 'Medium' ? 'secondary' : 'destructive'
+                                question.difficulty === 'Medium' ? 'secondary' : 'destructive'
                             }
                             className="text-xs"
                           >
@@ -490,7 +501,7 @@ export function QuizEditor({
                                 <span className="text-sm font-medium">Question {index + 1}</span>
                                 <Badge variant={
                                   question.difficulty === 'Easy' ? 'default' :
-                                  question.difficulty === 'Medium' ? 'secondary' : 'destructive'
+                                    question.difficulty === 'Medium' ? 'secondary' : 'destructive'
                                 } className="text-xs">
                                   {question.difficulty}
                                 </Badge>
@@ -516,9 +527,8 @@ export function QuizEditor({
                             <p className="text-xs font-medium text-gray-500">Answer Options:</p>
                             <div className="grid grid-cols-1 gap-2">
                               {question.options.slice(0, 2).map((option, optIndex) => (
-                                <div key={option.id} className={`text-xs p-2 rounded border ${
-                                  option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-gray-50'
-                                }`}>
+                                <div key={option.id} className={`text-xs p-2 rounded border ${option.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-gray-50'
+                                  }`}>
                                   <span className="font-medium">{String.fromCharCode(65 + optIndex)}.</span> {option.text}
                                   {option.isCorrect && <span className="text-green-600 ml-2">✓</span>}
                                 </div>

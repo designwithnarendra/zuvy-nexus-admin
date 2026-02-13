@@ -258,7 +258,7 @@ const AllCoursesPage = () => {
           {!isInstructor() && (
             <Button
               onClick={handleCreateCourse}
-              className="bg-primary hover:bg-primary-dark shadow-4dp hover:shadow-hover transition-all duration-200 px-4 h-12"
+              className="bg-primary hover:bg-primary-dark shadow-soft hover:shadow-medium transition-all duration-200 px-4 h-12"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create New Course

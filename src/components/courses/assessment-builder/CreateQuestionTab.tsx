@@ -49,7 +49,7 @@ const CreateQuestionTab = ({ onCreateMCQ, onCreateCoding, onCreateOpenEnded }: C
             <Button
               key={item.type}
               variant="outline"
-              className="h-auto p-4 flex items-start gap-3 hover:shadow-4dp transition-all"
+              className="h-auto p-4 flex items-start gap-3 hover:shadow-soft transition-all"
               onClick={item.onClick}
             >
               <div className={`p-2 rounded-md ${item.color}`}>

@@ -155,9 +155,9 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
             Organize students into batches for better management
           </p>
         </div>
-        <Button 
+        <Button
           onClick={handleCreateBatch}
-          className="bg-primary hover:bg-primary-dark shadow-4dp"
+          className="bg-primary hover:bg-primary-dark shadow-soft"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create New Batch
@@ -167,7 +167,7 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
       {/* Batch Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {batches.map((batch) => (
-          <Card key={batch.id} className="hover:shadow-hover transition-all duration-200">
+          <Card key={batch.id} className="hover:shadow-medium transition-all duration-200">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div>

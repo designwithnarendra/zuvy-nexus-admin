@@ -133,7 +133,7 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
                     className={cn(
                       "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
                       item.active
-                        ? "bg-primary text-primary-foreground shadow-2dp"
+                        ? "bg-primary text-primary-foreground shadow-soft"
                         : "text-muted-foreground hover:text-white hover:bg-primary"
                     )}
                   >

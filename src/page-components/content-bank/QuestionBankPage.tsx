@@ -1,12 +1,11 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Settings, ChevronDown, Eye, Edit, Trash2 } from 'lucide-react';
+import { Plus, Settings, Eye, Edit, Trash2 } from 'lucide-react';
 import DataTable from '@/components/shared/DataTable';
 import { CodingProblemEditor } from '@/components/courses/learning-item-editors/CodingProblemEditor';
 import BulkUploadModal from '@/components/content-bank/BulkUploadModal';
@@ -24,7 +23,10 @@ interface Question {
   createdDate: string;
 }
 
+type QuestionType = 'MCQ' | 'Coding' | 'Open Ended';
+
 const QuestionBankPage = () => {
+  const [activeTab, setActiveTab] = useState<QuestionType>('MCQ');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [isManageTopicsOpen, setIsManageTopicsOpen] = useState(false);
@@ -33,7 +35,6 @@ const QuestionBankPage = () => {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
-  const [createType, setCreateType] = useState<'MCQ' | 'Coding' | 'Open Ended'>('MCQ');
 
   // Expanded questions data with 30+ items
   const questions: Question[] = [
@@ -100,30 +101,38 @@ const QuestionBankPage = () => {
     }
   };
 
+  // Filter questions by active tab
+  const filteredQuestions = useMemo(() => {
+    return questions.filter(q => q.type === activeTab);
+  }, [activeTab]);
+
   const questionColumns = [
     { key: 'text', label: 'Question' },
-    { key: 'type', label: 'Type' },
     { key: 'topic', label: 'Topic' },
     { key: 'difficulty', label: 'Difficulty' },
     { key: 'usageCount', label: 'Usage Count' },
-    { key: 'createdDate', label: 'Created' },
+    { key: 'createdDate', label: 'Created Date' },
     { key: 'actions', label: 'Actions', sortable: false }
   ];
+
+  // Format date to DD Mon YYYY
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
 
   const formatQuestionData = (question: Question) => ({
     ...question,
     text: (
-      <div 
+      <div
         className="max-w-md cursor-pointer hover:text-primary"
         onClick={() => handlePreviewQuestion(question.id)}
       >
         <p className="font-medium line-clamp-2">{question.text}</p>
       </div>
-    ),
-    type: (
-      <Badge className={getTypeColor(question.type)} variant="outline">
-        {question.type}
-      </Badge>
     ),
     difficulty: (
       <Badge className={getDifficultyColor(question.difficulty)} variant="outline">
@@ -133,7 +142,7 @@ const QuestionBankPage = () => {
     usageCount: (
       <span className="font-medium">{question.usageCount}</span>
     ),
-    createdDate: new Date(question.createdDate).toLocaleDateString(),
+    createdDate: formatDate(question.createdDate),
     actions: (
       <div className="flex items-center gap-2">
         <Button
@@ -161,13 +170,12 @@ const QuestionBankPage = () => {
     setIsCreateDialogOpen(false);
   };
 
-  const handleCreateTypeSelect = (type: 'MCQ' | 'Coding' | 'Open Ended') => {
-    if (type === 'Open Ended') {
+  const handleCreateQuestionClick = () => {
+    if (activeTab === 'Open Ended') {
       setIsOpenEndedModalOpen(true);
-    } else if (type === 'MCQ') {
+    } else if (activeTab === 'MCQ') {
       setIsMCQModalOpen(true);
-    } else {
-      setCreateType(type);
+    } else if (activeTab === 'Coding') {
       setIsCreateDialogOpen(true);
     }
   };
@@ -194,37 +202,46 @@ const QuestionBankPage = () => {
   };
 
   const renderQuestionCreator = () => {
-    switch (createType) {
+    return (
+      <CodingProblemEditor
+        mode="create"
+        initialData={{
+          title: '',
+          problemStatement: '',
+          constraints: '',
+          difficulty: '',
+          topic: '',
+          testCases: [{
+            id: `test-${Date.now()}`,
+            inputs: [{
+              id: `input-${Date.now()}`,
+              type: 'int',
+              value: ''
+            }],
+            outputType: 'int',
+            expectedOutput: '',
+            isHidden: false
+          }]
+        } as any}
+        onSave={(data) => {
+          handleCreateQuestion();
+        }}
+        onCancel={() => setIsCreateDialogOpen(false)}
+      />
+    );
+  };
+
+  // Get tab title based on active tab
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case 'MCQ':
+        return 'MCQs';
       case 'Coding':
-        return (
-          <CodingProblemEditor
-            mode="create"
-            initialData={{
-              title: '',
-              problemStatement: '',
-              constraints: '',
-              difficulty: '',
-              topic: '',
-              testCases: [{
-                id: `test-${Date.now()}`,
-                inputs: [{
-                  id: `input-${Date.now()}`,
-                  type: 'int',
-                  value: ''
-                }],
-                outputType: 'int',
-                expectedOutput: '',
-                isHidden: false
-              }]
-            } as any}
-            onSave={(data) => {
-              handleCreateQuestion();
-            }}
-            onCancel={() => setIsCreateDialogOpen(false)}
-          />
-        );
+        return 'Coding Questions';
+      case 'Open Ended':
+        return 'Open Ended Questions';
       default:
-        return null;
+        return 'MCQs';
     }
   };
 
@@ -243,55 +260,47 @@ const QuestionBankPage = () => {
           <Button
             variant="outline"
             onClick={() => setIsManageTopicsOpen(true)}
-            className="shadow-4dp"
+            className="shadow-soft"
           >
             <Settings className="h-4 w-4 mr-2" />
             Manage Topics
           </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="bg-primary hover:bg-primary-dark shadow-4dp">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Question
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleCreateTypeSelect('MCQ')}>
-                Multiple Choice Question
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleCreateTypeSelect('Coding')}>
-                Coding Problem
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleCreateTypeSelect('Open Ended')}>
-                Open Ended Question
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
-      </div>
 
-      {/* Questions Table */}
-      <div>
-        <DataTable
-          data={questions.map(formatQuestionData)}
-          columns={questionColumns}
-          searchable
-          filterable
-          itemsPerPage={20}
-        />
-      </div>
+        {/* Tab Content */}
+        <TabsContent value={activeTab} className="mt-0">
+          {/* Title with Count and Create Button */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="font-heading text-h5">{getTabTitle()} ({filteredQuestions.length})</h1>
+            <Button
+              onClick={handleCreateQuestionClick}
+              className="bg-primary hover:bg-primary-dark shadow-soft"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Question
+            </Button>
+          </div>
 
-      {/* Create Question Dialog */}
+          {/* Questions Table */}
+          <DataTable
+            data={filteredQuestions.map(formatQuestionData)}
+            columns={questionColumns}
+            searchable
+            filterable
+            itemsPerPage={20}
+          />
+        </TabsContent>
+      </Tabs>
+
+      {/* Create Coding Question Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-heading text-body1 font-semibold">
-              Create {createType === 'Open Ended' ? 'Open Ended Question' : createType === 'MCQ' ? 'Multiple Choice Question' : 'Coding Problem'}
+              Create Coding Problem
             </DialogTitle>
           </DialogHeader>
-          
+
           {renderQuestionCreator()}
         </DialogContent>
       </Dialog>

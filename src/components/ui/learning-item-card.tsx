@@ -210,7 +210,7 @@ export function LearningItemCard({
 
             <div className="flex items-center ml-2">
               {/* Drag Handle */}
-              <DragHandle className="h-6 w-6 flex items-center justify-center rounded-sm hover:bg-accent mr-1">
+              <DragHandle className="h-6 w-6 flex items-center justify-center rounded-sm hover:bg-primary-light mr-1">
                 <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
               </DragHandle>
               
