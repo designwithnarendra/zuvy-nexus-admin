@@ -1,11 +1,11 @@
 'use client'
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Layers, Database, Settings, LogOut, Building2 } from 'lucide-react';
+import { LayoutDashboard, Layers, Database, Settings, LogOut, Building2, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUser } from '@/contexts/UserContext';
@@ -20,6 +20,11 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, logout, isInstructor } = useUser();
+  const [isAuditLogPage, setIsAuditLogPage] = useState(false);
+
+  useEffect(() => {
+    setIsAuditLogPage(pathname === '/audit-log' || pathname === '/audit-log/');
+  }, [pathname]);
 
   // Don't show layout on role selector page
   const isRoleSelector = pathname === '/role-selector' || pathname?.startsWith('/role-selector');
@@ -142,6 +147,34 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
           </div>
           
           <div className="ml-auto flex items-center gap-3">
+            {currentUser && (
+              <Button
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium transition-colors rounded-md px-4 py-2",
+                  isAuditLogPage
+                    ? "bg-primary text-primary-foreground shadow-2dp"
+                    : "text-muted-foreground hover:text-white hover:bg-primary"
+                )}
+                style={
+                  isAuditLogPage
+                    ? {
+                        backgroundColor: 'hsl(122, 36%, 27%)',
+                        color: 'hsl(0, 0%, 100%)',
+                        boxShadow: '0 1px 3px 0 rgba(79,109,207,0.1), 0 1px 2px 0 rgba(79,109,207,0.06)'
+                      }
+                    : {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(0, 0%, 54%)'
+                      }
+                }
+                title="Audit Log"
+                aria-label="Audit Log"
+                onClick={() => router.push('/audit-log')}
+              >
+                <Bell className="h-5 w-5" />
+                <span>Audit Log</span>
+              </Button>
+            )}
             {currentUser && (
               <Badge 
                 className={cn(

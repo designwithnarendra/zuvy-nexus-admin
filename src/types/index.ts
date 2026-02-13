@@ -56,7 +56,7 @@ export interface BaseLearningItem {
 }
 
 // Learning item types
-export type LearningItemType = 'article' | 'video' | 'quiz' | 'assignment' | 'coding' | 'live-class' | 'feedback' | 'assessment';
+export type LearningItemType = 'article' | 'video' | 'quiz' | 'assignment' | 'coding' | 'live-class' | 'feedback' | 'assessment' | 'reading';
 
 // Article specific properties
 export interface Article extends BaseLearningItem {

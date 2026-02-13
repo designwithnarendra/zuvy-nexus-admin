@@ -1,3 +1,11 @@
+// Example tag usage for documentation/demo
+const TagDemo = () => (
+  <div className="flex gap-2 mb-6">
+    <Badge variant="courseStudio">Course Studio</Badge>
+    <Badge variant="contentBank">Content Bank</Badge>
+    <Badge variant="rolesPermission">Roles & Permission</Badge>
+  </div>
+);
 
 'use client'
 
@@ -185,6 +193,8 @@ const DashboardPage = () => {
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-7xl">
+      {/* Tag color demo */}
+      <TagDemo />
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-h5 mb-2">Dashboard</h1>

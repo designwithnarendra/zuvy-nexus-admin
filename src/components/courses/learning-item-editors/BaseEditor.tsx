@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { LearningItemType } from '@/components/ui/learning-item-card';
+import { LearningItemType } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export interface BaseEditorProps {
@@ -52,6 +52,7 @@ export function BaseEditor({
       'quiz': 'Quiz',
       'coding': 'Coding Problem',
       'feedback': 'Feedback Form',
+      'reading': 'Reading',
       'live-class': 'Live Class',
       'assessment': 'Assessment',
     };
