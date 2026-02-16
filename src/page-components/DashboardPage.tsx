@@ -1,12 +1,3 @@
-// Example tag usage for documentation/demo
-const TagDemo = () => (
-  <div className="flex gap-2 mb-6">
-    <Badge variant="courseStudio">Course Studio</Badge>
-    <Badge variant="contentBank">Content Bank</Badge>
-    <Badge variant="rolesPermission">Roles & Permission</Badge>
-  </div>
-);
-
 'use client'
 
 import { useState } from 'react';
