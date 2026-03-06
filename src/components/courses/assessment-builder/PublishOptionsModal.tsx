@@ -304,7 +304,7 @@ export function PublishOptionsModal({
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button onClick={handleSchedule} className="bg-primary hover:bg-primary-dark">
+              <Button onClick={handleSchedule} className="bg-primary hover:bg-primary-mid">
                 Schedule Assessment
               </Button>
             </div>
@@ -373,7 +373,7 @@ export function PublishOptionsModal({
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button onClick={handlePublishNow} className="bg-primary hover:bg-primary-dark">
+              <Button onClick={handlePublishNow} className="bg-primary hover:bg-primary-mid">
                 Publish Assessment
               </Button>
             </div>

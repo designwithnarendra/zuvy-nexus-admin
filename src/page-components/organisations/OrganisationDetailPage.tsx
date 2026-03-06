@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -28,6 +28,13 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
   const [activeTab, setActiveTab] = useState('courses');
   const [activeRolesSubTab, setActiveRolesSubTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isEntering, setIsEntering] = useState(true);
+  const [isSwitchingOrganisation, setIsSwitchingOrganisation] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setIsEntering(false));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Find the organisation
   const organisation = mockOrganisations.find(org => org.id === orgId);
@@ -53,6 +60,23 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
   const handleLogout = () => {
     logout();
     router.push('/role-selector');
+  };
+
+  const handleOrganisationSwitch = (nextOrgId: string) => {
+    if (!organisation) return;
+    if (nextOrgId === organisation.id || isSwitchingOrganisation) return;
+    setIsSwitchingOrganisation(true);
+    setTimeout(() => {
+      router.push(`/settings/organisations/${nextOrgId}`);
+    }, 120);
+  };
+
+  const handleBackToAllOrgs = () => {
+    if (isSwitchingOrganisation) return;
+    setIsSwitchingOrganisation(true);
+    setTimeout(() => {
+      router.push('/settings/organisations');
+    }, 120);
   };
 
   const tabsData = [
@@ -85,7 +109,7 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
             {/* Organization Header */}
             <div className="flex items-center gap-4">
               {/* Organization Logo/Avatar + Name with Dropdown */}
-              <Select value={organisation.id} onValueChange={(id) => router.push(`/settings/organisations/${id}`)}>
+              <Select value={organisation.id} onValueChange={handleOrganisationSwitch}>
                 <SelectTrigger className="border-0 shadow-none p-0 h-auto focus:ring-0 bg-transparent hover:bg-slate-50 rounded-lg px-3 py-2 w-80">
                   <div className="flex items-center gap-2 overflow-hidden">
                     <div className={`bg-orange-500 w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold text-xs flex-shrink-0`}>
@@ -128,10 +152,13 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
                   {/* Back to all orgs option */}
                   <div className="border-t mt-2">
                     <button
-                      onClick={() => router.push('/settings/organisations')}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded transition-colors"
+                      onClick={handleBackToAllOrgs}
+                      className={cn(
+                        "group w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded transition-colors",
+                        isSwitchingOrganisation && "pointer-events-none opacity-60"
+                      )}
                     >
-                      <ArrowLeft className="w-4 h-4" />
+                      <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-[3px]" />
                       <span>Back to all orgs</span>
                     </button>
                   </div>
@@ -162,10 +189,10 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={cn(
-                      "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                      "relative overflow-hidden flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 after:absolute after:left-1/2 after:bottom-0 after:h-[2px] after:w-[calc(100%-1.25rem)] after:-translate-x-1/2 after:origin-center after:scale-x-0 after:transition-transform after:duration-200",
                       activeTab === item.id
-                        ? "bg-primary text-primary-foreground shadow-2dp"
-                        : "text-muted-foreground hover:text-white hover:bg-primary"
+                        ? "bg-primary text-primary-foreground shadow-soft after:hidden"
+                        : "text-muted-foreground hover:text-primary hover:bg-primary-light after:bg-primary hover:after:scale-x-100"
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -181,12 +208,12 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
             {currentUser && (
               <Badge 
                 className={cn(
-                  "px-3 py-1 text-sm font-medium border",
+                  "px-3 py-1 text-sm font-medium border transition-colors duration-200",
                   currentUser.role === 'SuperAdmin' 
-                    ? "bg-violet-50 text-violet-700 border-violet-200"
+                    ? "bg-violet-50 text-violet-700 border-violet-200 hover:bg-primary hover:text-primary-foreground hover:border-primary"
                     : currentUser.role === 'Admin'
-                    ? "bg-info/10 text-info border-info/20"
-                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    ? "bg-info/10 text-info border-info/20 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-primary hover:text-primary-foreground hover:border-primary"
                 )}
               >
                 {currentUser.role === 'SuperAdmin' ? 'Super Admin' : currentUser.role}
@@ -207,7 +234,12 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pt-16">
+      <main
+        className={cn(
+          "flex-1 pt-16 transition-all duration-200",
+          (isEntering || isSwitchingOrganisation) ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
+        )}
+      >
         <div className="p-6">
           {activeTab === 'courses' && (
             <div className="-mx-6 -mt-14">

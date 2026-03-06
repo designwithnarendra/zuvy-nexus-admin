@@ -235,9 +235,9 @@ const SubmissionDetailsPage = ({
         <Button
           variant="ghost"
           onClick={handleBack}
-          className="hover:text-primary hover:bg-transparent p-0"
+          className="group !bg-transparent !shadow-none hover:!bg-transparent hover:!shadow-none hover:!translate-y-0 hover:text-primary p-0"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-[3px]" />
           Back to Course Submissions
         </Button>
       </div>
@@ -419,7 +419,7 @@ const SubmissionDetailsPage = ({
             <Button variant="outline" onClick={handleCancelReAttempt}>
               Cancel
             </Button>
-            <Button onClick={handleApproveReAttempt} className="bg-primary hover:bg-primary-dark">
+            <Button onClick={handleApproveReAttempt} className="bg-primary hover:bg-primary-mid">
               Approve Re-Attempt
             </Button>
           </DialogFooter>

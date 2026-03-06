@@ -258,9 +258,9 @@ const AllCoursesPage = () => {
           {!isInstructor() && (
             <Button
               onClick={handleCreateCourse}
-              className="bg-primary hover:bg-primary-dark shadow-soft hover:shadow-medium transition-all duration-200 px-4 h-12"
+              className="group bg-primary hover:bg-primary-mid shadow-soft hover:shadow-medium transition-all duration-200 px-4 h-12"
             >
-              <Plus className="h-5 w-5 mr-2" />
+              <Plus className="h-5 w-5 mr-2 transition-transform duration-150 group-hover:rotate-90" />
               Create New Course
             </Button>
           )}
@@ -406,7 +406,7 @@ const AllCoursesPage = () => {
               <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmitCourse} className="bg-primary hover:bg-primary-dark">
+              <Button onClick={handleSubmitCourse} className="bg-primary hover:bg-primary-mid">
                 Create Course
               </Button>
             </div>

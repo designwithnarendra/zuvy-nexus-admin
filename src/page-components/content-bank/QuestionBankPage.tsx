@@ -35,6 +35,7 @@ const QuestionBankPage = () => {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const tabContentClassName = "mt-0 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-1 data-[state=active]:duration-300";
 
   // Expanded questions data with 30+ items
   const questions: Question[] = [
@@ -265,12 +266,12 @@ const QuestionBankPage = () => {
         </div>
 
         {/* MCQ Tab Content */}
-        <TabsContent value="MCQ" className="mt-0">
+        <TabsContent value="MCQ" className={tabContentClassName}>
           <div className="flex items-center justify-between mb-6">
             <h1 className="font-heading text-h5">MCQs ({questions.filter(q => q.type === 'MCQ').length})</h1>
             <Button
               onClick={handleCreateQuestionClick}
-              className="bg-primary hover:bg-primary-dark shadow-soft"
+              className="bg-primary hover:bg-primary-mid shadow-soft"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Question
@@ -286,12 +287,12 @@ const QuestionBankPage = () => {
         </TabsContent>
 
         {/* Coding Tab Content */}
-        <TabsContent value="Coding" className="mt-0">
+        <TabsContent value="Coding" className={tabContentClassName}>
           <div className="flex items-center justify-between mb-6">
             <h1 className="font-heading text-h5">Coding Questions ({questions.filter(q => q.type === 'Coding').length})</h1>
             <Button
               onClick={handleCreateQuestionClick}
-              className="bg-primary hover:bg-primary-dark shadow-soft"
+              className="bg-primary hover:bg-primary-mid shadow-soft"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Question
@@ -307,12 +308,12 @@ const QuestionBankPage = () => {
         </TabsContent>
 
         {/* Open Ended Tab Content */}
-        <TabsContent value="Open Ended" className="mt-0">
+        <TabsContent value="Open Ended" className={tabContentClassName}>
           <div className="flex items-center justify-between mb-6">
             <h1 className="font-heading text-h5">Open Ended Questions ({questions.filter(q => q.type === 'Open Ended').length})</h1>
             <Button
               onClick={handleCreateQuestionClick}
-              className="bg-primary hover:bg-primary-dark shadow-soft"
+              className="bg-primary hover:bg-primary-mid shadow-soft"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Question

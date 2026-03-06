@@ -37,6 +37,8 @@ const OrganisationsPage = () => {
     email: ''
   });
   const [managementTypeChangeErrors, setManagementTypeChangeErrors] = useState<Record<string, string>>({});
+  const [navigatingOrgId, setNavigatingOrgId] = useState<string | null>(null);
+  const [isPageExiting, setIsPageExiting] = useState(false);
 
   const handleAddOrganisation = (newOrg: Omit<Organisation, 'id' | 'dateAdded'>) => {
     const organisation: Organisation = {
@@ -172,6 +174,15 @@ const OrganisationsPage = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleNavigateToOrganisation = (orgId: string) => {
+    if (isPageExiting) return;
+    setNavigatingOrgId(orgId);
+    setIsPageExiting(true);
+    setTimeout(() => {
+      router.push(`/settings/organisations/${orgId}`);
+    }, 80);
+  };
+
   // Filter organisations based on search term and management type
   const filteredOrganisations = organisations.filter(org => {
     const matchesSearch = org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -196,32 +207,22 @@ const OrganisationsPage = () => {
 
   const formattedOrganisations = filteredOrganisations.map(org => ({
     ...org,
-    name: (
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          router.push(`/settings/organisations/${org.id}`);
-        }}
-        className="font-medium text-primary hover:underline transition-colors text-left cursor-pointer"
-        type="button"
-      >
-        {org.name}
-      </button>
-    ),
+    name: <span className="font-medium text-primary">{org.name}</span>,
     managementType: (
-      <Select
-        value={org.managementType}
-        onValueChange={(value: ManagementType) => handleManagementTypeChange(org.id, value)}
-      >
-        <SelectTrigger className="w-[170px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Self Managed">Self Managed</SelectItem>
-          <SelectItem value="Zuvy Managed">Zuvy Managed</SelectItem>
-        </SelectContent>
-      </Select>
+      <div data-no-row-click="true">
+        <Select
+          value={org.managementType}
+          onValueChange={(value: ManagementType) => handleManagementTypeChange(org.id, value)}
+        >
+          <SelectTrigger className="w-[170px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Self Managed">Self Managed</SelectItem>
+            <SelectItem value="Zuvy Managed">Zuvy Managed</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     ),
     pointOfContact: (
       <div className="flex flex-col">
@@ -238,29 +239,29 @@ const OrganisationsPage = () => {
       <span className="text-muted-foreground">-</span>
     ),
     actions: (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" data-no-row-click="true">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => handleEditClick(org)}
-          className="h-8 w-8 hover:bg-primary hover:text-white"
+          className="group h-8 w-8 hover:bg-primary hover:text-white"
         >
-          <Edit className="h-4 w-4" />
+          <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => handleDeleteClick(org)}
-          className="h-8 w-8 text-destructive hover:bg-red-500 hover:text-white"
+          className="group h-8 w-8 text-destructive hover:bg-red-500 hover:text-white"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
         </Button>
       </div>
     )
   }));
 
   return (
-    <div className="w-full space-y-6">
+    <div className={`w-full space-y-6 transition-opacity duration-[80ms] ${isPageExiting ? 'opacity-0' : 'opacity-100'}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -308,6 +309,8 @@ const OrganisationsPage = () => {
         searchable={false}
         filterable={true}
         itemsPerPage={10}
+        onRowClick={(row) => handleNavigateToOrganisation(row.id)}
+        rowClassName={(row) => (navigatingOrgId === row.id ? 'scale-[0.995]' : '')}
       />
 
       {/* Add Organisation Modal */}

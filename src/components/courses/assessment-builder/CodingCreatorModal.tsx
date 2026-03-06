@@ -336,7 +336,7 @@ const CodingCreatorModal = ({ isOpen, onClose, onBack, onQuestionCreated, setIsC
             <Button variant="outline" onClick={onBack} disabled={isCreating}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={isCreating} className="bg-primary hover:bg-primary-dark">
+            <Button onClick={handleSave} disabled={isCreating} className="bg-primary hover:bg-primary-mid">
               {isCreating ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -142,7 +142,7 @@ export function AssessmentSettings({
         </div>
         <Button
           onClick={onOpenPublishModal}
-          className="bg-primary hover:bg-primary-dark"
+          className="bg-primary hover:bg-primary-mid"
         >
           Publish Options
         </Button>

@@ -28,7 +28,7 @@ const CourseCard = ({
       case 'published':
         return 'bg-success-light text-success-dark border-success';
       case 'ongoing':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+        return 'bg-orange-100 text-orange-800 border-orange-200 animate-pulse-ring';
       case 'completed':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'draft':

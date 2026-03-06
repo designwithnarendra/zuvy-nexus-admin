@@ -132,9 +132,9 @@ const BatchDetailsPage = ({ courseId, batchId }: BatchDetailsPageProps) => {
           <Button
             variant="ghost"
             onClick={() => router.push(`/courses/${courseId}?tab=batches`)}
-            className="mb-12 hover:text-primary hover:bg-transparent p-0"
+            className="group mb-12 p-0 !bg-transparent !shadow-none hover:!bg-transparent hover:!shadow-none hover:!translate-y-0 hover:text-primary"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-[3px]" />
             Back to Batches
           </Button>
         </div>

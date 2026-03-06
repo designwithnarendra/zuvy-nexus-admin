@@ -352,7 +352,7 @@ const StudentsTab = ({ courseId, initialBatchFilter }: StudentsTabProps) => {
           </Button>
           {!isInstructor() && (
             <Button
-              className="bg-primary hover:bg-primary-dark shadow-soft h-10"
+              className="bg-primary hover:bg-primary-mid shadow-soft h-10"
               onClick={() => setIsBulkUploadModalOpen(true)}
             >
               <FileSpreadsheet className="h-4 w-4 mr-2" />

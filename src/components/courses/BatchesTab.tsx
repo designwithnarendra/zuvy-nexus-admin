@@ -184,10 +184,10 @@ const BatchesTab = ({ courseId }: BatchesTabProps) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 hover:bg-primary hover:text-white"
+                  className="group h-8 w-8 hover:bg-primary hover:text-white"
                   onClick={() => handleEditBatch(batch)}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                 </Button>
               </div>
             </CardHeader>

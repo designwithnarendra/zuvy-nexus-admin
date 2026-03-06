@@ -458,7 +458,7 @@ const MCQCreatorModal = ({ isOpen, onClose }: MCQCreatorModalProps) => {
                     />
                     <Label
                       htmlFor="bulk-file-upload"
-                      className="cursor-pointer inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary-dark"
+                      className="cursor-pointer inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary-mid"
                     >
                       Choose File
                     </Label>
@@ -468,7 +468,7 @@ const MCQCreatorModal = ({ isOpen, onClose }: MCQCreatorModalProps) => {
               
               {bulkFile && (
                 <div className="flex justify-end">
-                  <Button className="bg-primary hover:bg-primary-dark">
+                  <Button className="bg-primary hover:bg-primary-mid">
                     Add Questions
                   </Button>
                 </div>
@@ -572,7 +572,7 @@ const MCQCreatorModal = ({ isOpen, onClose }: MCQCreatorModalProps) => {
                   <Button 
                     onClick={handleGenerateQuestions}
                     disabled={aiDifficulties.length === 0 || aiTopics.some(t => !t.name) || isGenerating}
-                    className="bg-primary hover:bg-primary-dark"
+                    className="bg-primary hover:bg-primary-mid"
                   >
                     {isGenerating ? (
                       <>
@@ -672,7 +672,7 @@ const MCQCreatorModal = ({ isOpen, onClose }: MCQCreatorModalProps) => {
                     <Button 
                       onClick={handleCreateQuestions}
                       disabled={selectedCount === 0}
-                      className="bg-primary hover:bg-primary-dark"
+                      className="bg-primary hover:bg-primary-mid"
                     >
                       Generate {selectedCount} Questions
                     </Button>
@@ -695,7 +695,7 @@ const MCQCreatorModal = ({ isOpen, onClose }: MCQCreatorModalProps) => {
                 (activeTab === 'one-at-a-time' && (!topic || !difficulty || currentVariant?.question === '')) ||
                 (activeTab === 'bulk-upload' && !bulkFile)
               }
-              className="bg-primary hover:bg-primary-dark"
+              className="bg-primary hover:bg-primary-mid"
             >
               Create Question{activeTab === 'one-at-a-time' && variants.length > 1 ? 's' : ''}
             </Button>

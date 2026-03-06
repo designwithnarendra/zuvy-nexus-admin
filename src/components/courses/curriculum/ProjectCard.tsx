@@ -66,6 +66,10 @@ const ProjectCard = ({
                 <Button
                   variant="ghost"
                   size="sm"
+                  className={cn(
+                    item.title !== 'Portfolio Website' ? 'opacity-50 cursor-not-allowed' : '',
+                    'group hover:!translate-y-0 hover:!shadow-none'
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     // Only allow editing for Project 1: Portfolio Website
@@ -76,20 +80,19 @@ const ProjectCard = ({
                     }
                   }}
                   disabled={item.title !== 'Portfolio Website'}
-                  className={item.title !== 'Portfolio Website' ? 'opacity-50 cursor-not-allowed' : ''}
                   title={item.title === 'Portfolio Website' ? 'Edit project' : 'Editing not available for this project'}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                 </Button>
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+                      className="group text-destructive hover:text-destructive-dark hover:bg-destructive-light hover:!translate-y-0 hover:!shadow-none"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>

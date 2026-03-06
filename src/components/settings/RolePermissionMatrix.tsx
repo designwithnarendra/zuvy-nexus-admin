@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -105,6 +105,19 @@ const RolePermissionMatrix: React.FC<RolePermissionMatrixProps> = ({
   );
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoveredButtonId, setHoveredButtonId] = useState<string | null>(null);
+  const moduleBodyRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [moduleBodyHeights, setModuleBodyHeights] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const nextHeights: Record<string, number> = {};
+
+    modules.forEach((module) => {
+      const body = moduleBodyRefs.current[module.id];
+      nextHeights[module.id] = body?.scrollHeight ?? 0;
+    });
+
+    setModuleBodyHeights(nextHeights);
+  }, [modules, expandedModules]);
 
   const toggleModuleExpansion = (moduleId: string) => {
     setExpandedModules((prev) => {
@@ -249,8 +262,8 @@ const RolePermissionMatrix: React.FC<RolePermissionMatrixProps> = ({
             >
               <ChevronDown
                 className={cn(
-                  'h-5 w-5 transition-transform',
-                  !expandedModules.has(moduleId) && '-rotate-90'
+                  'h-5 w-5 transition-transform duration-300',
+                  !expandedModules.has(moduleId) && 'rotate-180'
                 )}
               />
             </button>
@@ -298,23 +311,35 @@ const RolePermissionMatrix: React.FC<RolePermissionMatrixProps> = ({
       {/* Matrix Content */}
       <div className="divide-y divide-border">
         {modules.map((module) => {
-          const parentState = getParentState(module.id);
-
           return (
             <React.Fragment key={module.id}>
               {/* Parent Row */}
               {renderPermissionCell(module.id, null, false)}
 
               {/* Child Rows */}
-              {expandedModules.has(module.id) &&
-                module.children.map((child) => (
-                  <div
-                    key={`${module.id}-${child.id}`}
-                    className="bg-muted-light"
-                  >
-                    {renderPermissionCell(module.id, child.id, true)}
-                  </div>
-                ))}
+              <div
+                className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+                style={{
+                  maxHeight: expandedModules.has(module.id)
+                    ? `${moduleBodyHeights[module.id] ?? 0}px`
+                    : '0px',
+                }}
+              >
+                <div
+                  ref={(element) => {
+                    moduleBodyRefs.current[module.id] = element;
+                  }}
+                >
+                  {module.children.map((child) => (
+                    <div
+                      key={`${module.id}-${child.id}`}
+                      className="bg-muted-light"
+                    >
+                      {renderPermissionCell(module.id, child.id, true)}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </React.Fragment>
           );
         })}

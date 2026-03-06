@@ -250,7 +250,7 @@ const GeneralDetailsTab = ({ courseId }: GeneralDetailsTabProps) => {
         {/* Save Changes Button - Only for Admin */}
         {!isInstructor() && (
           <div className="flex justify-end pt-4 border-t">
-            <Button onClick={handleSave} className="bg-primary hover:bg-primary-dark">
+            <Button onClick={handleSave} className="bg-primary hover:bg-primary-mid">
               Save Changes
             </Button>
           </div>

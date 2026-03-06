@@ -262,7 +262,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
               <Button 
                 onClick={handleGenerate}
                 disabled={!setupData.topics || setupData.questionTypes.length === 0 || isGenerating}
-                className="bg-primary hover:bg-primary-dark"
+                className="bg-primary hover:bg-primary-mid"
               >
                 {isGenerating ? (
                   <>
@@ -369,7 +369,7 @@ const AIGenerationModal = ({ isOpen, onClose }: AIGenerationModalProps) => {
                 <Button 
                   onClick={handleImportSelected}
                   disabled={selectedCount === 0}
-                  className="bg-primary hover:bg-primary-dark"
+                  className="bg-primary hover:bg-primary-mid"
                 >
                   Import {selectedCount} Questions
                 </Button>

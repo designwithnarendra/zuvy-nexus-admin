@@ -111,7 +111,7 @@ const SettingsTab = ({ courseId }: SettingsTabProps) => {
               <AlertDescription>Settings saved successfully</AlertDescription>
             </Alert>
           )}
-          <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary-dark">
+          <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary-mid">
             Save Settings
           </Button>
         </div>

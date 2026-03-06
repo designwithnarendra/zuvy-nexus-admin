@@ -74,7 +74,7 @@ const CreateTopicModal = ({ isOpen, onClose, onTopicCreated }: CreateTopicModalP
           <Button 
             onClick={handleCreate}
             disabled={!topicData.name.trim()}
-            className="bg-primary hover:bg-primary-dark"
+            className="bg-primary hover:bg-primary-mid"
           >
             Create Topic
           </Button>

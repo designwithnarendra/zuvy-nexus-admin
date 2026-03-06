@@ -134,7 +134,7 @@ const ManageTopicsModal = ({ isOpen, onClose }: ManageTopicsModalProps) => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button onClick={onClose} className="bg-primary hover:bg-primary-dark">
+            <Button onClick={onClose} className="bg-primary hover:bg-primary-mid">
               Done
             </Button>
           </div>

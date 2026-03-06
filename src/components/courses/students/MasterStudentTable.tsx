@@ -20,7 +20,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, MoreVertical, UserMinus, UserX, Mail, Edit } from 'lucide-react';
+import { AlertCircle, MoreVertical, UserMinus, Mail, Edit } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import DataTable from '@/components/shared/DataTable';
 
@@ -86,14 +86,6 @@ const MasterStudentTable = ({
     currentBatch: string | null;
     newBatch: string | null;
   } | null>(null);
-
-  // Check if a student can be deleted (only if batch hasn't started)
-  const canDeleteStudent = (student: Student): boolean => {
-    if (!student.batch) return true; // Not assigned to a batch
-
-    const batch = batches.find(b => b.name === student.batch);
-    return batch ? batch.status === 'Not Started' : true;
-  };
 
   // Get student initials for avatar fallback
   const getStudentInitials = (name: string): string => {
@@ -171,8 +163,8 @@ const MasterStudentTable = ({
 
   // Format student data for the table
   const formatStudentData = (student: Student) => {
-    const canDelete = canDeleteStudent(student);
-    const isDropped = student.status === 'dropout';
+    const isActive = student.status === 'active';
+    const hasPostContactActions = isActive;
     const isSelected = selectedStudents.includes(student.id);
 
     const baseData = {
@@ -247,13 +239,17 @@ const MasterStudentTable = ({
       ),
       actions: (
         <div onClick={(e) => e.stopPropagation()}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">Actions</span>
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="!shadow-none hover:!shadow-none hover:!translate-y-0 hover:!bg-transparent"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">Actions</span>
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => handleStudentAction('edit', student)}>
                 <Edit className="h-4 w-4 mr-2" />
@@ -263,23 +259,14 @@ const MasterStudentTable = ({
                 <Mail className="h-4 w-4 mr-2" />
                 Contact Student
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {!isDropped && (
+              {hasPostContactActions && <DropdownMenuSeparator />}
+              {isActive && (
                 <DropdownMenuItem
                   onClick={() => handleStudentAction('dropout', student)}
                   className="text-warning"
                 >
                   <UserMinus className="h-4 w-4 mr-2" />
                   Mark as Dropout
-                </DropdownMenuItem>
-              )}
-              {canDelete && (
-                <DropdownMenuItem
-                  onClick={() => handleStudentAction('delete', student)}
-                  className="text-destructive hover:bg-red-500 hover:text-white"
-                >
-                  <UserX className="h-4 w-4 mr-2" />
-                  Delete Student
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

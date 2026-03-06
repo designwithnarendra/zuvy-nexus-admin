@@ -319,7 +319,7 @@ const DashboardPage = () => {
               <CardTitle className="font-heading text-body1 font-semibold">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start bg-primary hover:bg-primary-dark" asChild>
+              <Button className="w-full justify-start bg-primary hover:bg-primary-mid" asChild>
                 <a href="/courses">
                   <BookOpen className="h-4 w-4 mr-2" />
                   Create New Course

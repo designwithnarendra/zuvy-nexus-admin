@@ -91,6 +91,7 @@ const ModuleCard = ({
             <Button
               variant="ghost"
               size="sm"
+              className="group hover:!translate-y-0 hover:!shadow-none"
               onClick={(e) => {
                 e.stopPropagation();
                 if (onEditModule) {
@@ -99,19 +100,19 @@ const ModuleCard = ({
               }}
               title={`Edit ${item.type} details`}
             >
-              <Edit className="h-4 w-4" />
+              <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
             </Button>
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+                  className="group text-destructive hover:text-destructive-dark hover:bg-destructive-light hover:!translate-y-0 hover:!shadow-none"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                 </Button>
               </DialogTrigger>
               <DialogContent>

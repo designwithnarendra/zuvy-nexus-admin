@@ -24,6 +24,7 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
   const [batchFilter, setBatchFilter] = useState<string | null>(null);
   const [initialSubmissionType, setInitialSubmissionType] = useState<string | null>(null);
   const studentsTabRef = useRef<HTMLDivElement>(null);
+  const tabContentClassName = "mt-0 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-1 data-[state=active]:duration-300";
 
   // Define available tabs based on role
   const availableTabs = useMemo(() => {
@@ -103,30 +104,30 @@ const CourseViewTabs = ({ courseId }: CourseViewTabsProps) => {
       </TabsList>
 
       <div className="mt-6">
-        <TabsContent value="general" className="mt-0">
+        <TabsContent value="general" className={tabContentClassName}>
           <GeneralDetailsTab courseId={courseId} />
         </TabsContent>
 
-        <TabsContent value="curriculum" className="mt-0">
+        <TabsContent value="curriculum" className={tabContentClassName}>
           <CurriculumTab courseId={courseId} />
         </TabsContent>
 
-        <TabsContent value="students" className="mt-0" ref={studentsTabRef}>
+        <TabsContent value="students" className={tabContentClassName} ref={studentsTabRef}>
           <StudentsTab courseId={courseId} initialBatchFilter={batchFilter} />
         </TabsContent>
 
         {!isInstructor() && (
-          <TabsContent value="batches" className="mt-0">
+          <TabsContent value="batches" className={tabContentClassName}>
             <BatchesTab courseId={courseId} />
           </TabsContent>
         )}
 
-        <TabsContent value="submissions" className="mt-0">
+        <TabsContent value="submissions" className={tabContentClassName}>
           <SubmissionsTab courseId={courseId} initialSubmissionType={initialSubmissionType} />
         </TabsContent>
 
         {!isInstructor() && (
-          <TabsContent value="settings" className="mt-0">
+          <TabsContent value="settings" className={tabContentClassName}>
             <SettingsTab courseId={courseId} />
           </TabsContent>
         )}

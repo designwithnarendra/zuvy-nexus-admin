@@ -612,9 +612,9 @@ const ModulePage = ({ courseId, moduleId }: ModulePageProps) => {
           <Button
             variant="ghost"
             onClick={() => router.push(`/courses/${courseId}?tab=curriculum`)}
-            className="mb-4 hover:text-primary hover:bg-transparent p-0"
+            className="group mb-4 !bg-transparent !shadow-none hover:!bg-transparent hover:!shadow-none hover:!translate-y-0 hover:text-primary p-0"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-[3px]" />
             Back to Course
           </Button>
 

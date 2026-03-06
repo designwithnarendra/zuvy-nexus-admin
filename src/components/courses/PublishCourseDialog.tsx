@@ -144,7 +144,7 @@ const PublishCourseDialog = ({
           <Button 
             onClick={handlePublish}
             disabled={!isValid || isPublishing}
-            className="bg-primary hover:bg-primary-dark"
+            className="bg-primary hover:bg-primary-mid"
           >
             {isPublishing ? 'Publishing...' : 'Publish'}
           </Button>

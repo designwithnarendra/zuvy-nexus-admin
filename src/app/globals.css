@@ -19,21 +19,24 @@
     --card-foreground: 150 15% 15%; /* #21302B - Match foreground */
 
     /* Primary Brand Colors - Light Mode - Forest Green */
-    --primary: 120 37% 27%; /* #2C5F2D */
-    --primary-light: 130 43% 95%; /* #E8F5E9 */
-    --primary-dark: 123 40% 20%; /* #1D4620 */
+    --primary: 122 36% 27%; /* #2C5F2D */
+    --primary-light: 122 39% 93%; /* very pale green */
+    --primary-mid: 122 37% 40%; /* intermediate green */
+    --primary-dark: 122 40% 20%; /* #1D4620 - deep forest */
     --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
     /* Secondary Brand Colors - Light Mode - Sunset Orange */
     --secondary: 25 80% 52%; /* #EB7E2E */
-    --secondary-light: 25 85% 94%; /* #FDEEE3 */
-    --secondary-dark: 25 80% 42%; /* #C66418 */
+    --secondary-light: 25 85% 94%; /* #FDEEE3 - pale peach */
+    --secondary-mid: 25 82% 64%; /* intermediate orange */
+    --secondary-dark: 25 80% 42%; /* #C66418 - burnt orange */
     --secondary-foreground: 0 0% 100%; /* #FFFFFF */
 
     /* Accent Colors - Light Mode - Bright Teal */
     --accent: 153 91% 49%; /* #12EA7B */
-    --accent-light: 153 91% 94%; /* #E0FFF0 */
-    --accent-dark: 151 91% 39%; /* #0DB862 */
+    --accent-light: 153 91% 94%; /* #E0FFF0 - pale mint */
+    --accent-mid: 153 91% 62%; /* intermediate teal */
+    --accent-dark: 151 91% 39%; /* #0DB862 - deep teal */
     --accent-foreground: 0 0% 10%; /* #1A1A1A */
 
     /* Grey Scale - Light Mode */
@@ -110,21 +113,24 @@
     --card-foreground: 30 30% 98%; /* Light text on cards */
 
     /* Primary Brand Colors - Dark Mode - Forest Green (lighter) */
-    --primary: 125 37% 36%; /* Lighter green for dark mode */
-    --primary-light: 120 37% 27%; /* Darker variant */
-    --primary-dark: 124 38% 46%; /* Lighter variant */
+    --primary: 122 35% 36%; /* Lighter green for dark mode */
+    --primary-light: 122 36% 27%; /* base green (swapped) */
+    --primary-mid: 122 36% 32%; /* intermediate, biased toward darker */
+    --primary-dark: 122 35% 45%; /* bright green - emphasis, active states */
     --primary-foreground: 0 0% 100%; /* White text */
 
     /* Secondary Brand Colors - Dark Mode - Sunset Orange */
-    --secondary: 25 80% 52%; /* Same sunset orange */
-    --secondary-light: 25 80% 42%; /* Darker variant */
-    --secondary-dark: 25 85% 62%; /* Lighter variant */
+    --secondary: 25 80% 52%; /* unchanged */
+    --secondary-light: 25 80% 42%; /* deeper orange (swapped) */
+    --secondary-mid: 25 80% 47%; /* intermediate orange */
+    --secondary-dark: 25 85% 62%; /* brighter orange - emphasis, active states */
     --secondary-foreground: 0 0% 100%; /* White text */
 
     /* Accent Colors - Dark Mode - Bright Teal */
-    --accent: 153 91% 49%; /* Same teal */
-    --accent-light: 151 91% 39%; /* Darker variant */
-    --accent-dark: 153 91% 56%; /* Lighter variant */
+    --accent: 153 91% 49%; /* unchanged */
+    --accent-light: 151 91% 39%; /* deep teal (swapped) */
+    --accent-mid: 152 91% 44%; /* intermediate teal */
+    --accent-dark: 153 91% 56%; /* brighter teal - emphasis, active states */
     --accent-foreground: 0 0% 10%; /* Dark text */
 
     /* Grey Scale - Dark Mode */
@@ -331,6 +337,45 @@
 
   .transition-bounce {
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bell-wiggle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(-10deg);
+    }
+    40% {
+      transform: rotate(10deg);
+    }
+    60% {
+      transform: rotate(-6deg);
+    }
+    80% {
+      transform: rotate(6deg);
+    }
+  }
+
+  .animate-bell-wiggle {
+    animation: bell-wiggle 900ms ease-in-out 1;
+    transform-origin: top center;
+  }
+
+  /* Global fallback: rotate plus icons in all button-like controls on hover */
+  button .lucide-plus,
+  button .lucide-plus-circle,
+  [role='button'] .lucide-plus,
+  [role='button'] .lucide-plus-circle {
+    transition: transform 200ms ease;
+  }
+
+  button:hover .lucide-plus,
+  button:hover .lucide-plus-circle,
+  [role='button']:hover .lucide-plus,
+  [role='button']:hover .lucide-plus-circle {
+    transform: rotate(90deg);
   }
 
   /* Full-width content utilities */

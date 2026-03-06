@@ -20,6 +20,8 @@ interface DataTableProps {
   searchable?: boolean;
   filterable?: boolean;
   itemsPerPage?: number;
+  onRowClick?: (row: any) => void;
+  rowClassName?: (row: any) => string;
 }
 
 const DataTable = ({ 
@@ -27,11 +29,14 @@ const DataTable = ({
   columns, 
   searchable = true, 
   filterable = false,
-  itemsPerPage = 10 
+  itemsPerPage = 10,
+  onRowClick,
+  rowClassName
 }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pressedRowKey, setPressedRowKey] = useState<string | number | null>(null);
   const [filters, setFilters] = useState({
     type: 'all',
     topic: 'all',
@@ -135,6 +140,15 @@ const DataTable = ({
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
+  const shouldIgnoreRowClick = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return false;
+    return Boolean(
+      target.closest(
+        'button, a, input, select, textarea, [role="button"], [role="checkbox"], [data-no-row-click="true"]'
+      )
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
@@ -212,7 +226,7 @@ const DataTable = ({
               {columns.map((column) => (
                 <TableHead 
                   key={column.key}
-                  className={column.sortable !== false ? "cursor-pointer hover:bg-primary-light" : ""}
+                  className={column.sortable !== false ? "cursor-pointer" : ""}
                   onClick={() => column.sortable !== false && handleSort(column.key)}
                 >
                   <div className="flex items-center gap-2">
@@ -232,7 +246,21 @@ const DataTable = ({
               </TableRow>
             ) : (
               paginatedData.map((item, index) => (
-                <TableRow key={item.id || index} className="hover:bg-primary-light">
+                <TableRow
+                  key={item.id || index}
+                  className={`${onRowClick ? 'cursor-pointer transition-transform duration-100' : ''} ${pressedRowKey === (item.id || index) ? 'scale-[0.995]' : ''} hover:bg-primary-light ${rowClassName ? rowClassName(item) : ''}`}
+                  onPointerDown={(e) => {
+                    if (!onRowClick || shouldIgnoreRowClick(e.target)) return;
+                    setPressedRowKey(item.id || index);
+                  }}
+                  onPointerUp={() => setPressedRowKey(null)}
+                  onPointerLeave={() => setPressedRowKey(null)}
+                  onPointerCancel={() => setPressedRowKey(null)}
+                  onClick={(e) => {
+                    if (!onRowClick || shouldIgnoreRowClick(e.target)) return;
+                    onRowClick(item);
+                  }}
+                >
                   {columns.map((column) => (
                     <TableCell key={column.key}>
                       {item[column.key]}

@@ -71,7 +71,10 @@ const BatchCard = ({ batch, onView, onEdit, onDelete }: BatchCardProps) => {
                   <Eye className="h-4 w-4 mr-2" />
                   View Students
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEdit(batch.id)}>
+                <DropdownMenuItem
+                  onClick={() => onEdit(batch.id)}
+                  className="[&_svg]:transition-transform [&_svg]:duration-200 data-[highlighted]:[&_svg]:scale-125"
+                >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Batch
                 </DropdownMenuItem>

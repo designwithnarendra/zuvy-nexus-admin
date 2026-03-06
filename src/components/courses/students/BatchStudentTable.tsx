@@ -83,6 +83,7 @@ const BatchStudentTable = ({
   // Format student data for the table
   const formatStudentData = (student: Student) => {
     const isDropped = student.status === 'dropout';
+    const hasPostContactActions = (!isDropped && batch.status === 'Ongoing') || batch.status === 'Not Started';
     
     return {
       ...student,
@@ -112,7 +113,11 @@ const BatchStudentTable = ({
       actions: (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="!shadow-none hover:!shadow-none hover:!translate-y-0 hover:!bg-transparent"
+            >
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Actions</span>
             </Button>
@@ -126,7 +131,7 @@ const BatchStudentTable = ({
               <Mail className="h-4 w-4 mr-2" />
               Contact Student
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {hasPostContactActions && <DropdownMenuSeparator />}
             {!isDropped && batch.status === 'Ongoing' && (
               <DropdownMenuItem 
                 onClick={() => handleStudentAction('dropout', student)}

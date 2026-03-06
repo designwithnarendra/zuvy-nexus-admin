@@ -116,16 +116,16 @@ const SingleCoursePage = () => {
           <Button
             variant="ghost"
             onClick={() => router.push('/courses')}
-            className="hover:text-primary hover:bg-transparent"
+            className="group !bg-transparent !shadow-none hover:!bg-transparent hover:!shadow-none hover:!translate-y-0 hover:text-primary"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:-translate-x-[3px]" />
             Back to Course Library
           </Button>
           
           {!isInstructor() && (
             <div className="flex items-center gap-3">
               <Button
-                className="bg-primary hover:bg-primary-dark shadow-soft"
+                className="bg-primary hover:bg-primary-mid shadow-soft"
                 onClick={() => setIsPublishDialogOpen(true)}
               >
                 <Upload className="h-4 w-4 mr-2" />

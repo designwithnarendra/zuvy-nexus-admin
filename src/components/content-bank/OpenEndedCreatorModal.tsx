@@ -119,7 +119,7 @@ const OpenEndedCreatorModal = ({ isOpen, onClose }: OpenEndedCreatorModalProps) 
             <Button 
               onClick={handleCreateQuestion}
               disabled={!questionData.question || !questionData.difficulty || !questionData.topic}
-              className="bg-primary hover:bg-primary-dark"
+              className="bg-primary hover:bg-primary-mid"
             >
               Create Question
             </Button>

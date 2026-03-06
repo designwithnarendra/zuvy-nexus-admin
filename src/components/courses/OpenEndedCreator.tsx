@@ -139,7 +139,7 @@ const OpenEndedCreator = ({ onSave }: OpenEndedCreatorProps) => {
         <Button variant="outline" onClick={onSave}>
           Cancel
         </Button>
-        <Button onClick={handleSave} className="bg-primary hover:bg-primary-dark">
+        <Button onClick={handleSave} className="bg-primary hover:bg-primary-mid">
           Create Question
         </Button>
       </div>

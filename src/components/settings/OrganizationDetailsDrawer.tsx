@@ -633,7 +633,7 @@ const OrganizationDetailsDrawer = ({
             <Button variant="outline" onClick={handleAnimatedClose}>
               Cancel
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-white" onClick={handleSave}>
+            <Button className="bg-primary hover:bg-primary-mid text-white" onClick={handleSave}>
               Save Changes
             </Button>
           </div>

@@ -79,7 +79,7 @@ const SelectedQuestionsPanel = ({ selectedQuestions, onQuestionRemove, onCreateA
       <div className="pt-4 border-t">
         <Button 
           onClick={onCreateAssessment}
-          className="w-full bg-primary hover:bg-primary-dark"
+          className="w-full bg-primary hover:bg-primary-mid"
           disabled={selectedQuestions.length === 0}
         >
           Create Assessment

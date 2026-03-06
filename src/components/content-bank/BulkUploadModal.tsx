@@ -298,7 +298,7 @@ const BulkUploadModal = ({ isOpen, onClose }: BulkUploadModalProps) => {
                 <Button 
                   onClick={handleImport}
                   disabled={validQuestions.length === 0 && warningQuestions.length === 0}
-                  className="bg-primary hover:bg-primary-dark"
+                  className="bg-primary hover:bg-primary-mid"
                 >
                   Import {validQuestions.length + warningQuestions.length} Questions
                 </Button>

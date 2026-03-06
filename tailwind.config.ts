@@ -60,6 +60,7 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					light: 'hsl(var(--primary-light))',
+					mid: 'hsl(var(--primary-mid))',
 					dark: 'hsl(var(--primary-dark))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
@@ -79,12 +80,14 @@ export default {
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					light: 'hsl(var(--secondary-light))',
+					mid: 'hsl(var(--secondary-mid))',
 					dark: 'hsl(var(--secondary-dark))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					light: 'hsl(var(--accent-light))',
+					mid: 'hsl(var(--accent-mid))',
 					dark: 'hsl(var(--accent-dark))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
@@ -282,6 +285,47 @@ export default {
 					'50%': {
 						opacity: '0.8'
 					}
+				},
+				'wiggle': {
+					'0%, 100%': { transform: 'rotate(0deg)' },
+					'15%': { transform: 'rotate(-12deg)' },
+					'30%': { transform: 'rotate(10deg)' },
+					'45%': { transform: 'rotate(-8deg)' },
+					'60%': { transform: 'rotate(6deg)' },
+					'75%': { transform: 'rotate(-4deg)' },
+					'90%': { transform: 'rotate(2deg)' }
+				},
+				'pulse-ring': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.55' }
+				},
+				'modal-overlay-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'modal-overlay-out': {
+					from: { opacity: '1' },
+					to: { opacity: '0' }
+				},
+				'modal-content-in': {
+					from: {
+						opacity: '0',
+						transform: 'translate(-50%, calc(-50% + 20px)) scale(0.98)'
+					},
+					to: {
+						opacity: '1',
+						transform: 'translate(-50%, -50%) scale(1)'
+					}
+				},
+				'modal-content-out': {
+					from: {
+						opacity: '1',
+						transform: 'translate(-50%, -50%) scale(1)'
+					},
+					to: {
+						opacity: '0',
+						transform: 'translate(-50%, calc(-50% + 20px)) scale(0.98)'
+					}
 				}
 			},
 			animation: {
@@ -300,7 +344,13 @@ export default {
 				'float-slow': 'float-slow 8s ease-in-out infinite',
 				'spin-slow': 'spin-slow 12s linear infinite',
 				'drift': 'drift 10s ease-in-out infinite',
-				'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite'
+				'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite',
+				'wiggle': 'wiggle 0.6s ease-in-out',
+				'pulse-ring': 'pulse-ring 1.8s ease-in-out infinite',
+				'modal-overlay-in': 'modal-overlay-in 220ms ease-out',
+				'modal-overlay-out': 'modal-overlay-out 180ms ease-in',
+				'modal-content-in': 'modal-content-in 220ms ease-out',
+				'modal-content-out': 'modal-content-out 180ms ease-in'
 			}
 		}
 	},

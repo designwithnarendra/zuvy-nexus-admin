@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   FileText, 
@@ -31,6 +31,8 @@ const SubmissionsTab = ({ courseId, initialSubmissionType }: SubmissionsTabProps
   const [activeSubmissionType, setActiveSubmissionType] = useState(
     initialSubmissionType || 'assessments'
   );
+  const tabsListRef = useRef<HTMLDivElement>(null);
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
 
   // Update active tab when initialSubmissionType changes
   useEffect(() => {
@@ -38,6 +40,30 @@ const SubmissionsTab = ({ courseId, initialSubmissionType }: SubmissionsTabProps
       setActiveSubmissionType(initialSubmissionType);
     }
   }, [initialSubmissionType]);
+
+  useEffect(() => {
+    const updateUnderline = () => {
+      if (!tabsListRef.current) return;
+
+      const activeTabElement = tabsListRef.current.querySelector<HTMLElement>(
+        `[data-submission-tab="${activeSubmissionType}"]`
+      );
+
+      if (!activeTabElement) return;
+
+      setUnderlineStyle({
+        left: activeTabElement.offsetLeft,
+        width: activeTabElement.offsetWidth,
+      });
+    };
+
+    updateUnderline();
+    window.addEventListener('resize', updateUnderline);
+
+    return () => {
+      window.removeEventListener('resize', updateUnderline);
+    };
+  }, [activeSubmissionType]);
 
   return (
     <div className="w-full space-y-6">
@@ -50,18 +76,26 @@ const SubmissionsTab = ({ courseId, initialSubmissionType }: SubmissionsTabProps
         onValueChange={setActiveSubmissionType}
         className="w-full"
       >
-        <TabsList className="grid w-full rounded-none border-b bg-transparent p-0 h-auto" 
+        <TabsList
+          ref={tabsListRef}
+          className="relative grid w-full rounded-none border-b bg-transparent p-0 h-auto"
           style={{ gridTemplateColumns: `repeat(${submissionTypes.length}, 1fr)` }}>
           {submissionTypes.map(type => (
             <TabsTrigger 
               key={type.id} 
               value={type.id}
-              className="flex items-center gap-2 rounded-none border-b-2 border-b-transparent bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
+              data-submission-tab={type.id}
+              className="relative z-10 flex items-center gap-2 rounded-none border-b-2 border-b-transparent bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
             >
               <type.icon className="h-4 w-4" />
               <span className="hidden sm:inline">{type.label}</span>
             </TabsTrigger>
           ))}
+          <span
+            className="pointer-events-none absolute bottom-0 block h-0.5 bg-primary transition-[left,width] duration-300 ease-out"
+            style={{ left: `${underlineStyle.left}px`, width: `${underlineStyle.width}px` }}
+            aria-hidden="true"
+          />
         </TabsList>
 
         {submissionTypes.map(type => (

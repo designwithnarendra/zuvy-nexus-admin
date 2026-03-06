@@ -366,7 +366,7 @@ Bob Johnson,bob.johnson@example.com,`;
               {uploadProgress && uploadProgress.processedRecords === uploadProgress.totalRecords && (
                 <Button
                   onClick={handleAddStudents}
-                  className="bg-primary hover:bg-primary-dark ml-auto"
+                  className="bg-primary hover:bg-primary-mid ml-auto"
                 >
                   Add Students
                 </Button>

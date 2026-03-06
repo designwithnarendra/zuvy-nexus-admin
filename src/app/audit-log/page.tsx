@@ -964,7 +964,7 @@ export default function AuditLogPage() {
         </div>
         <Button
           onClick={handleExport}
-          className="bg-primary hover:bg-primary-dark shadow-4dp"
+          className="bg-primary hover:bg-primary-mid shadow-4dp"
         >
           <Download className="h-4 w-4 mr-2" />
           Export

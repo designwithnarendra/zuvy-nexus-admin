@@ -107,18 +107,19 @@ const LearningItemCard = ({
           <Button 
             variant="ghost" 
             size="sm"
+            className="group"
             onClick={onEdit}
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
           </Button>
           <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-destructive hover:text-destructive-dark hover:bg-destructive-light"
+                className="group text-destructive hover:text-destructive-dark hover:bg-destructive-light"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
               </Button>
             </DialogTrigger>
             <DialogContent>

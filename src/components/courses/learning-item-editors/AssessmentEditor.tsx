@@ -462,7 +462,7 @@ export function AssessmentEditor({
         <Button variant="outline" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleNext} className="bg-primary hover:bg-primary-dark">
+        <Button onClick={handleNext} className="bg-primary hover:bg-primary-mid">
           Next
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>

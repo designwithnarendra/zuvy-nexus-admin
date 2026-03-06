@@ -457,9 +457,9 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
         {!isInstructor() && (
           <Button
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary hover:bg-primary-dark h-12"
+            className="group bg-primary hover:bg-primary-mid h-12"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-90" />
             Add Module/Project
           </Button>
         )}
@@ -627,7 +627,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
               <Button
                 onClick={handleAddItem}
                 disabled={!newItemData.title || !newItemData.description}
-                className="bg-primary hover:bg-primary-dark"
+                className="bg-primary hover:bg-primary-mid"
               >
                 Add {newItemData.type === 'module' ? 'Module' : 'Project'}
               </Button>
@@ -731,7 +731,7 @@ const CurriculumTab = ({ courseId }: CurriculumTabProps) => {
               <Button
                 onClick={handleUpdateItem}
                 disabled={!editItemData.title || !editItemData.description}
-                className="bg-primary hover:bg-primary-dark"
+                className="bg-primary hover:bg-primary-mid"
               >
                 Update {editItemData.type === 'module' ? 'Module' : 'Project'}
               </Button>
