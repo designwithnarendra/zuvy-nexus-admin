@@ -51,7 +51,7 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
   }
 
   // Don't show layout on organisation detail pages
-  const isOrgDetail = /^\/settings\/organisations\/[^/]+\/?$/.test(pathname);
+  const isOrgDetail = /^\/settings\/organisations\/[^/]+(?:\/audit-log)?\/?$/.test(pathname);
   if (isOrgDetail) {
     console.log('🚀 MainLayout: Detected organisation detail page, returning children only. Pathname:', pathname);
     return <>{children}</>;
@@ -164,7 +164,7 @@ const MainLayout = ({ children, hideNavigation = false }: MainLayoutProps) => {
           </div>
           
           <div className="ml-auto flex items-center gap-3">
-            {currentUser && (
+            {currentUser && !(isSuperAdmin && isOrganisationsPage) && (
               <Link
                 href="/audit-log"
                 className={cn(

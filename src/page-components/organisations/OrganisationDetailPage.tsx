@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -9,32 +9,51 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Layers, Database, Settings, LogOut, Check, ArrowLeft, Users, Shield } from 'lucide-react';
+import { Layers, Database, Settings, LogOut, Check, ArrowLeft, Users, Shield, Bell } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import { Organisation } from '@/types/index';
 import { mockOrganisations } from '@/types/mock-rbac-data';
 import AllCoursesPage from '../courses/AllCoursesPage';
 import QuestionBankPage from '../content-bank/QuestionBankPage';
+import AuditLogPage from '@/app/audit-log/page';
 import OrganisationManageRoles from '@/components/settings/OrganisationManageRoles';
 import UsersPage from '@/components/settings/UsersPage';
 
 interface OrganisationDetailPageProps {
   orgId: string;
+  initialTab?: 'courses' | 'content-bank' | 'roles' | 'audit-log';
 }
 
-const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
+const OrganisationDetailPage = ({ orgId, initialTab = 'courses' }: OrganisationDetailPageProps) => {
   const router = useRouter();
   const { logout, currentUser } = useUser();
-  const [activeTab, setActiveTab] = useState('courses');
+  const [activeTab, setActiveTab] = useState<'courses' | 'content-bank' | 'roles' | 'audit-log'>(initialTab);
   const [activeRolesSubTab, setActiveRolesSubTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [isEntering, setIsEntering] = useState(true);
   const [isSwitchingOrganisation, setIsSwitchingOrganisation] = useState(false);
+  const [showBellWiggle, setShowBellWiggle] = useState(false);
+  const hasPlayedBellWiggle = useRef(false);
+  const unreadAuditCount = 3;
+  const hasUnreadNotifications = unreadAuditCount > 0;
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setIsEntering(false));
     return () => cancelAnimationFrame(raf);
   }, []);
+
+  useEffect(() => {
+    if (!hasUnreadNotifications || hasPlayedBellWiggle.current) return;
+
+    hasPlayedBellWiggle.current = true;
+    setShowBellWiggle(true);
+
+    const timeout = setTimeout(() => {
+      setShowBellWiggle(false);
+    }, 1200);
+
+    return () => clearTimeout(timeout);
+  }, [hasUnreadNotifications]);
 
   // Find the organisation
   const organisation = mockOrganisations.find(org => org.id === orgId);
@@ -105,7 +124,7 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="flex h-16 items-center justify-between w-full px-6">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8 min-w-0">
             {/* Organization Header */}
             <div className="flex items-center gap-4">
               {/* Organization Logo/Avatar + Name with Dropdown */}
@@ -181,13 +200,13 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
             </div>
 
             {/* Navigation Tabs */}
-            <nav className="flex items-center space-x-1">
+            <nav className="flex items-center space-x-1 min-w-0 overflow-x-auto">
               {tabsData.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => setActiveTab(item.id as 'courses' | 'content-bank' | 'roles' | 'audit-log')}
                     className={cn(
                       "relative overflow-hidden flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 after:absolute after:left-1/2 after:bottom-0 after:h-[2px] after:w-[calc(100%-1.25rem)] after:-translate-x-1/2 after:origin-center after:scale-x-0 after:transition-transform after:duration-200",
                       activeTab === item.id
@@ -204,7 +223,23 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
           </div>
 
           {/* Right: User and Logout */}
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-3 shrink-0">
+            {currentUser && (
+              <Link
+                href={`/settings/organisations/${organisation.id}/audit-log`}
+                className={cn(
+                  "relative overflow-hidden flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 after:absolute after:left-1/2 after:bottom-0 after:h-[2px] after:w-[calc(100%-1.25rem)] after:-translate-x-1/2 after:origin-center after:scale-x-0 after:transition-transform after:duration-200",
+                  activeTab === 'audit-log'
+                    ? "bg-primary text-primary-foreground after:hidden"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary-light after:bg-primary hover:after:scale-x-100"
+                )}
+                title="Audit Log"
+                aria-label="Audit Log"
+              >
+                <Bell className={cn("h-4 w-4", showBellWiggle && "animate-bell-wiggle")} />
+                <span>Audit Log</span>
+              </Link>
+            )}
             {currentUser && (
               <Badge 
                 className={cn(
@@ -240,55 +275,59 @@ const OrganisationDetailPage = ({ orgId }: OrganisationDetailPageProps) => {
           (isEntering || isSwitchingOrganisation) ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
         )}
       >
-        <div className="p-6">
-          {activeTab === 'courses' && (
-            <div className="-mx-6 -mt-14">
-              <AllCoursesPage />
-            </div>
-          )}
-          {activeTab === 'content-bank' && (
-            <div className="-mx-6 -mt-14">
-              <QuestionBankPage />
-            </div>
-          )}
-          {activeTab === 'roles' && (
-            <div className="w-full">
-              {/* Roles and Permissions Sub-tabs */}
-              <div className="mb-8">
-                <nav className="flex items-center space-x-1">
-                  <button
-                    onClick={() => setActiveRolesSubTab('users')}
-                    className={cn(
-                      "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                      activeRolesSubTab === 'users'
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                  >
-                    <Users className="h-4 w-4" />
-                    <span>Users</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveRolesSubTab('manage-roles')}
-                    className={cn(
-                      "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                      activeRolesSubTab === 'manage-roles'
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                  >
-                    <Shield className="h-4 w-4" />
-                    <span>Manage Role Functions</span>
-                  </button>
-                </nav>
+        {activeTab === 'audit-log' ? (
+          <AuditLogPage />
+        ) : (
+          <div className="p-6">
+            {activeTab === 'courses' && (
+              <div className="-mx-6 -mt-14">
+                <AllCoursesPage />
               </div>
+            )}
+            {activeTab === 'content-bank' && (
+              <div className="-mx-6 -mt-14">
+                <QuestionBankPage />
+              </div>
+            )}
+            {activeTab === 'roles' && (
+              <div className="w-full">
+                {/* Roles and Permissions Sub-tabs */}
+                <div className="mb-8">
+                  <nav className="flex items-center space-x-1">
+                    <button
+                      onClick={() => setActiveRolesSubTab('users')}
+                      className={cn(
+                        "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                        activeRolesSubTab === 'users'
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      )}
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>Users</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveRolesSubTab('manage-roles')}
+                      className={cn(
+                        "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                        activeRolesSubTab === 'manage-roles'
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      )}
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span>Manage Role Functions</span>
+                    </button>
+                  </nav>
+                </div>
 
-              {/* Sub-tab content */}
-              {activeRolesSubTab === 'users' && <UsersPage hideInviteSection={true} />}
-              {activeRolesSubTab === 'manage-roles' && <OrganisationManageRoles />}
-            </div>
-          )}
-        </div>
+                {/* Sub-tab content */}
+                {activeRolesSubTab === 'users' && <UsersPage hideInviteSection={true} />}
+                {activeRolesSubTab === 'manage-roles' && <OrganisationManageRoles />}
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
